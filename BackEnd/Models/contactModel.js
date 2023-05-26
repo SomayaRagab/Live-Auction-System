@@ -38,4 +38,4 @@ const contactSchema = new Schema({
 });
 contactSchema.plugin(Autoincrement,  {id: 'contact_id',inc_field: 'id'});
 
-const contactModel = mongoose.model('contacts', contactSchema);
+const contacts = mongoose.model('contacts', contactSchema);
