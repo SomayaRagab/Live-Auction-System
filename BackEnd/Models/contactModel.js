@@ -10,23 +10,28 @@ const contactSchema = new Schema({
     },
     name: {
         type: String,
-        required: true
+        required: [true,'required name']
     },
     email: {
         type: String,
-        required: true
+        //match email with regex
+        match: [/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/, " Invalid Email"],
+        required: [true,'required email']
     },
     phone: {
         type: String,
-        required: true
+        //match phone with regex
+        match: [/^01[0125][0-9]{8}$/, "Invalid phoneNumber"],
+        
+        required: [true,'required phone']
     },
     subject: {
         type: String,
-        required: true
+        required: [true,'required subject']
     },
     message: {
         type: String,
-        required: true
+        required: [true,'required message']
     }
 }, {
     timestamps: true
