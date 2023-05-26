@@ -5,7 +5,7 @@ const schema = new mongoose.Schema(
     _id: Number,
     name: { type: String, required: [true, "Name is required"] },
     qty: { type: Number, required: [true, "Qty is required"] },
-    images: { type: String, required: [true, "Image is required"] },
+    image: { type: String, required: [true, "Image is required"] },
     material: { type: String, required: [true, "Material is required"] },
     size: { type: String, required: [true, "Size is required"] },
     color: { type: String, required: [true, "Color is required"] },
@@ -19,7 +19,7 @@ const schema = new mongoose.Schema(
     },
     max_price: { type: Number, required: [true, "Max Price is required"] },
     end_time: { type: Date, required: [true, "End Time is required"] },
-    category: { type: Number, ref: "categories" },
+    category: { type: [Number], ref: "categories" },
   },
   { timestamps: true }
 );
