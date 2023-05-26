@@ -40,11 +40,11 @@ const auctionSchema = mongoose.Schema({
         ref: 'items',
         required: [true, 'Items is required']
     }
-    ,timestamp: {
-        type: Date,
-        default: Date.now
-    }
-});
+}
+    , {
+        timestamps: true
+        }
+        );
 
 
 auctionSchema.plugin(autoIncrement, {id:'auction_id', inc_field: 'id' });
