@@ -28,6 +28,26 @@ const userSchema = new Schema({
         match: [/^01[0125][0-9]{8}$/, "Invalid phoneNumber"],
         required: [true,'required phone']
     },
+    address: {
+        type: Object,
+        city:{
+            type: String,
+            required: [true,'required city']
+        },
+        street:{
+            type: String,   
+            required: [true,'required street']
+        },
+        building_number:{
+            type: String,
+            required: [true,'required building number']
+        },
+        required: [true,'required address']
+    },
+    image:{
+        type: String,
+        required: [true,'required image']
+    },
     role: {
         type: String,
         enum: ['admin', 'client'],
