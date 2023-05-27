@@ -1,7 +1,6 @@
 const { body } = require('express-validator');
 
 exports.validatePostArray = [
-
   body('name')
     .isString()
     .withMessage('name must be string')
@@ -15,7 +14,7 @@ exports.validatePostArray = [
     .withMessage(
       'password must be at least 8 chars, one uppercase letter, one lowercase letter,one special char, and one number'
     ),
-  body('image').isString().withMessage('image must be string'),
+
   body('city').isString().withMessage('city must be string'),
   body('street').isString().withMessage('street must be string'),
   body('building').isString().withMessage('building must be string'),

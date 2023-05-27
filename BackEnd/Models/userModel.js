@@ -6,7 +6,7 @@ const Autoincrement = require('mongoose-sequence')(mongoose);
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    id: {
+    _id: {
         type: Number
     },
     name: {
@@ -59,6 +59,6 @@ const userSchema = new Schema({
     timestamps: true
 });
 
-userSchema.plugin(Autoincrement,  {id: 'user_id',inc_field: 'id'});
+userSchema.plugin(Autoincrement,  {id: 'user_id',inc_field: '_id'});
 
 const users = mongoose.model('users', userSchema);
