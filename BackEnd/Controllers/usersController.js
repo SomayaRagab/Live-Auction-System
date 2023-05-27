@@ -39,7 +39,6 @@ exports.addUser = (request, response, next) => {
         api_secret: 'DobujUPSTN5VO6Gjk8O4QoL0ZkI'
       });
 
-
     // save image url clandianry.
     // replace \ with / in request.file.path
 
