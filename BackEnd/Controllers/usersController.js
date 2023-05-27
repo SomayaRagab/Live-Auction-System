@@ -1,8 +1,12 @@
+require('../Models/userModel');
 const mongoose = require('mongoose');
 const fs = require('fs');
-const clandinary = require('cloudinary').v2;
-require('../Models/userModel');
+const cloudinary = require('cloudinary').v2;
+ require('../Helper/cloudinary');
 const userSchema = mongoose.model('users');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 
 //get all users in system
 
@@ -29,26 +33,38 @@ exports.getUser = (request, response, next) => {
 //add user
 exports.addUser = (request, response, next) => {
 
-    // save image url clandianry
-    clandinary.uploader.upload(request.file.path, function (error, result) {
-        request.body.image = result.url;
-    });
-    new userSchema({
-        _id: request.body.id,
-        name: request.body.name,
-        email: request.body.email,
-        password: request.body.password,
-        phone: request.body.phone,
-        image: request.body.image,
-        "address.city": request.body.city,
-        "address.street": request.body.street,
-        "address.building": request.body.building,
-        role: request.body.role
+    // save image url clandianry.
+    // replace \ with / in request.file.path
 
-    })
-        .save()
-        .then((data) => {
-            response.status(201).json({ data });
-        })
-        .catch((error) => next(error));
+    // request.body.image = request.file.path.replace(/\\/g, '/');
+    console.log(request.file.path)
+    // path = `../${request.body.image}`
+    // console.log(path)
+    
+    cloudinary.uploader.upload(request.body.image, function (error, result) {
+        //this will the image source
+        console.log(result);
+        // request.body.image = result.url;
+    });
+
+
+    // console.log(request.body.image);
+    // new userSchema({
+    //     _id: request.body.id,
+    //     name: request.body.name,
+    //     email: request.body.email,
+    //     password: bcrypt.hashSync(request.body.password, bcrypt.genSaltSync(saltRounds)),
+    //     phone: request.body.phone,
+    //     image: request.body.image,
+    //     "address.city": request.body.city,
+    //     "address.street": request.body.street,
+    //     "address.building_number": request.body.building,
+    //     role: request.body.role
+
+    // })
+    //     .save()
+    //     .then((data) => {
+    //         response.status(201).json({ data });
+    //     })
+    //     .catch((error) => next(error));
 };
