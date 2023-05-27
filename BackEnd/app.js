@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
+const cloudinary = require('cloudinary').v2;
+
 
 // routes
 const loginRoutes = require("./Routes/loginRoute");
