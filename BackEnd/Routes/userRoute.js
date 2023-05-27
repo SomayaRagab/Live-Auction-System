@@ -10,4 +10,7 @@ const router = express.Router();
 router
     .route('/users')
     .get( controller.getAllUsers)
-    .post(validatePostArray, validateMW,imageUpload.single('image'),controller.addUser);
+    .post(imageUpload.single('image'),controller.addUser);
+
+
+module.exports = router;

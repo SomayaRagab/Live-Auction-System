@@ -4,7 +4,6 @@ const morgan = require("morgan");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const fs = require("fs");
-const cloudinary = require('cloudinary').v2;
 
 
 // routes
@@ -73,7 +72,7 @@ server.use(express.urlencoded({ extended: false }));
 
 // Routes
 
-// server.use(userRoutes);
+server.use(userRoutes);
 // server.use( itemRoutes);
 // server.use(auctionRoutes);
 // server.use( bindingRoute);
@@ -92,3 +91,4 @@ server.use((error, request, response, next) => {
   let status = error.status || 500;
   response.status(status).json({ message: error + "" });
 });
+// validatePostArray, validateMW,
