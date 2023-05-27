@@ -23,7 +23,7 @@ const { PORT } = require("./Config/env");
 
 //  open server using express
 const server = express(); 
-let port = PORT;
+let port = 8080;
 mongoose.set("strictQuery", true);
 mongoose
   .connect(
@@ -45,7 +45,6 @@ server.use(
     origin: "*",
   })
 );
-
 
 morgan(function (tokens, request, res) {
   return [
