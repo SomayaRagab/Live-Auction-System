@@ -65,7 +65,7 @@ server.use(userRoutes);
 // server.use( itemRoutes);
 // server.use(auctionRoutes);
 // server.use( bindingRoute);
-// server.use( categoryRoutes);
+server.use( categoryRoutes);
 // server.use(contactRoutes);
 
 // not found middleware
@@ -79,4 +79,3 @@ server.use((error, request, response, next) => {
   let status = error.status || 500;
   response.status(status).json({ message: error + '' });
 });
-// validatePostArray, validateMW,
