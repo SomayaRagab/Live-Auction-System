@@ -107,5 +107,3 @@ exports.getAuctionsByName = (request, response, error) => {
     }
   });
 };
-
-

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const autoIncrement = require("mongoose-sequence")(mongoose);
+const erdGenerator = require('mongoose-erd-generator');
 
 const auctionSchema = mongoose.Schema(
   {
@@ -46,6 +47,11 @@ const auctionSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+erdGenerator(auctionSchema, {filename: 'auctionSchema.png'});
+const erd = erdGenerator(auctionSchema);
+
+console.log(erd); // returns the path of the generated erd
 
 auctionSchema.plugin(autoIncrement, { id: "auction_id", inc_field: "id" });
 const auctions = mongoose.model("auctions", auctionSchema);
