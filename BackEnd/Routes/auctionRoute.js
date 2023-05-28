@@ -1,5 +1,5 @@
 const express = require('express');
-const controller = require('./../Controllers/auctionController');
+const controller = require('./../Controllers/auctionsController');
 const validateMW = require('./../Validations/validateMW');
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 router
     .route('/auctions')
     .get( controller.getAllAuctions)
-    .post(controller.addUser)
+    .post(controller.addAuction)
     
 
 router
@@ -19,7 +19,7 @@ router
 
 router 
     .route('/auctions/:status')
-    .get(controller.getAuctionByStatus);
+    .get(controller.getAuctionsByStatus);
 
 router
     .route('/auctions/:name')
