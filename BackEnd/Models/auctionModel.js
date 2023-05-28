@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const autoIncrement = require("mongoose-sequence")(mongoose);
-const erdGenerator = require('mongoose-erd-generator');
+const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const auctionSchema = mongoose.Schema(
   {
@@ -10,37 +9,37 @@ const auctionSchema = mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, 'Name is required'],
     },
     reference_number: {
       type: Number,
-      required: [true, "Reference Number is required"],
+      required: [true, 'Reference Number is required'],
     },
     start_date: {
       type: Date,
-      required: [true, "Start Date is required"],
+      required: [true, 'Start Date is required'],
     },
     end_date: {
       type: Date,
-      required: [true, "End Date is required"],
+      required: [true, 'End Date is required'],
     },
     time: {
       type: String,
-      required: [true, "Time is required"],
+      required: [true, 'Time is required'],
     },
     fees: {
       type: Number,
-      required: [true, "Fees is required"],
+      required: [true, 'Fees is required'],
     },
     status: {
       type: String,
-      enum: ["started", "ended", "not started"],
-      required: [true, "Status is required"],
+      enum: ['started', 'ended', 'not started'],
+      required: [true, 'Status is required'],
     },
     items: {
       type: Array,
-      ref: "items",
-      required: [true, "Items is required"],
+      ref: 'items',
+      required: [true, 'Items is required'],
     },
   },
   {
@@ -48,10 +47,5 @@ const auctionSchema = mongoose.Schema(
   }
 );
 
-erdGenerator(auctionSchema, {filename: 'auctionSchema.png'});
-const erd = erdGenerator(auctionSchema);
-
-console.log(erd); // returns the path of the generated erd
-
-auctionSchema.plugin(autoIncrement, { id: "auction_id", inc_field: "id" });
-const auctions = mongoose.model("auctions", auctionSchema);
+auctionSchema.plugin(autoIncrement, { id: 'auction_id', inc_field: 'id' });
+const auctions = mongoose.model('auctions', auctionSchema);

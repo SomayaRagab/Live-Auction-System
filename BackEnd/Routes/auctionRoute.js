@@ -19,7 +19,7 @@ router
 
 router 
     .route('/auctions/:status')
-    .get(controller.getAuctionByStatus);
+    .get(controller.getAuctionsByStatus);
 
 router
     .route('/auctions/:name')
