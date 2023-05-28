@@ -63,7 +63,7 @@ server.use(express.urlencoded({ extended: false }));
 
 server.use(userRoutes);
 // server.use( itemRoutes);
-// server.use(auctionRoutes);
+server.use(auctionRoutes);
 // server.use( bindingRoute);
 server.use( categoryRoutes);
 // server.use(contactRoutes);
