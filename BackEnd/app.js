@@ -14,6 +14,7 @@ const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 
+
 const { PORT, CONNECTION } = require('./Config/env');
 
 //  open server using express
@@ -62,7 +63,7 @@ server.use(express.urlencoded({ extended: false }));
 // Routes
 
 server.use(userRoutes);
-// server.use( itemRoutes);
+server.use( itemRoutes);
 server.use(auctionRoutes);
 // server.use( bindingRoute);
 server.use( categoryRoutes);

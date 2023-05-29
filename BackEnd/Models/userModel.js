@@ -51,7 +51,7 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: ['admin', 'user'],
-      required: [true, 'required role'],
+      default: 'user',
     },
     block: {
       type: Boolean,
@@ -72,5 +72,4 @@ const userSchema = new Schema(
 );
 
 userSchema.plugin(Autoincrement, { id: 'user_id', inc_field: '_id' });
-
-const users = mongoose.model('users', userSchema);
+mongoose.model('users', userSchema);
