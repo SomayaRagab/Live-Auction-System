@@ -9,16 +9,6 @@ const schema = new mongoose.Schema(
     material: { type: String, required: [true, 'Material is required'] },
     size: { type: String, required: [true, 'Size is required'] },
     color: { type: String, required: [true, 'Color is required'] },
-    bidding_gap: {
-      type: Number,
-      required: [true, 'Bidding Gap is required'],
-    },
-    start_bidding: {
-      type: Number,
-      required: [true, 'Start Bidding is required'],
-    },
-    max_price: { type: Number, required: [true, 'Max Price is required'] },
-    end_time: { type: Date, required: [true, 'End Time is required'] },
     category: { type: [Number], ref: 'categories' },
   },
   { timestamps: true }

@@ -6,19 +6,15 @@ exports.validatePostArray = [
     .withMessage('name must be string')
     .isLength({ min: 2 })
     .withMessage('name must be at least 2 chars'),
-
   body('email').isEmail().withMessage('invalid email'),
-
   body('password')
     .isStrongPassword()
     .withMessage(
       'password must be at least 8 chars, one uppercase letter, one lowercase letter,one special char, and one number'
     ),
-
   body('city').isString().withMessage('city must be string'),
   body('street').isString().withMessage('street must be string'),
   body('building').isString().withMessage('building must be string'),
-  body('role').isString().withMessage('role must be string'),
   body('phone')
     .isString()
     .withMessage('phone must be string')

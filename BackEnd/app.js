@@ -14,6 +14,7 @@ const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 
+
 const { PORT, CONNECTION } = require('./Config/env');
 
 //  open server using express
@@ -62,10 +63,10 @@ server.use(express.urlencoded({ extended: false }));
 // Routes
 
 server.use(userRoutes);
-// server.use( itemRoutes);
+server.use( itemRoutes);
 server.use(auctionRoutes);
 // server.use( bindingRoute);
-// server.use( categoryRoutes);
+server.use( categoryRoutes);
 // server.use(contactRoutes);
 
 // not found middleware
@@ -79,4 +80,3 @@ server.use((error, request, response, next) => {
   let status = error.status || 500;
   response.status(status).json({ message: error + '' });
 });
-// validatePostArray, validateMW,
