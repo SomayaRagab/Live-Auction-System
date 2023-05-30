@@ -2,12 +2,13 @@ const mongoose = require('mongoose');
 require('./../Models/bindingModel');
 const bindingSchema = mongoose.model('biddings');
 const auctionSchema = mongoose.model('auctions');
+const itemDetailsSchema = mongoose.model('itemDetails');
 const itemSchema = mongoose.model('items');
 const userSchema = mongoose.model('users');
 
-const addBidding = async (req, res) => {
+exports.addBidding = async (req, res) => {
   try {
-    const { auction_id, item_id, user_id, amount } = req.body;
+    const { auction_id, item_id, user_id, bide } = req.body;
 
     // Fetch the item from the database
     const item = await itemSchema.findOne({ _id: item_id });
@@ -19,7 +20,12 @@ const addBidding = async (req, res) => {
 
     // Check if the bidding amount is greater than or bidding gap of the item
     if (amount < item.bidding_gap) {
-      res.status(400).json({ success: false, error: 'Bidding amount is less than the bidding gap of the item' });
+      res
+        .status(400)
+        .json({
+          success: false,
+          error: 'Bidding amount is less than the bidding gap of the item',
+        });
       return;
     }
 
@@ -30,20 +36,18 @@ const addBidding = async (req, res) => {
       res.status(400).json({ success: false, error: 'Invalid user ID' });
       return;
     }
-    //check if user blocked or not 
-    if (user.blocked) 
-    {
+    //check if user blocked or not
+    if (!user.block) {
       res.status(400).json({ success: false, error: 'User is blocked' });
     }
 
-    
-
     // Create a new bidding instance
-    const bidding = new biddings({
+    amount = item.amount + bide;
+    const bidding = new bidding({
       auction_id,
       item_id,
       user_id,
-      amount
+      amount,
     });
 
     // Save the bidding to the database
@@ -55,4 +59,3 @@ const addBidding = async (req, res) => {
     res.status(500).json({ success: false, error: 'Server Error' });
   }
 };
-

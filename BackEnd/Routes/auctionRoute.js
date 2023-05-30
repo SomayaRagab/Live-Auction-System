@@ -1,20 +1,21 @@
 const express = require('express');
 const controller = require('./../Controllers/auctionsController');
 const validateMW = require('./../Validations/validateMW');
+const { auctionValidatePostArray, auctionValidatePatchArray } = require('./../Validations/auctionValidateArray');
+const validateParamArray  = require('./../Validations/paramValidationArray');
 
 const router = express.Router();
 
-router
-    .route('/auctions')
-    .get( controller.getAllAuctions)
-    .post(controller.addAuction)
-    
+router.route('/auctions')
+    .get(controller.getAllAuctions)
+    .post(auctionValidatePostArray, validateMW, controller.addAuction);
 
-router
-    .route('/auctions/:id')
-    .get(controller.getAuctionById)
-    .put(controller.updateAuction)
-    .delete(controller.deleteAuction);
+router.route('/auctions/:id')
+    .get(validateParamArray,validateMW, controller.getAuctionById)
+    .patch(validateParamArray, auctionValidatePatchArray, validateMW, controller.updateAuction)
+    .delete(validateParamArray,validateMW, controller.deleteAuction);
+
+
 
 
 router 

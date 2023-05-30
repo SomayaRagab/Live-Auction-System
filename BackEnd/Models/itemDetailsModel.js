@@ -23,12 +23,14 @@ const itemDetailsSchema = new Schema({
     required: [true, 'Item Id is required'],
   },
   end_time: {
-    type: Date,
+    type: String,
+    match:[/^[0-2][0-3]:[0-5][0-9]$/,'Invalid Time'],
     required: [true, 'End Time is required'],
   },
 });
-mongoose.model('itemDetails', itemDetailsSchema);
 itemDetailsSchema.plugin(Autoincrement, {
   id: 'itemDetails_id',
   inc_field: '_id',
 });
+
+mongoose.model('itemDetails', itemDetailsSchema);

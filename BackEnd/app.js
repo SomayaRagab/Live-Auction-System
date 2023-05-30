@@ -13,6 +13,7 @@ const auctionRoutes = require('./Routes/auctionRoute');
 const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
+const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 
 
 const { PORT, CONNECTION } = require('./Config/env');
@@ -65,6 +66,7 @@ server.use(express.urlencoded({ extended: false }));
 server.use(userRoutes);
 server.use( itemRoutes);
 server.use(auctionRoutes);
+server.use(itemDetailsRoutes);
 // server.use( bindingRoute);
 server.use( categoryRoutes);
 // server.use(contactRoutes);

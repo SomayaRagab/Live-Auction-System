@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const autoIncrement = require('mongoose-sequence')(mongoose);
-
 const auctionSchema = mongoose.Schema(
   {
-    id: {
+    _id: {
       type: Number,
     },
     name: {
@@ -13,6 +12,7 @@ const auctionSchema = mongoose.Schema(
     },
     reference_number: {
       type: Number,
+      unique: true,
       required: [true, 'Reference Number is required'],
     },
     start_date: {
@@ -23,8 +23,9 @@ const auctionSchema = mongoose.Schema(
       type: Date,
       required: [true, 'End Date is required'],
     },
-    time: {
+    time:  {
       type: String,
+      match:[/^[0-2][0-3]:[0-5][0-9]$/,'Invalid Time'],
       required: [true, 'Time is required'],
     },
     fees: {
@@ -33,12 +34,13 @@ const auctionSchema = mongoose.Schema(
     },
     status: {
       type: String,
+      default: 'not started',
       enum: ['started', 'ended', 'not started'],
       required: [true, 'Status is required'],
     },
     items: {
-      type: Array,
-      ref: 'items',
+      type: [Number],
+      ref: 'itemDetails',
       required: [true, 'Items is required'],
     },
   },
@@ -47,5 +49,5 @@ const auctionSchema = mongoose.Schema(
   }
 );
 
-auctionSchema.plugin(autoIncrement, { id: 'auction_id', inc_field: 'id' });
+auctionSchema.plugin(autoIncrement, { id: 'auction_id', inc_field: '_id' });
 const auctions = mongoose.model('auctions', auctionSchema);
