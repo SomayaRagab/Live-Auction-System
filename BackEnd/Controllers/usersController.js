@@ -33,7 +33,6 @@ exports.getUser = (request, response, next) => {
 exports.addUser = (request, response, next) => {
     // save image url clandianry.
     // replace \ with / in request.file.path
-    console.log(request.file.path);
     image = request.file.path.replace(/\\/g, '/');
     cloudinary.uploader.upload(image, function (error, result) {
         if (error) {
@@ -69,11 +68,10 @@ exports.addUser = (request, response, next) => {
 
 exports.updateUser = (request, response, next) => {
     let password;
-    console.log(request.role);
     if (request.body.password) {
         password = bcrypt.hashSync(request.body.password, saltRounds);
     }
-    if (request.role == 'user') {
+    if (request.id == request.body.id) {
         userSchema
             .findOne({
                 _id: request.body.id,
@@ -112,12 +110,12 @@ exports.updateUser = (request, response, next) => {
             })
             .catch((error) => next(error));
     } else {
-        next(new Error('not have permission, only user can edit'));
+        next(new Error('not have permission'));
     }
 };
 
 exports.deleteUser = (request, response, next) => {
-    if (request.role == 'user') {
+    if (request.id == request.body.id) {
         userSchema
             .findOne({
                 _id: request.body.id,

@@ -22,3 +22,14 @@ module.exports.checkUser = (request, response, next) => {
     }
 }
 
+module.exports.checkUserORAdmin = (request, response, next) => {
+    if (request.role == "user" || request.role == "admin") {
+        //go to next layer  (controller)
+        next();
+    }
+    else {
+        let error = new Error("Not authorized");
+        error.status = 403;
+        next(error);
+    }
+}
