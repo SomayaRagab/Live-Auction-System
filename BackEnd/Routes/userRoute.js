@@ -11,6 +11,7 @@ router
   .route('/users')
   .get(controller.getAllUsers)
   .post(imageUpload.single('image'), validatePostArray, validateMW,controller.addUser)
-  .patch(imageUpload.single('image'), validateUpdateArray, validateMW,controller.updateUser);
+  .patch(imageUpload.single('image'), validateUpdateArray, validateMW,controller.updateUser)
+  .delete(validateMW,controller.deleteUser);
 
 module.exports = router;

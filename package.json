@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "cloudinary-build-url": "^0.2.4"
+  }
+}
