@@ -70,6 +70,7 @@ exports.addUser = (request, response, next) => {
 
 exports.updateUser=(request,response,next)=>{
     let password;
+    console.log(request.role);  
     if(request.body.password){
         password = bcrypt.hashSync(request.body.password, saltRounds);
     }

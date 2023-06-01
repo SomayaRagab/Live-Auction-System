@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 
 // routes
-const loginRoutes = require('./Routes/loginRoute');
+const loginRoute = require('./Routes/loginRoute');
 const auth = require('./Middleware/authentication');
 const userRoutes = require('./Routes/userRoute');
 const itemRoutes = require('./Routes/itemRoute');
@@ -63,8 +63,8 @@ server.use(express.urlencoded({ extended: false }));
 // auth middleware
 
 // Routes
-server.use(loginRoutes);
-// server.use(auth);
+server.use(loginRoute);
+server.use(auth);
 server.use(userRoutes);
 server.use( itemRoutes);
 server.use(auctionRoutes);
