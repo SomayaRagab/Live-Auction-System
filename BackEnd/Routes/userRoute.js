@@ -4,7 +4,6 @@ const validateMW = require('./../Validations/validateMW');
 const { validatePostArray, validateUpdateArray } = require('./../Validations/userValidationArray');
 const uploadImage = require('../Helper/uploadingImages');
 const imageUpload = uploadImage('user');
-
 const router = express.Router();
 
 router

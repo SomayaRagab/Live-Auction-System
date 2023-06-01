@@ -8,6 +8,7 @@ const fs = require('fs');
 // routes
 const loginRoute = require('./Routes/loginRoute');
 const auth = require('./Middleware/authentication');
+const registrationRoute = require('./Routes/registrationRoute');
 const userRoutes = require('./Routes/userRoute');
 const itemRoutes = require('./Routes/itemRoute');
 const auctionRoutes = require('./Routes/auctionRoute');
@@ -63,6 +64,7 @@ server.use(express.urlencoded({ extended: false }));
 // auth middleware
 
 // Routes
+server.use(registrationRoute);
 server.use(loginRoute);
 server.use(auth);
 server.use(userRoutes);
