@@ -10,17 +10,13 @@ const router = express.Router();
 router
   .route('/users')
   .get(
-    auth.checkAdmin,
     controller.getAllUsers
     )
   .post(
-    auth.checkAdmin,
-    imageUpload.single('image'), validatePostArray, validateMW,controller.addUser)
+    imageUpload.single('image'), validatePostArray,controller.addUser)
   .patch(
-    auth.checkUserORAdmin,
-    imageUpload.single('image'), validateUpdateArray, validateMW,controller.updateUser)
+    imageUpload.single('image'), validateUpdateArray,controller.updateUser)
   .delete(
-    auth.checkUserORAdmin,
-    validateMW,controller.deleteUser);
+   controller.deleteUser);
 
 module.exports = router;
