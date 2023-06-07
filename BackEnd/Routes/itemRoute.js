@@ -23,13 +23,14 @@ router
 
 router
   .route('/items/:id')
-  .get(validateParamArray, validateMW, itemController.getItem)
+  .get(validateParamArray , itemController.getItem)
   .patch(
+    imageUpload.single('image'),
     validateParamArray,
     itemValidatePatchArray,
     validateMW,
     itemController.updateItem
   )
-  .delete(validateParamArray, validateMW, itemController.deleteItem);
+  .delete(validateParamArray , itemController.deleteItem);
 
 module.exports = router;

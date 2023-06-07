@@ -16,9 +16,9 @@ router.route('/itemDetails')
 .post(itemDetailsValidatePostArray,validateMW,itemDetailsController.createItemDetails);
 
 router.route('/itemDetails/:id')
-.get(validateParamArray,validateMW,itemDetailsController.getItemDetailsById)
-.patch(validateParamArray,itemDetailsValidatePatchArray,validateMW,itemDetailsController.updateItemDetails)
-.delete(validateParamArray,validateMW,itemDetailsController.deleteItemDetails);
+.get(validateParamArray,itemDetailsController.getItemDetailsById)
+.patch(validateParamArray,itemDetailsValidatePatchArray,itemDetailsController.updateItemDetails)
+.delete(validateParamArray,itemDetailsController.deleteItemDetails);
 
 
 module.exports = router;

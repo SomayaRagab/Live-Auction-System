@@ -8,12 +8,12 @@ const router = express.Router();
 
 router.route('/auctions')
     .get(controller.getAllAuctions)
-    .post(auctionValidatePostArray, validateMW, controller.addAuction);
+    .post(auctionValidatePostArray , controller.addAuction);
 
 router.route('/auctions/:id')
-    .get(validateParamArray,validateMW, controller.getAuctionById)
+    .get(validateParamArray,controller.getAuctionById)
     .patch(validateParamArray, auctionValidatePatchArray, validateMW, controller.updateAuction)
-    .delete(validateParamArray,validateMW, controller.deleteAuction);
+    .delete(validateParamArray, controller.deleteAuction);
 
 
 

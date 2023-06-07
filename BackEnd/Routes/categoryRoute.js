@@ -13,9 +13,9 @@ router.route('/categories')
 
 
 router.route('/categories/:id')
-    .get(validateParamArray, validateMW, controller.getCategory)
-    .patch(validateParamArray, validatePatchArray, validateMW, controller.updateCategory)
-    .delete(validateParamArray, validateMW, controller.deleteCategory);
+    .get(validateParamArray , controller.getCategory)
+    .patch(validateParamArray, validatePatchArray,  controller.updateCategory)
+    .delete(validateParamArray,  controller.deleteCategory);
 
 
 module.exports = router;    

@@ -17,7 +17,6 @@ const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 
-
 const { PORT, CONNECTION } = require('./Config/env');
 
 //  open server using express
@@ -58,21 +57,20 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 // login Route
-
-// server.use(loginRoutes);
+// server.use(registrationRoute);
+// server.use(loginRoute);
 
 // auth middleware
+// server.use(auth);
 
 // Routes
-server.use(registrationRoute);
-server.use(loginRoute);
-server.use(auth);
+
 server.use(userRoutes);
-server.use( itemRoutes);
+server.use(itemRoutes);
 server.use(auctionRoutes);
 server.use(itemDetailsRoutes);
 // server.use( bindingRoute);
-server.use( categoryRoutes);
+server.use(categoryRoutes);
 // server.use(contactRoutes);
 
 // not found middleware
