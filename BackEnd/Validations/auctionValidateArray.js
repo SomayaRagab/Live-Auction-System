@@ -8,7 +8,7 @@ exports.auctionValidatePostArray = [
     .isString()
     .withMessage('Time must be a time formatted')
     .custom((value) => {
-      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
+      if (!/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/.test(value)) {
         throw new Error('Value must be time with HH:MM format');
       }
       return true;
