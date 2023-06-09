@@ -136,3 +136,38 @@ exports.deleteUser = (request, response, next) => {
     })
     .catch((error) => next(error));
 };
+
+exports.blockOrUnblockUser = (request,response, next) => {
+  let block= true;
+  userSchema
+    .findOne({
+      _id: request.params.id,
+    })
+    .then((data) => {
+      if (!data) throw new Error("there is no user with this id ");
+      if(data.block == false){
+        data.block = true;
+        block = true
+      }
+      else
+        {
+          data.block = false;
+          block = false
+        }
+      return userSchema.updateOne(
+        {
+          _id: request.params.id,
+        },
+        {
+          $set: {
+            block: data.block
+          },
+        }
+      );
+    })
+    .then((data) => {
+      console.log(data);
+      response.status(200).json({ data: `user updated successfully, block=${block}` });
+    })
+    .catch((error) => next(error));
+};

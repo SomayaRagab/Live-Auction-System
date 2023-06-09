@@ -19,9 +19,9 @@ const router = express.Router();
 
 router
   .route('/users')
-  .get(checkUserORAdmin, controller.getAllUsers)
+  .get(checkAdmin, controller.getAllUsers)
   .post(
-    checkAdmin,
+    // checkAdmin,
     imageUpload.single('image'),
     validatePostArray,
     controller.addUser
@@ -39,5 +39,9 @@ router
     controller.updateUser
   )
   .delete(checkAdmin, validateParamArray, validateMW, controller.deleteUser);
+
+router
+  .route('/users/:id/block')
+  .patch(validateParamArray, validateMW, controller.blockOrUnblockUser);
 
 module.exports = router;

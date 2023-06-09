@@ -10,7 +10,6 @@ const saltRounds = 10;
 exports.addUser = (request, response, next) => {
     // save image url clandianry.
     // replace \ with / in request.file.path
-    console.log(request.file.path);
     image = request.file.path.replace(/\\/g, '/');
     cloudinary.uploader.upload(image, function (error, result) {
         if (error) {
