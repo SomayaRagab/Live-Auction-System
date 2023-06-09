@@ -7,7 +7,7 @@ module.exports = (request, response, next) => {
         let token = request.get("authorization").split(" ")[1];
         let decodedToken = jwt.verify(token, SECRET_KEY);
         request.id = decodedToken.id;
-        request.role = decodedToken.role;
+        request.role = decodedToken.role;                                                                   
         //to go to the next layers(end point) with id ,role
         next();
     }

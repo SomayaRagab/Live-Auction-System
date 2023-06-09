@@ -11,7 +11,7 @@ module.exports.checkAdmin = (request, response, next) => {
 }
 
 module.exports.checkUser = (request, response, next) => {
-    if (request.role == "user") {
+    if (request.role == "user" ) {
         //go to next layer  (controller)
         next();
     }

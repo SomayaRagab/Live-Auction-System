@@ -57,11 +57,11 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 // login Route
-// server.use(registrationRoute);
-// server.use(loginRoute);
+server.use(registrationRoute);
+server.use(loginRoute);
 
 // auth middleware
-// server.use(auth);
+server.use(auth);
 
 // Routes
 

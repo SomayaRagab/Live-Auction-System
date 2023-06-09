@@ -38,11 +38,11 @@ const auctionSchema = mongoose.Schema(
       enum: ['started', 'ended', 'not started'],
       required: [true, 'Status is required'],
     },
-    items: {
-      type: [Number],
-      ref: 'itemDetails',
-      required: [true, 'Items is required'],
-    },
+    // items: {
+    //   type: [Number],
+    //   ref: 'itemDetails',
+    //   required: [true, 'Items is required'],
+    // },
   },
   {
     timestamps: true,

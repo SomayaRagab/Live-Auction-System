@@ -1,6 +1,7 @@
 const express = require('express');
 const validateMW = require('./../Validations/validateMW');
 const itemController = require('./../Controllers/itemsController');
+const { checkAdmin, checkUserORAdmin } = require('../Middleware/authorization');
 const validateParamArray = require('./../Validations/paramValidationArray');
 const {
   itemValidatePostArray,
@@ -13,8 +14,9 @@ const router = express.Router();
 
 router
   .route('/items')
-  .get(itemController.getAllItems)
+  .get(checkUserORAdmin, itemController.getAllItems)
   .post(
+    checkAdmin,
     imageUpload.single('image'),
     itemValidatePostArray,
     validateMW,
@@ -23,14 +25,15 @@ router
 
 router
   .route('/items/:id')
-  .get(validateParamArray , itemController.getItem)
+  .get(checkUserORAdmin, validateParamArray, itemController.getItem)
   .patch(
+    checkAdmin,
     imageUpload.single('image'),
     validateParamArray,
     itemValidatePatchArray,
     validateMW,
     itemController.updateItem
   )
-  .delete(validateParamArray , itemController.deleteItem);
+  .delete(checkAdmin, validateParamArray, itemController.deleteItem);
 
 module.exports = router;

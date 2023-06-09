@@ -24,7 +24,7 @@ exports.validatePostArray = [
     .withMessage('invalid phone number'),
 ];
 
-exports.validateUpdateArray = [
+exports.validatePatchArray = [
   body('name')
     .optional()
     .isString()

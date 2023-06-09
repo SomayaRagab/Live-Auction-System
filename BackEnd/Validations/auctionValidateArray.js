@@ -14,11 +14,6 @@ exports.auctionValidatePostArray = [
       return true;
     }),
   body('fees').isInt({ min: 1 }).withMessage('Fees is required'),
-  body('items')
-    .isArray({ min: 1 })
-    .withMessage('Items must be an array of at least 1 number'),
-
-  body('items.*').isInt({ min: 1 }).withMessage('Item must be number'),
 ];
 
 exports.auctionValidatePatchArray = [
@@ -40,10 +35,4 @@ exports.auctionValidatePatchArray = [
       return true;
     }),
   body('fees').optional().isInt({ min: 1 }).withMessage('Fees is required'),
-  body('items')
-    .optional()
-    .isArray({ min: 1 })
-    .withMessage('Items must be an array of at least 1 number'),
-
-  body('items.*').isInt({ min: 1 }).withMessage('Item must be number'),
 ];

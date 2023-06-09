@@ -11,7 +11,10 @@ const ItemSchema = mongoose.model('items');
 // Get all items
 exports.getAllItems = async (req, res, next) => {
   try {
-    const items = await ItemSchema.find();
+    const items = await ItemSchema.find().populate({
+      path: 'category',
+      select: { name: 1 },
+    });
     res.status(200).json(items);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -22,6 +25,10 @@ exports.getAllItems = async (req, res, next) => {
 
 exports.getItem = (req, res, next) => {
   ItemSchema.findOne({ _id: req.params.id })
+    .populate({
+      path: 'category',
+      select: { name: 1 },
+    })
     .then((item) => {
       if (item) res.status(200).json(item);
       else throw new Error('Item not found');
@@ -36,6 +43,7 @@ exports.addItem = async (req, res, next) => {
     const categoriesLength = categories.length;
     for (let i = 0; i < categoriesLength; i++) {
       const category = await categorySchema.findOne({ _id: categories[i] });
+      console.log(category);
       if (!category) {
         return res.status(400).json({ error: 'Invalid item ID' });
       }
@@ -68,16 +76,16 @@ exports.addItem = async (req, res, next) => {
 // Update item
 exports.updateItem = async (req, res, next) => {
   try {
-    const { category, name, qty, material, size, color } = req.body;
+    const { category } = req.body;
+    console.log(category);
 
     // Check if all categories in array are valid item IDs in the category schema
-    const categories = req.body.category;
     if (category) {
-      const categoriesLength = categories.length;
+      const categoriesLength = category.length;
       for (let i = 0; i < categoriesLength; i++) {
-        const category = await categorySchema.findOne({ _id: categories[i] });
-        if (!category) {
-          return res.status(400).json({ error: 'Invalid item ID' });
+        const item = await categorySchema.findOne({ _id: category[i] });
+        if (!item) {
+          return res.status(400).json({ error: 'Invalid category ID' });
         }
       }
     }
@@ -95,13 +103,13 @@ exports.updateItem = async (req, res, next) => {
       { _id: req.params.id },
       {
         $set: {
-          name,
-          qty,
+          name: req.body.name,
+          qty: req.body.qty,
           image: imageUrl,
-          material,
-          size,
-          color,
-          category,
+          material: req.body.material,
+          size: req.body.size,
+          color: req.body.color,
+          category: category,
         },
       }
     );
@@ -112,7 +120,6 @@ exports.updateItem = async (req, res, next) => {
       throw new Error('Item not found');
     }
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
