@@ -32,7 +32,7 @@ exports.getItemDetails = async (req, res) => {
     const allItems = await itemDetailsSchema
       .find()
       .populate({ path: 'item_id', select: { name: 1, image: 1 } })
-      .populate({ path: 'auction_id', select: { name: 1 } });
+      .populate({ path: 'auction_id', select: { name: 1  } });
     res.status(200).json({ data: allItems });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -43,8 +43,8 @@ exports.getItemDetailsById = async (req, res) => {
   try {
     const itemDetails = await itemDetailsSchema
       .findById(req.params.id)
-      .populate({ path: 'item_id', select: { name: 1 } })
-      .populate({ path: 'auction_id', select: { name: 1, image: 1 } });
+      .populate({ path: 'item_id', select: { name: 1 , image:1 } })
+      .populate({ path: 'auction_id', select: { name: 1} });
     if (!itemDetails) throw new Error('Item Details not found');
     res.status(200).json(itemDetails);
   } catch (err) {

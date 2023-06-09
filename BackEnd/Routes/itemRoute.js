@@ -25,7 +25,7 @@ router
 
 router
   .route('/items/:id')
-  .get(checkUserORAdmin, validateParamArray, itemController.getItem)
+  .get(checkUserORAdmin, validateParamArray,validateMW, itemController.getItem)
   .patch(
     checkAdmin,
     imageUpload.single('image'),
@@ -34,6 +34,13 @@ router
     validateMW,
     itemController.updateItem
   )
-  .delete(checkAdmin, validateParamArray, itemController.deleteItem);
+  .delete(checkAdmin, validateParamArray,validateMW, itemController.deleteItem);
 
+router
+  .route('/items/autocomplete/:name')
+  .get(checkUserORAdmin, itemController.autocompleteItem);
+
+
+ router.route('/category/:id/items')
+    .get(checkUserORAdmin ,validateParamArray , itemController.getItemsByCategory);
 module.exports = router;

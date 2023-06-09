@@ -19,5 +19,10 @@ router.route('/categories/:id')
     .delete(checkAdmin,validateParamArray,  controller.deleteCategory);
 
 
+router.route('/categories/autocomplete/:name')
+    .get(checkUserORAdmin , controller.autocompleteCategory);
+
+
+
 module.exports = router;    
 

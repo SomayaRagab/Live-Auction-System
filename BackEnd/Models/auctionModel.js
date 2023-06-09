@@ -23,9 +23,9 @@ const auctionSchema = mongoose.Schema(
       type: Date,
       required: [true, 'End Date is required'],
     },
-    time:  {
+    time: {
       type: String,
-      match:[/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/,'Invalid Time'],
+      match: [/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/, 'Invalid Time'],
       required: [true, 'Time is required'],
     },
     fees: {
@@ -38,11 +38,6 @@ const auctionSchema = mongoose.Schema(
       enum: ['started', 'ended', 'not started'],
       required: [true, 'Status is required'],
     },
-    // items: {
-    //   type: [Number],
-    //   ref: 'itemDetails',
-    //   required: [true, 'Items is required'],
-    // },
   },
   {
     timestamps: true,

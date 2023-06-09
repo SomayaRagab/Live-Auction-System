@@ -147,3 +147,27 @@ exports.deleteItem = async (req, res, next) => {
     })
     .catch((error) => next(error));
 };
+// get item by category
+exports.getItemsByCategory = (req, res, next) => {
+  ItemSchema.find({ category: req.params.id }, { category: 0 })
+    .then((data) => {
+      if (data) res.status(200).json(data);
+      else throw new Error('Item not found');
+    })
+    .catch((error) => next(error));
+};
+
+// autocomplete item name or material
+exports.autocompleteItem = (req, res, next) => {
+  ItemSchema.find({
+    $or: [
+      { name: { $regex: req.params.name, $options: 'ix' } },
+      { material: { $regex: req.params.name, $options: 'ix' } },
+    ],
+  })
+    .then((data) => {
+      if (data) res.status(200).json(data);
+      else throw new Error('Item not found');
+    })
+    .catch((error) => next(error));
+};
