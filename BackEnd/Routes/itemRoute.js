@@ -1,6 +1,7 @@
 const express = require('express');
 const validateMW = require('./../Validations/validateMW');
 const itemController = require('./../Controllers/itemsController');
+const { checkAdmin, checkUserORAdmin } = require('../Middleware/authorization');
 const validateParamArray = require('./../Validations/paramValidationArray');
 const {
   itemValidatePostArray,
@@ -13,8 +14,9 @@ const router = express.Router();
 
 router
   .route('/items')
-  .get(itemController.getAllItems)
+  .get(checkUserORAdmin, itemController.getAllItems)
   .post(
+    checkAdmin,
     imageUpload.single('image'),
     itemValidatePostArray,
     validateMW,
@@ -23,13 +25,22 @@ router
 
 router
   .route('/items/:id')
-  .get(validateParamArray, validateMW, itemController.getItem)
+  .get(checkUserORAdmin, validateParamArray,validateMW, itemController.getItem)
   .patch(
+    checkAdmin,
+    imageUpload.single('image'),
     validateParamArray,
     itemValidatePatchArray,
     validateMW,
     itemController.updateItem
   )
-  .delete(validateParamArray, validateMW, itemController.deleteItem);
+  .delete(checkAdmin, validateParamArray,validateMW, itemController.deleteItem);
 
+router
+  .route('/items/autocomplete/:name')
+  .get(checkUserORAdmin, itemController.autocompleteItem);
+
+
+ router.route('/category/:id/items')
+    .get(checkUserORAdmin ,validateParamArray , itemController.getItemsByCategory);
 module.exports = router;

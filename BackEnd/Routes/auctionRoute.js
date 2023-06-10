@@ -3,28 +3,31 @@ const controller = require('./../Controllers/auctionsController');
 const validateMW = require('./../Validations/validateMW');
 const { auctionValidatePostArray, auctionValidatePatchArray } = require('./../Validations/auctionValidateArray');
 const validateParamArray  = require('./../Validations/paramValidationArray');
+const { checkAdmin , checkUserORAdmin } = require('./../Middleware/authorization');
+
+
 
 const router = express.Router();
 
 router.route('/auctions')
-    .get(controller.getAllAuctions)
-    .post(auctionValidatePostArray, validateMW, controller.addAuction);
+    .get(checkUserORAdmin ,controller.getAllAuctions)
+    .post(checkAdmin,auctionValidatePostArray , controller.addAuction);
 
 router.route('/auctions/:id')
-    .get(validateParamArray,validateMW, controller.getAuctionById)
-    .patch(validateParamArray, auctionValidatePatchArray, validateMW, controller.updateAuction)
-    .delete(validateParamArray,validateMW, controller.deleteAuction);
+    .get(checkUserORAdmin ,checkAdmin,validateParamArray,controller.getAuctionById)
+    .patch(checkAdmin,validateParamArray, auctionValidatePatchArray, validateMW, controller.updateAuction)
+    .delete(checkAdmin,validateParamArray, controller.deleteAuction);
 
 
 
 
 router 
     .route('/auctions/:status')
-    .get(controller.getAuctionsByStatus);
+    .get(checkAdmin , controller.getAuctionsByStatus);
 
 router
     .route('/auctions/:name')
-    .get(controller.getAuctionsByName)
+    .get( checkUserORAdmin,controller.getAuctionsByName)
 
 
 module.exports = router;

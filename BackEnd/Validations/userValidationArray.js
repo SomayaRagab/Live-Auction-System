@@ -23,3 +23,30 @@ exports.validatePostArray = [
     .matches(/^01[0125][0-9]{8}$/)
     .withMessage('invalid phone number'),
 ];
+
+exports.validatePatchArray = [
+  body('name')
+    .optional()
+    .isString()
+    .withMessage('name must be string')
+    .isLength({ min: 2 })
+    .withMessage('name must be at least 2 chars'),
+  body('email').optional().isEmail().withMessage('invalid email'),
+  body('password')
+    .optional()
+    .isStrongPassword()
+    .withMessage(
+      'password must be at least 8 chars, one uppercase letter, one lowercase letter,one special char, and one number'
+    ),
+  body('city').optional().isString().withMessage('city must be string'),
+  body('street').optional().isString().withMessage('street must be string'),
+  body('building').optional().isString().withMessage('building must be string'),
+  body('phone')
+    .optional()
+    .isString()
+    .withMessage('phone must be string')
+    .isLength({ min: 11, max: 11 })
+    .withMessage('phone must be  11 chars')
+    .matches(/^01[0125][0-9]{8}$/)
+    .withMessage('invalid phone number'),
+];

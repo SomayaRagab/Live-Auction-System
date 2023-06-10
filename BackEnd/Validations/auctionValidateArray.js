@@ -8,17 +8,12 @@ exports.auctionValidatePostArray = [
     .isString()
     .withMessage('Time must be a time formatted')
     .custom((value) => {
-      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
+      if (!/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/.test(value)) {
         throw new Error('Value must be time with HH:MM format');
       }
       return true;
     }),
   body('fees').isInt({ min: 1 }).withMessage('Fees is required'),
-  body('items')
-    .isArray({ min: 1 })
-    .withMessage('Items must be an array of at least 1 number'),
-
-  body('items.*').isInt({ min: 1 }).withMessage('Item must be number'),
 ];
 
 exports.auctionValidatePatchArray = [
@@ -40,10 +35,4 @@ exports.auctionValidatePatchArray = [
       return true;
     }),
   body('fees').optional().isInt({ min: 1 }).withMessage('Fees is required'),
-  body('items')
-    .optional()
-    .isArray({ min: 1 })
-    .withMessage('Items must be an array of at least 1 number'),
-
-  body('items.*').isInt({ min: 1 }).withMessage('Item must be number'),
 ];

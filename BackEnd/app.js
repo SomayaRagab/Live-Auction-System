@@ -6,7 +6,9 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 
 // routes
-const loginRoutes = require('./Routes/loginRoute');
+const loginRoute = require('./Routes/loginRoute');
+const auth = require('./Middleware/authentication');
+const registrationRoute = require('./Routes/registrationRoute');
 const userRoutes = require('./Routes/userRoute');
 const itemRoutes = require('./Routes/itemRoute');
 const auctionRoutes = require('./Routes/auctionRoute');
@@ -14,7 +16,6 @@ const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
-
 
 const { PORT, CONNECTION } = require('./Config/env');
 
@@ -56,19 +57,25 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 // login Route
-
-// server.use(loginRoutes);
+server.use(registrationRoute);
+server.use(loginRoute);
 
 // auth middleware
+server.use(auth);
 
 // Routes
 
 server.use(userRoutes);
-server.use( itemRoutes);
+server.use(itemRoutes);
 server.use(auctionRoutes);
 server.use(itemDetailsRoutes);
+<<<<<<< HEAD
 server.use( bindingRoute);
 server.use( categoryRoutes);
+=======
+// server.use( bindingRoute);
+server.use(categoryRoutes);
+>>>>>>> a36c04bbb7c42d3b6009901bcadfacbddfe99591
 // server.use(contactRoutes);
 
 // not found middleware
@@ -78,7 +85,7 @@ server.use((request, response, next) => {
 
 // error middleware
 server.use((error, request, response, next) => {
-  if (request.file) fs.unlinkSync(request.file.path);
+  // if (request.file) fs.unlinkSync(request.file.path);
   let status = error.status || 500;
   response.status(status).json({ message: error + '' });
 });

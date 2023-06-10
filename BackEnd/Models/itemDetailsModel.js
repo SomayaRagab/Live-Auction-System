@@ -22,9 +22,14 @@ const itemDetailsSchema = new Schema({
     ref: 'items',
     required: [true, 'Item Id is required'],
   },
+  auction_id: {
+    type: Number,
+    ref: 'auctions',
+    required: [true, 'Auction Id is required'],
+  },
   end_time: {
     type: String,
-    match:[/^[0-2][0-3]:[0-5][0-9]$/,'Invalid Time'],
+    match: [/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/, 'Invalid Time'],
     required: [true, 'End Time is required'],
   },
 });

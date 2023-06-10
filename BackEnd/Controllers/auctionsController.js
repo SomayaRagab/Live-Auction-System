@@ -49,7 +49,6 @@ exports.addAuction = async (req, res, next) => {
       end_date: req.body.end_date,
       time: req.body.time,
       fees: req.body.fees,
-      items: req.body.items,
     });
 
     const newAuction = await auction.save();
@@ -113,7 +112,7 @@ exports.getAuctionsByName = (request, response, next) => {
     if (data.length == 0) {
       response.status(404).json({ message: 'Auction not found' });
     } else {
-      response.status(200).json({ data });
+      response.status(200).json({ message: 'Auctions deleted successfuly.' });
     }
   });
 };
