@@ -1,12 +1,14 @@
-require('../Models/userModel');
 const mongoose = require('mongoose');
-const fs = require('fs');
-const cloudinary = require('cloudinary').v2;
-require('../Helper/cloudinary');
 const userSchema = mongoose.model('users');
+const fs = require('fs');
 const bcrypt = require('bcrypt');
+const cloudinary = require('cloudinary').v2;
 const saltRounds = 10;
 const { extractPublicId } = require('cloudinary-build-url');
+const handleTempImage = require('../Helper/uploadImage');
+require('../Models/userModel');
+require('../Helper/cloudinary');
+
 
 //get all users in system
 exports.getAllUsers = async (request, response, next) => {
@@ -31,10 +33,10 @@ exports.getUser = (request, response, next) => {
 
 //add user
 exports.addUser = (request, response, next) => {
-  // save image url clandianry.
-  // replace \ with / in request.file.path
-  image = request.file.path.replace(/\\/g, '/');
-  cloudinary.uploader.upload(image, function (error, result) {
+  // Save the image buffer as a temporary file
+  const tempFilePath = handleTempImage(request);
+
+  cloudinary.uploader.upload(tempFilePath, { folder: 'images/user' }, function (error, result) {
     if (error) {
       console.error(error);
       return response
@@ -65,6 +67,7 @@ exports.addUser = (request, response, next) => {
       .catch((error) => next(error));
   });
 };
+
 
 exports.updateUser = (request, response, next) => {
   let password;
@@ -115,7 +118,8 @@ exports.updateUser = (request, response, next) => {
 };
 
 exports.deleteUser = (request, response, next) => {
-  userSchema
+  if (request.id == request.params.id || request.role == 'admin') {
+    userSchema
     .findOne({
       _id: request.params.id,
     })
@@ -124,7 +128,6 @@ exports.deleteUser = (request, response, next) => {
       if (data.image) {
         const publicId = extractPublicId(data.image);
         cloudinary.uploader.destroy(publicId, function (error, result) {
-          console.log(result, error);
         });
       }
       return userSchema.deleteOne({ _id: request.params.id });
@@ -135,6 +138,10 @@ exports.deleteUser = (request, response, next) => {
       }
     })
     .catch((error) => next(error));
+  }
+  else {
+    next(new Error('not have permission, only admin or authorized user can delete'));
+  }
 };
 
 exports.blockOrUnblockUser = (request,response, next) => {
@@ -166,7 +173,6 @@ exports.blockOrUnblockUser = (request,response, next) => {
       );
     })
     .then((data) => {
-      console.log(data);
       response.status(200).json({ data: `user updated successfully, block=${block}` });
     })
     .catch((error) => next(error));

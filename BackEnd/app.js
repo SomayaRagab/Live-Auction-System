@@ -80,7 +80,7 @@ server.use((request, response, next) => {
 
 // error middleware
 server.use((error, request, response, next) => {
-  if (request.file) fs.unlinkSync(request.file.path);
+  // if (request.file) fs.unlinkSync(request.file.path);
   let status = error.status || 500;
   response.status(status).json({ message: error + '' });
 });
