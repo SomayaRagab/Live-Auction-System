@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 require('../Models/categoryModel');
+require('../Models/itemModel');
 const categorySchema = mongoose.model('categories');
+const ItemSchema = mongoose.model('items');
 
 exports.getAllCategories = (request, response, next) => {
   categorySchema
@@ -55,7 +57,13 @@ exports.updateCategory = (request, response, next) => {
 };
 
 // delete category
-exports.deleteCategory = (request, response, next) => {
+exports.deleteCategory = async (request, response, next) => {
+  // ckech if category exist in item
+  const items = await ItemSchema.findOne({ category: request.params.id });
+
+  if (items) {
+    return response.status(400).json({ error: 'category is used in item' });
+  }
   categorySchema
     .deleteOne({ _id: request.params.id })
     .then((data) => {

@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
 require('./../Models/itemModel');
 require('./../Models/categoryModel');
-const cloudinary = require('cloudinary').v2;
 require('../Helper/cloudinary');
-const { extractPublicId } = require('cloudinary-build-url');
+require('./../Models/itemDetailsModel');
+const handleTempImage =require('./../Helper/uploadImage');
 
+const cloudinary = require('cloudinary').v2;
+const { extractPublicId } = require('cloudinary-build-url');
 const categorySchema = mongoose.model('categories');
 const ItemSchema = mongoose.model('items');
+const itemDetailsSchema = mongoose.model('itemDetails');
 
 // Get all items
 exports.getAllItems = async (req, res, next) => {
@@ -48,12 +51,20 @@ exports.addItem = async (req, res, next) => {
         return res.status(400).json({ error: 'Invalid item ID' });
       }
     }
-
+ 
     // Upload image to Cloudinary and get the URL
-    const image = req.file.path.replace(/\\/g, '/');
-    const cloudinaryResult = await cloudinary.uploader.upload(image);
-    const imageUrl = cloudinaryResult.url;
-
+    const tempFilePath = await handleTempImage(req);
+    const imageUrl = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(tempFilePath, { folder: 'images/item' }, function (error, result) {
+        if (error) {
+          console.error(error);
+          return reject('Failed to upload image to Cloudinary');
+        }
+        const imageUrl = result.url;
+        resolve(imageUrl);
+      });
+    });
+ 
     // Create and save the new item
     const newItem = new ItemSchema({
       _id: req.body.id,
@@ -65,6 +76,7 @@ exports.addItem = async (req, res, next) => {
       color: req.body.color,
       category: categories,
     });
+ 
     const savedItem = await newItem.save();
     return res.status(201).json({ data: savedItem });
   } catch (err) {
@@ -72,6 +84,10 @@ exports.addItem = async (req, res, next) => {
     return res.status(500).json({ error: err.message });
   }
 };
+
+
+   
+
 
 // Update item
 exports.updateItem = async (req, res, next) => {
@@ -91,6 +107,7 @@ exports.updateItem = async (req, res, next) => {
     }
 
     // Upload image to Cloudinary and get the URL
+
     let imageUrl = '';
     console.log(req.file);
     if (req.file) {
@@ -127,6 +144,12 @@ exports.updateItem = async (req, res, next) => {
 // Delete item
 
 exports.deleteItem = async (req, res, next) => {
+  // ckech if item exist in itemDetails
+  const items = await itemDetailsSchema.find({ item_id: req.params.id });
+  if (items) {
+    return res.status(400).json({ error: 'Item is used in itemDetails' });
+  }
+
   const image = await ItemSchema.find(
     { _id: req.params.id },
     { image: 1, _id: 0 }
@@ -147,6 +170,7 @@ exports.deleteItem = async (req, res, next) => {
     })
     .catch((error) => next(error));
 };
+
 // get item by category
 exports.getItemsByCategory = (req, res, next) => {
   ItemSchema.find({ category: req.params.id }, { category: 0 })
