@@ -8,6 +8,7 @@ const userSchema = mongoose.model('users');
 
 exports.addBidding = async (req, res) => {
   try {
+
     const { auction_id, item_id, user_id, bide } = req.body;
 
     // Fetch the item from the database

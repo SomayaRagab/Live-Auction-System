@@ -67,7 +67,7 @@ server.use(userRoutes);
 server.use( itemRoutes);
 server.use(auctionRoutes);
 server.use(itemDetailsRoutes);
-// server.use( bindingRoute);
+server.use( bindingRoute);
 server.use( categoryRoutes);
 // server.use(contactRoutes);
 

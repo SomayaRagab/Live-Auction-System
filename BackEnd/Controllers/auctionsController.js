@@ -36,12 +36,12 @@ exports.addAuction = async (req, res, next) => {
     const items = req.body.items;
     const itemsLength = items.length;
     for (let i = 0; i < itemsLength; i++) {
-    const item = await itemSchema.findOne({ _id: items[i] });
-    if (!item) {
-    res.status(400).json({ error: 'Invalid item ID' });
-    return;
-    } 
-  }
+      const item = await itemSchema.findOne({ _id: items[i] });
+      if (!item) {
+        res.status(400).json({ error: 'Invalid item ID' });
+        return;
+      }
+    }
     const auction = new auctionSchema({
       name: req.body.name,
       reference_number: req.body.reference_number,
@@ -56,7 +56,7 @@ exports.addAuction = async (req, res, next) => {
     res.status(201).json(newAuction);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error:err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -100,7 +100,7 @@ exports.getAuctionsByStatus = (request, response, next) => {
       if (data.length == 0) {
         response.status(404).json({ message: 'Auction not found.' });
       } else {
-        response.status(200).json({ message :'Auctions deleted successfuly.' });
+        response.status(200).json({ message: 'Auctions deleted successfuly.' });
       }
     })
     .catch((error) => next(error));
