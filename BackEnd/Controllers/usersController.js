@@ -118,7 +118,6 @@ exports.updateUser = (request, response, next) => {
 };
 
 exports.deleteUser = (request, response, next) => {
-  if (request.id == request.params.id || request.role == 'admin') {
     userSchema
     .findOne({
       _id: request.params.id,
@@ -138,10 +137,6 @@ exports.deleteUser = (request, response, next) => {
       }
     })
     .catch((error) => next(error));
-  }
-  else {
-    next(new Error('not have permission, only admin or authorized user can delete'));
-  }
 };
 
 exports.blockOrUnblockUser = (request,response, next) => {

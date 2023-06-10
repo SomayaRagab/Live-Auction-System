@@ -29,7 +29,7 @@ router
     validateMW,
     controller.updateUser
   )
-  .delete(checkUserORAdmin, validateParamArray, validateMW, controller.deleteUser);
+  .delete(checkAdmin, validateParamArray, validateMW, controller.deleteUser);
 
 router
   .route('/users/:id/block')
