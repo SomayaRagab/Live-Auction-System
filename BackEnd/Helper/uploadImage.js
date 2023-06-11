@@ -2,9 +2,21 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-module.exports = function handleTempImage(request){
-    const fileExtension = path.extname(request.file.originalname);
-    const tempFilePath = path.join(os.tmpdir(), `temp_image${fileExtension}`);  
-    fs.writeFileSync(tempFilePath, request.file.buffer);
-    return tempFilePath;
+module.exports = async function handleTempImage(request) {
+  const fileExtension = await getFileExtension(request.file.originalname);
+  const filetypes = /jpeg|jpg|png|gif/;
+  if (!filetypes.test(fileExtension)) {
+    throw new Error('Invalid file type');
+  }
+  const tempFilePath = path.join(os.tmpdir(), `temp_image${fileExtension}`);
+  await fs.promises.writeFile(tempFilePath, request.file.buffer);
+  return tempFilePath;
+};
+
+async function getFileExtension(filename) {
+  const ext = path.extname(filename);
+  if (!ext) {
+    throw new Error('Missing file extension');
+  }
+  return ext.toLowerCase();
 }

@@ -7,8 +7,8 @@ const {
   itemValidatePostArray,
   itemValidatePatchArray,
 } = require('./../Validations/itemValidateArray');
-const uploadImage = require('../Helper/uploadingImages');
-const imageUpload = uploadImage('item');
+const multer = require('multer');
+const upload = multer();
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router
   .get(checkUserORAdmin, itemController.getAllItems)
   .post(
     checkAdmin,
-    imageUpload.single('image'),
+    upload.single('image'),
     itemValidatePostArray,
     validateMW,
     itemController.addItem
@@ -28,7 +28,7 @@ router
   .get(checkUserORAdmin, validateParamArray,validateMW, itemController.getItem)
   .patch(
     checkAdmin,
-    imageUpload.single('image'),
+    upload.single('image'),
     validateParamArray,
     itemValidatePatchArray,
     validateMW,
