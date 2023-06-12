@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "cloudinary-build-url": "^0.2.4"
+    "cloudinary-build-url": "^0.2.4",
+    "node-schedule": "^2.1.1"
   }
 }

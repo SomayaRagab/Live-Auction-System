@@ -6,7 +6,7 @@ module.exports = async function handleTempImage(request) {
   const fileExtension = await getFileExtension(request.file.originalname);
   const filetypes = /jpeg|jpg|png|gif/;
   if (!filetypes.test(fileExtension)) {
-    throw new Error('Invalid file type');
+    throw new Error('Invalid image type');
   }
   const tempFilePath = path.join(os.tmpdir(), `temp_image${fileExtension}`);
   await fs.promises.writeFile(tempFilePath, request.file.buffer);
@@ -16,7 +16,7 @@ module.exports = async function handleTempImage(request) {
 async function getFileExtension(filename) {
   const ext = path.extname(filename);
   if (!ext) {
-    throw new Error('Missing file extension');
+    throw new Error('Missing image extension');
   }
   return ext.toLowerCase();
 }
