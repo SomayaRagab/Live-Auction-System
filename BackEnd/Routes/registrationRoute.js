@@ -8,6 +8,6 @@ const router = express.Router();
 
 router
   .route('/signup')
-  .post(imageUpload.single('image'), validatePostArray, controller.addUser);
+  .post(imageUpload.single('image'), validatePostArray,validateMW, controller.addUser);
 
 module.exports = router;
