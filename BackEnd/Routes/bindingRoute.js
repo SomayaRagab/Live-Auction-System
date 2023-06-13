@@ -8,5 +8,12 @@ const validateMW = require('./../Validations/validateMW');
 router.route('/biddings')
     .post(biddingValidatePostArray, validateMW, controller.addBidding);
 
+router.route('/biddings')
+     .get(controller.getAllBiddings);
+router.route('/winners')
+    .get(controller.getMaxAmount);
+
+router.route('/previous')
+    .get(controller.getPreviousMaxAmount);
 
 module.exports = router;

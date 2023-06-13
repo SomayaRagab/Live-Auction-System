@@ -65,6 +65,8 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
+    facebookId: String,
+    googleId: String
   },
   {
     timestamps: true,

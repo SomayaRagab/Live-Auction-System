@@ -5,7 +5,7 @@ const users=mongoose.model('users');
 const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const biddingSchema = mongoose.Schema({
-    id: {
+    _id: {
         type: Number,
     },
     auction_id: {
@@ -25,7 +25,8 @@ const biddingSchema = mongoose.Schema({
     },
     amount: {
         type: Number,
-        required: [true, 'Amount is required']
+        required: [true, 'Amount is required'],
+        default:0
     },
 }
     , {
@@ -33,5 +34,5 @@ const biddingSchema = mongoose.Schema({
     }
 );
 
-biddingSchema.plugin(autoIncrement, { id: 'bidding_id', inc_field: 'id' });
+biddingSchema.plugin(autoIncrement, { id: 'bidding_id', inc_field: '_id' });
 const biddings = mongoose.model('biddings', biddingSchema);

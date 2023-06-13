@@ -76,7 +76,12 @@ exports.updateAuction = (request, response, next) => {
 };
 
 //Delete Auction
-exports.deleteAuction = (request, response, next) => {
+exports.deleteAuction =async (request, response, next) => {
+  const Auctions = await itemDetailsSchema.find({ item_id: req.params.id });
+  if (Auctions) {
+    return res.status(400).json({ error: 'Auctions is used in itemDetails' });
+
+  }
   auctionSchema
     .findByIdAndDelete(request.params.id)
     .then((data) => {

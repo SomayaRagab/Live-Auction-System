@@ -17,6 +17,11 @@ const itemDetailsSchema = new Schema({
     type: Number,
     required: [true, 'Max Price is required'],
   },
+  current_price :{
+    type: Number,
+    default: 0,
+  }
+  ,
   item_id: {
     type: Number,
     ref: 'items',
