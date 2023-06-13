@@ -3,13 +3,16 @@ require('./../Models/itemModel');
 require('./../Models/categoryModel');
 require('../Helper/cloudinary');
 require('./../Models/itemDetailsModel');
-const handleTempImage =require('./../Helper/uploadImage');
+require('./../Models/auctionModel');
+
+const handleTempImage = require('./../Helper/uploadImage');
 
 const cloudinary = require('cloudinary').v2;
 const { extractPublicId } = require('cloudinary-build-url');
 const categorySchema = mongoose.model('categories');
 const ItemSchema = mongoose.model('items');
 const itemDetailsSchema = mongoose.model('itemDetails');
+const auctionSchema = mongoose.model('auctions');
 
 // Get all items
 exports.getAllItems = async (req, res, next) => {
@@ -51,7 +54,61 @@ exports.addItem = async (req, res, next) => {
         return res.status(400).json({ error: 'Invalid item ID' });
       }
     }
- 
+
+    // Upload image to Cloudinary and get the URL
+    const tempFilePath = await handleTempImage(req);
+    const imageUrl = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(
+        tempFilePath,
+        { folder: 'images/item' },
+        function (error, result) {
+          if (error) {
+            console.error(error);
+            return reject('Failed to upload image to Cloudinary');
+          }
+          const imageUrl = result.url;
+          resolve(imageUrl);
+        }
+      );
+    });
+
+    // Create and save the new item
+    const newItem = new ItemSchema({
+      _id: req.body.id,
+      name: req.body.name,
+      qty: req.body.qty,
+      image: imageUrl,
+      material: req.body.material,
+      size: req.body.size,
+      color: req.body.color,
+      category: categories,
+    });
+
+    const savedItem = await newItem.save();
+    return res.status(201).json({ data: savedItem });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
+  }
+};
+
+// Update item
+exports.updateItem = async (req, res, next) => {
+  try {
+    const { category } = req.body;
+
+    // Check if all categories in array are valid item IDs in the category schema
+    if (category) {
+      const categoriesLength = category.length;
+      for (let i = 0; i < categoriesLength; i++) {
+        const item = await categorySchema.findOne({ _id: category[i] });
+        if (!item) {
+          return res.status(400).json({ error: 'Invalid category ID' });
+        }
+      }
+    }
+
+
     // Upload image to Cloudinary and get the URL
     const tempFilePath = await handleTempImage(req);
     const imageUrl = await new Promise((resolve, reject) => {
@@ -65,56 +122,6 @@ exports.addItem = async (req, res, next) => {
       });
     });
  
-    // Create and save the new item
-    const newItem = new ItemSchema({
-      _id: req.body.id,
-      name: req.body.name,
-      qty: req.body.qty,
-      image: imageUrl,
-      material: req.body.material,
-      size: req.body.size,
-      color: req.body.color,
-      category: categories,
-    });
- 
-    const savedItem = await newItem.save();
-    return res.status(201).json({ data: savedItem });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err.message });
-  }
-};
-
-
-   
-
-
-// Update item
-exports.updateItem = async (req, res, next) => {
-  try {
-    const { category } = req.body;
-    console.log(category);
-
-    // Check if all categories in array are valid item IDs in the category schema
-    if (category) {
-      const categoriesLength = category.length;
-      for (let i = 0; i < categoriesLength; i++) {
-        const item = await categorySchema.findOne({ _id: category[i] });
-        if (!item) {
-          return res.status(400).json({ error: 'Invalid category ID' });
-        }
-      }
-    }
-
-    // Upload image to Cloudinary and get the URL
-
-    let imageUrl = '';
-    console.log(req.file);
-    if (req.file) {
-      const image = req.file.path.replace(/\\/g, '/');
-      const cloudinaryResult = await cloudinary.uploader.upload(image);
-      imageUrl = cloudinaryResult.url;
-    }
     // Update the item
     const result = await ItemSchema.updateOne(
       { _id: req.params.id },
@@ -146,9 +153,14 @@ exports.updateItem = async (req, res, next) => {
 exports.deleteItem = async (req, res, next) => {
   // ckech if item exist in itemDetails
   const items = await itemDetailsSchema.find({ item_id: req.params.id });
+  const itemAuction = await auctionSchema.find({ item_id: req.params.id });
   if (items) {
     return res.status(400).json({ error: 'Item is used in itemDetails' });
   }
+  if (itemAuction) {
+    return res.status(400).json({ error: 'Item is used in auction' });
+  }
+  
 
   const image = await ItemSchema.find(
     { _id: req.params.id },

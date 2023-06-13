@@ -149,11 +149,13 @@ exports.blockOrUnblockUser = (request,response, next) => {
       if (!data) throw new Error("there is no user with this id ");
       if(data.block == false){
         data.block = true;
+        data.expire_block =addMonthToDate()
         block = true
       }
       else
         {
           data.block = false;
+          data.expire_block=null
           block = false
         }
       return userSchema.updateOne(
@@ -162,7 +164,8 @@ exports.blockOrUnblockUser = (request,response, next) => {
         },
         {
           $set: {
-            block: data.block
+            block: data.block,
+            expire_block: data.expire_block
           },
         }
       );
@@ -172,3 +175,13 @@ exports.blockOrUnblockUser = (request,response, next) => {
     })
     .catch((error) => next(error));
 };
+
+// function to add to expiredate mounth
+
+function addMonthToDate() {
+  currentDate = new Date();
+  const futureDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+  return futureDate;
+}
+
+
