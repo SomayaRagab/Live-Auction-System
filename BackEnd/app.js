@@ -73,7 +73,7 @@ server.use(auctionRoutes);
 server.use(itemDetailsRoutes);
 // server.use( bindingRoute);
 server.use(categoryRoutes);
-// server.use(contactRoutes);
+server.use(contactRoutes);
 
 // not found middleware
 server.use((request, response, next) => {
