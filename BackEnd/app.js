@@ -18,6 +18,7 @@ const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
+const resetPasswordRoute = require('./Routes/resetPasswordRoute'); 
 
 const { PORT, CONNECTION } = require('./Config/env');
 
@@ -59,8 +60,11 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 // login Route
+server.use(resetPasswordRoute);
 server.use(registrationRoute);
 server.use(loginRoute);
+
+
 
 // auth middleware
 server.use(auth);

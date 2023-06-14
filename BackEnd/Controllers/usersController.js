@@ -74,7 +74,7 @@ exports.updateUser = (request, response, next) => {
   if (request.body.password) {
     password = bcrypt.hashSync(request.body.password, saltRounds);
   }
-  if (request.id == request.params.id) {
+  // if (request.id == request.params.id) {
     userSchema
       .findOne({
         _id: request.params.id,
@@ -112,9 +112,9 @@ exports.updateUser = (request, response, next) => {
         response.status(200).json({ data: 'user updated successfully' });
       })
       .catch((error) => next(error));
-  } else {
-    next(new Error('not have permission'));
-  }
+  // } else {
+  //   next(new Error('not have permission'));
+  // }
 };
 
 exports.deleteUser = (request, response, next) => {
