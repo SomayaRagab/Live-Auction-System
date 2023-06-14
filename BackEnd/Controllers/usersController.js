@@ -32,40 +32,44 @@ exports.getUser = (request, response, next) => {
 };
 
 //add user
-exports.addUser = (request, response, next) => {
+exports.addUser = async (request, response, next) => {
   // Save the image buffer as a temporary file
-  const tempFilePath = handleTempImage(request);
-
-  cloudinary.uploader.upload(tempFilePath, { folder: 'images/user' }, function (error, result) {
-    if (error) {
-      console.error(error);
-      return response
-        .status(500)
-        .json({ error: 'Failed to upload image to Cloudinary' });
-    }
-
-    request.body.image = result.url;
-    new userSchema({
-      _id: request.body.id,
-      name: request.body.name,
-      email: request.body.email,
-      password: bcrypt.hashSync(
-        request.body.password,
-        bcrypt.genSaltSync(saltRounds)
-      ),
-      phone: request.body.phone,
-      image: request.body.image + '',
-      'address.city': request.body.city,
-      'address.street': request.body.street,
-      'address.building_number': request.body.building,
-      role: request.body.role,
-    })
-      .save()
-      .then((data) => {
-        response.status(201).json({ data });
-      })
-      .catch((error) => next(error));
+  const tempFilePath = await handleTempImage(request);
+  const imageUrl = await new Promise((resolve, reject) => {
+    cloudinary.uploader.upload(
+      tempFilePath,
+      { folder: 'images/user' },
+      function (error, result) {
+        if (error) {
+          return reject('Failed to upload image to Cloudinary');
+        }
+        const imageUrl = result.url;
+        resolve(imageUrl);
+      }
+    );
   });
+
+  request.body.image = imageUrl;
+  new userSchema({
+    _id: request.body.id,
+    name: request.body.name,
+    email: request.body.email,
+    password: bcrypt.hashSync(
+      request.body.password,
+      bcrypt.genSaltSync(saltRounds)
+    ),
+    phone: request.body.phone,
+    image: request.body.image + '',
+    'address.city': request.body.city,
+    'address.street': request.body.street,
+    'address.building_number': request.body.building,
+    role: request.body.role,
+  })
+    .save()
+    .then((data) => {
+      response.status(201).json({ data });
+    })
+    .catch((error) => next(error));
 };
 
 

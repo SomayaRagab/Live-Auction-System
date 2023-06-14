@@ -73,6 +73,8 @@ const userSchema = new Schema(
       type: Date,
       default: null,
     },
+    facebookId: String,
+    googleId: String
   },
   {
     timestamps: true,

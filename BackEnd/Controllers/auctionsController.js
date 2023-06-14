@@ -32,7 +32,16 @@ exports.getAuctionById = (request, response, next) => {
 //Add Auction
 exports.addAuction = async (req, res, next) => {
   try {
-
+    //check if all items in array are item id or not in items schema
+    const items = req.body.items;
+    const itemsLength = items.length;
+    for (let i = 0; i < itemsLength; i++) {
+      const item = await itemSchema.findOne({ _id: items[i] });
+      if (!item) {
+        res.status(400).json({ error: 'Invalid item ID' });
+        return;
+      }
+    }
     const auction = new auctionSchema({
       name: req.body.name,
       reference_number: req.body.reference_number,
@@ -45,6 +54,7 @@ exports.addAuction = async (req, res, next) => {
     const newAuction = await auction.save();
     res.status(201).json(newAuction);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -66,7 +76,12 @@ exports.updateAuction = (request, response, next) => {
 };
 
 //Delete Auction
-exports.deleteAuction = (request, response, next) => {
+exports.deleteAuction =async (request, response, next) => {
+  const Auctions = await itemDetailsSchema.find({ item_id: req.params.id });
+  if (Auctions) {
+    return res.status(400).json({ error: 'Auctions is used in itemDetails' });
+
+  }
   auctionSchema
     .findByIdAndDelete(request.params.id)
     .then((data) => {

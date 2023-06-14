@@ -4,6 +4,10 @@ const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const session = require('express-session');
+const passport = require('passport');
+const uuid = require('uuid');
+
 
 require('./Helper/scheduleUnblockUser');
 
@@ -20,12 +24,26 @@ const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 const resetPasswordRoute = require('./Routes/resetPasswordRoute'); 
 
+const authRoutes = require('./Routes/auth');
 const { PORT, CONNECTION } = require('./Config/env');
 
 //  open server using express
 const server = express();
 mongoose.set('strictQuery', true);
+
+//facebook and google auth
+server.use(session({
+  secret: uuid.v4(),
+  resave: false,
+  saveUninitialized: false
+}));
+
+server.use(passport.initialize());
+server.use(passport.session());
+
+server.use(authRoutes);
 mongoose
+// .connect("mongodb://127.0.0.1:27017/test")
   .connect(CONNECTION)
   .then(() => {
     console.log('DB connected');
@@ -75,7 +93,8 @@ server.use(userRoutes);
 server.use(itemRoutes);
 server.use(auctionRoutes);
 server.use(itemDetailsRoutes);
-// server.use( bindingRoute);
+server.use( bindingRoute);
+server.use( categoryRoutes);
 server.use(categoryRoutes);
 server.use(contactRoutes);
 
