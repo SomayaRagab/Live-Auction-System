@@ -23,6 +23,7 @@ const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 const authRoutes = require('./Routes/auth');
+const calenderRoute = require('./Routes/calenderRoute');
 const { PORT, CONNECTION } = require('./Config/env');
 
 //  open server using express
@@ -75,6 +76,8 @@ morgan('dev');
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
+
+
 // login Route
 server.use(registrationRoute);
 server.use(loginRoute);
@@ -92,6 +95,7 @@ server.use( bindingRoute);
 server.use( categoryRoutes);
 server.use(categoryRoutes);
 server.use(contactRoutes);
+server.use(calenderRoute);
 
 // not found middleware
 server.use((request, response, next) => {
@@ -100,7 +104,8 @@ server.use((request, response, next) => {
 
 // error middleware
 server.use((error, request, response, next) => {
-  if (request.file) fs.unlinkSync(request.file.path);
+  // if (request.file) fs.unlinkSync(request.file.path);
   let status = error.status || 500;
   response.status(status).json({ message: error + '' });
 });
+
