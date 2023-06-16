@@ -24,6 +24,7 @@ const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
+const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
 
 //  open server using express
@@ -77,6 +78,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 
+server.use(reportRoute);
 
 // login Route
 server.use(registrationRoute);
