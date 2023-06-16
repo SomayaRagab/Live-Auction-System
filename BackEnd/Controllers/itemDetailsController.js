@@ -5,6 +5,7 @@ const auctions = mongoose.model('auctions');
 const items = mongoose.model('items');
 const itemDetailsSchema = mongoose.model('itemDetails');
 
+
 exports.createItemDetails = async (req, res) => {
   try {
     const item = await items.findById(req.body.item_id);
@@ -13,26 +14,28 @@ exports.createItemDetails = async (req, res) => {
     if (!auction) throw new Error('Auction not found');
 
     // caculate end date
-    const date = calculateEndDate( auction.start_date , req.body.end_time )
-    console.log(date);
-    
+    const date = addTimeToDate(auction.end_date, req.body.end_time);
 
-    // const itemDetails = new itemDetailsSchema({
-    //   _id: req.body.id,
-    //   bidding_gap: req.body.bidding_gap,
-    //   start_bidding: req.body.start_bidding,
-    //   max_price: req.body.max_price,
-    //   item_id: req.body.item_id,
-    //   auction_id: req.body.auction_id,
-    //   end_time: req.body.end_time,
-    // });
-    // const savedItem = await itemDetails.save();
-    // res.status(201).json({ data: savedItem });
+    // update auction end date
+    auction.end_date = date;
+    await auction.save();
+
+    console.log(date);
+    const itemDetails = new itemDetailsSchema({
+      _id: req.body.id,
+      bidding_gap: req.body.bidding_gap,
+      start_bidding: req.body.start_bidding,
+      max_price: req.body.max_price,
+      item_id: req.body.item_id,
+      auction_id: req.body.auction_id,
+      end_time: req.body.end_time,
+    });
+    const savedItem = await itemDetails.save();
+    res.status(201).json({ data: savedItem });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
-
 exports.getItemDetails = async (req, res) => {
   try {
     const allItems = await itemDetailsSchema
@@ -115,3 +118,12 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
   }
 };
 
+function addTimeToDate(date, time ) {
+  console.log(date);
+  [hours, minutes] = time.split(':').map(Number);
+  const newDate = new Date(date);
+  newDate.setHours(date.getHours() + hours);
+  newDate.setMinutes(date.getMinutes() + minutes);
+ 
+  return newDate;
+}
