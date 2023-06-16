@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
 require('../Models/userModel');
+require('../Models/auctionModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
@@ -53,8 +54,6 @@ exports.getUserReport = async (request, response, next) => {
     }
 };
 
-
-
 exports.getAuctionReport = async (request, response, next) => {
     try {
         const totalAuctionsCount = await auctionSchema.countDocuments();
@@ -81,5 +80,47 @@ exports.getAuctionReport = async (request, response, next) => {
     }
 };
 
+exports.getTopBiddingUsers = async (request, response, next) => {
+    try {
+        const topUsers = await auctionSchema.aggregate([
+            {
+                $group: {
+                    _id: '$user',
+                    totalBids: { $sum: 1 },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            {
+                $unwind: '$user',
+            },
+            {
+                $sort: { totalBids: -1 },
+            },
+            {
+                $limit: 10,
+            },
+            {
+                $project: {
+                    _id: 0,
+                    username: '$user.username', // Replace with the actual field containing the username in your user model
+                    totalBids: 1,
+                },
+            },
+        ]);
+
+        response.json(topUsers);
+        console.log('Top bidding users data sent successfully!');
+    } catch (error) {
+        console.log('Top Bidding Users Controller hit');
+        next(error);
+    }
+};
 
 

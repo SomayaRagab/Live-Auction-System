@@ -19,6 +19,8 @@ router
         // checkAdmin,
         validateMW,
         reportController.getAuctionReport,
-        );
+    );
+
+router.get('/report/top-bidding-users', reportController.getTopBiddingUsers);
 
 module.exports = router;
