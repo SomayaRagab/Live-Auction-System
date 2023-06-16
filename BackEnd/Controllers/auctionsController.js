@@ -34,15 +34,6 @@ exports.getAuctionById = (request, response, next) => {
 exports.addAuction = async (req, res, next) => {
   try {
     //check if all items in array are item id or not in items schema
-    const items = req.body.items;
-    const itemsLength = items.length;
-    for (let i = 0; i < itemsLength; i++) {
-      const item = await itemSchema.findOne({ _id: items[i] });
-      if (!item) {
-        res.status(400).json({ error: 'Invalid item ID' });
-        return;
-      }
-    }
     const auction = new auctionSchema({
       name: req.body.name,
       reference_number: req.body.reference_number,
@@ -89,7 +80,7 @@ exports.deleteAuction = async (request, response, next) => {
       response.status(404).json({ message: 'Auction not found' });
     } else {
       if (data.status != 'not started') {
-        response.status(400).json({ message: 'Cannot delete this Auction' });
+        response.status(400).json({ message: 'Cannot delete Started Auction ' });
       } else {
         await auctionSchema.findByIdAndDelete(request.params.id).then(async (deletedData) => {
           // Delete all item details with this auction id
@@ -112,7 +103,7 @@ exports.getAuctionsByStatus = (request, response, next) => {
       if (data.length == 0) {
         response.status(404).json({ message: 'Auction not found.' });
       } else {
-        response.status(200).json({ message: 'Auctions deleted successfuly.' });
+        response.status(200).json({ data });
       }
     })
     .catch((error) => next(error));
@@ -125,11 +116,10 @@ exports.getAuctionsByName = (request, response, next) => {
     if (data.length == 0) {
       response.status(404).json({ message: 'Auction not found' });
     } else {
-      response.status(200).json({ message: 'Auctions deleted successfuly.' });
+      response.status(200).json({ data });
     }
   });
 };
-
 
 
 
