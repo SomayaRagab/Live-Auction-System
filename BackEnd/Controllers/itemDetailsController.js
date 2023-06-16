@@ -11,17 +11,23 @@ exports.createItemDetails = async (req, res) => {
     const auction = await auctions.findById(req.body.auction_id);
     if (!item) throw new Error('Item not found');
     if (!auction) throw new Error('Auction not found');
-    const itemDetails = new itemDetailsSchema({
-      _id: req.body.id,
-      bidding_gap: req.body.bidding_gap,
-      start_bidding: req.body.start_bidding,
-      max_price: req.body.max_price,
-      item_id: req.body.item_id,
-      auction_id: req.body.auction_id,
-      end_time: req.body.end_time,
-    });
-    const savedItem = await itemDetails.save();
-    res.status(201).json({ data: savedItem });
+
+    // caculate end date
+    const date = calculateEndDate( auction.start_date , req.body.end_time )
+    console.log(date);
+    
+
+    // const itemDetails = new itemDetailsSchema({
+    //   _id: req.body.id,
+    //   bidding_gap: req.body.bidding_gap,
+    //   start_bidding: req.body.start_bidding,
+    //   max_price: req.body.max_price,
+    //   item_id: req.body.item_id,
+    //   auction_id: req.body.auction_id,
+    //   end_time: req.body.end_time,
+    // });
+    // const savedItem = await itemDetails.save();
+    // res.status(201).json({ data: savedItem });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -108,3 +114,4 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 };
+
