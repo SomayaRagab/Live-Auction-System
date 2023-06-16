@@ -2,16 +2,40 @@ const mongoose = require('mongoose');
 const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
 require('../Models/userModel');
-require('../Models/auctionModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
         const totalUsersCount = await userSchema.countDocuments();
         const users = await userSchema.find({});
 
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+
+        const startDate = new Date(currentYear, currentMonth, 1); // Start of the current month
+        const endDate = new Date(currentYear, currentMonth + 1, 0); // End of the current month
+
+        const usersJoinedThisMonthCount = await userSchema.countDocuments({
+            createdAt: { $gte: startDate, $lt: endDate }
+        });
+
+        const previousMonthStartDate = new Date(currentYear, currentMonth - 1, 1); // Start of the previous month
+        const previousMonthEndDate = new Date(currentYear, currentMonth, 0); // End of the previous month
+
+        const usersJoinedPreviousMonthCount = await userSchema.countDocuments({
+            createdAt: { $gte: previousMonthStartDate, $lt: previousMonthEndDate }
+        });
+
+        const usersIncreased = usersJoinedThisMonthCount > usersJoinedPreviousMonthCount;
+        const usersDecreased = usersJoinedThisMonthCount < usersJoinedPreviousMonthCount;
+
         const reportData = {
             totalUsers: totalUsersCount,
             existingUsers: users.length,
+            usersJoinedThisMonth: usersJoinedThisMonthCount,
+            usersJoinedPreviousMonth: usersJoinedPreviousMonthCount,
+            usersIncreased,
+            usersDecreased,
             userData: users.map(user => ({
                 name: user.name,
                 email: user.email,
@@ -22,12 +46,14 @@ exports.getUserReport = async (request, response, next) => {
         };
 
         response.json(reportData);
-        console.log('Report data sent successfully!');
+        console.log('User report data sent successfully!');
     } catch (error) {
-        console.log('Report Controller hit');
+        console.log('User Report Controller hit');
         next(error);
     }
 };
+
+
 
 exports.getAuctionReport = async (request, response, next) => {
     try {
