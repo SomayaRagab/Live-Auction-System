@@ -6,11 +6,19 @@ const { checkAdmin } = require('../Middleware/authorization');
 
 
 router
-    .route('/report')
+    .route('/report/user')
     .get(
         // checkAdmin,
         validateMW,
-        reportController.getReport,
+        reportController.getUserReport,
+        );
+
+router
+    .route('/report/auction')
+    .get(
+        // checkAdmin,
+        validateMW,
+        reportController.getAuctionReport,
         );
 
 module.exports = router;
