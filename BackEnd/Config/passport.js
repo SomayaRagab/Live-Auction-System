@@ -39,7 +39,7 @@ passport.deserializeUser(function(id, done) {
 passport.use(new GoogleStrategy({
     clientID: '195369114062-5bmk8o6kdfkrnpelsk7rlpdn53r3s2b1.apps.googleusercontent.com',
     clientSecret:'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',
-    callbackURL: "http://localhost:8080/google/callback"
+    callbackURL: "http://auction.nader-mo.tech/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
     User.findOne({ googleId: profile.id }, function(err, user) {
