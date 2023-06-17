@@ -88,6 +88,9 @@ exports.addBidding = async (req, res) => {
 exports.getAllBiddings = (request, response, next) => {
   bindingSchema
     .find({})
+    .populate({path:'user_id',select:{name:1}})
+    .populate({path:'item_id',select:{name:1 ,image:1}})
+    .populate({path:'auction_id',select:{name:1}})
     .then((data) => {
       response.status(200).json({ data });
     })
