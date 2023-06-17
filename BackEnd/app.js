@@ -47,8 +47,8 @@ server.use(passport.session());
 
 server.use(authRoutes);
 mongoose
-.connect("mongodb://127.0.0.1:27017/test")
-  // .connect(CONNECTION)
+// .connect("mongodb://127.0.0.1:27017/test")
+  .connect(CONNECTION)
   .then(() => {
     console.log('DB connected');
     // listen port
