@@ -26,6 +26,7 @@ const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
 const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
+const refresh = require("./refresh")
 
 //  open server using express
 const server = express();
@@ -38,13 +39,14 @@ server.use(session({
   saveUninitialized: false
 }));
 
+server.use("/refresh", refresh);
 server.use(passport.initialize());
 server.use(passport.session());
 
 server.use(authRoutes);
 mongoose
-// .connect("mongodb://127.0.0.1:27017/test")
-  .connect(CONNECTION)
+.connect("mongodb://127.0.0.1:27017/test")
+  // .connect(CONNECTION)
   .then(() => {
     console.log('DB connected');
     // listen port
