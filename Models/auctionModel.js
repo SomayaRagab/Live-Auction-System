@@ -21,6 +21,7 @@ const auctionSchema = mongoose.Schema(
     },
     end_date: {
       type: Date,
+      default:null,
       required: [true, 'End Date is required'],
     },
     time: {

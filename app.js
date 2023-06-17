@@ -22,9 +22,13 @@ const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
+const resetPasswordRoute = require('./Routes/resetPasswordRoute'); 
+
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
+const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
+const refresh = require("./refresh")
 
 //  open server using express
 const server = express();
@@ -37,6 +41,7 @@ server.use(session({
   saveUninitialized: false
 }));
 
+server.use("/refresh", refresh);
 server.use(passport.initialize());
 server.use(passport.session());
 
@@ -77,10 +82,14 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 
+server.use(reportRoute);
 
 // login Route
+server.use(resetPasswordRoute);
 server.use(registrationRoute);
 server.use(loginRoute);
+
+
 
 // auth middleware
 server.use(auth);

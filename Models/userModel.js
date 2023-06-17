@@ -15,38 +15,38 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      match: [/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/, ' Invalid Email'],
-      required: [true, 'required email'],
+      // match: [/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/, ' Invalid Email'],
+      // required: [true, 'required email'],
       unique: [true, 'email already exists'],
     },
     password: {
       type: String,
-      required: [true, 'required password'],
+      // required: [true, 'required password'],
     },
     phone: {
       type: String,
       match: [/^01[0125][0-9]{8}$/, 'Invalid phoneNumber'],
-      required: [true, 'required phone'],
+      // required: [true, 'required phone'],
     },
     address: {
       type: Object,
       city: {
         type: String,
-        required: [true, 'required city'],
+        // required: [true, 'required city'],
       },
       street: {
         type: String,
-        required: [true, 'required street'],
+        // required: [true, 'required street'],
       },
       building_number: {
         type: String,
-        required: [true, 'required building number'],
+        // required: [true, 'required building number'],
       },
-      required: [true, 'required address'],
+      // required: [true, 'required address'],
     },
     image: {
       type: String,
-      required: [true, 'required image'],
+      // required: [true, 'required image'],
     },
     role: {
       type: String,
@@ -64,6 +64,14 @@ const userSchema = new Schema(
     itemNotPayed: {
       type: Number,
       default: 0,
+    },
+    resetPasswordToken: {
+      type: String,
+      default:''
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
     },
     facebookId: String,
     googleId: String
