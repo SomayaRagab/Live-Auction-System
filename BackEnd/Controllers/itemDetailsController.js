@@ -5,12 +5,22 @@ const auctions = mongoose.model('auctions');
 const items = mongoose.model('items');
 const itemDetailsSchema = mongoose.model('itemDetails');
 
+
 exports.createItemDetails = async (req, res) => {
   try {
     const item = await items.findById(req.body.item_id);
     const auction = await auctions.findById(req.body.auction_id);
     if (!item) throw new Error('Item not found');
     if (!auction) throw new Error('Auction not found');
+
+    // caculate end date
+    const date = addTimeToDate(auction.end_date, req.body.end_time);
+
+    // update auction end date
+    auction.end_date = date;
+    await auction.save();
+
+    console.log(date);
     const itemDetails = new itemDetailsSchema({
       _id: req.body.id,
       bidding_gap: req.body.bidding_gap,
@@ -26,7 +36,6 @@ exports.createItemDetails = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
 exports.getItemDetails = async (req, res) => {
   try {
     const allItems = await itemDetailsSchema
@@ -108,3 +117,13 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
     res.status(404).json({ error: err.message });
   }
 };
+
+function addTimeToDate(date, time ) {
+  console.log(date);
+  [hours, minutes] = time.split(':').map(Number);
+  const newDate = new Date(date);
+  newDate.setHours(date.getHours() + hours);
+  newDate.setMinutes(date.getMinutes() + minutes);
+ 
+  return newDate;
+}
