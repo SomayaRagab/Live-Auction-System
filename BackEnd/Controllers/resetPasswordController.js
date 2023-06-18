@@ -1,4 +1,4 @@
-const sendEmail = require('../Helper/sendEmail');
+const sendEmail = require('./../Helper/sendEmail');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 require('./../Models/userModel');

@@ -8,7 +8,7 @@ const session = require('express-session');
 const passport = require('passport');
 const uuid = require('uuid');
 
-
+// run schedule
 require('./Helper/scheduleUnblockUser');
 
 // routes
@@ -23,6 +23,7 @@ const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 const resetPasswordRoute = require('./Routes/resetPasswordRoute'); 
+const paymentRoute = require('./Routes/paymentRoute');
 
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
@@ -80,6 +81,7 @@ server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
 
+
 server.use(reportRoute);
 
 // login Route
@@ -103,6 +105,8 @@ server.use( categoryRoutes);
 server.use(categoryRoutes);
 server.use(contactRoutes);
 server.use(calenderRoute);
+server.use(paymentRoute);
+
 
 // not found middleware
 server.use((request, response, next) => {

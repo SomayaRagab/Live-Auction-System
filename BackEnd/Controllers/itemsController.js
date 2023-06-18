@@ -6,13 +6,11 @@ require('./../Models/itemDetailsModel');
 require('./../Models/auctionModel');
 
 const handleTempImage = require('./../Helper/uploadImage');
-
 const cloudinary = require('cloudinary').v2;
 const { extractPublicId } = require('cloudinary-build-url');
 const categorySchema = mongoose.model('categories');
 const ItemSchema = mongoose.model('items');
 const itemDetailsSchema = mongoose.model('itemDetails');
-const auctionSchema = mongoose.model('auctions');
 
 // Get all items
 exports.getAllItems = async (req, res, next) => {
@@ -49,7 +47,6 @@ exports.addItem = async (req, res, next) => {
     const categoriesLength = categories.length;
     for (let i = 0; i < categoriesLength; i++) {
       const category = await categorySchema.findOne({ _id: categories[i] });
-      console.log(category);
       if (!category) {
         return res.status(400).json({ error: 'Invalid item ID' });
       }
@@ -63,7 +60,6 @@ exports.addItem = async (req, res, next) => {
         { folder: 'images/item' },
         function (error, result) {
           if (error) {
-            console.error(error);
             return reject('Failed to upload image to Cloudinary');
           }
           const imageUrl = result.url;
@@ -85,18 +81,20 @@ exports.addItem = async (req, res, next) => {
     });
 
     const savedItem = await newItem.save();
-    return res.status(201).json({ data: savedItem });
+    res.status(201).json({ data: savedItem });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 // Update item
 exports.updateItem = async (req, res, next) => {
   try {
+    const item = await ItemSchema.findOne({ _id: req.params.id });
+    if (!item) {
+      return res.status(400).json({ error: 'Invalid item ID' });
+    }
     const { category } = req.body;
-
     // Check if all categories in array are valid item IDs in the category schema
     if (category) {
       const categoriesLength = category.length;
@@ -108,79 +106,80 @@ exports.updateItem = async (req, res, next) => {
       }
     }
 
-
     // Upload image to Cloudinary and get the URL
-    const tempFilePath = await handleTempImage(req);
-    const imageUrl = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload(tempFilePath, { folder: 'images/item' }, function (error, result) {
-        if (error) {
-          console.error(error);
-          return reject('Failed to upload image to Cloudinary');
-        }
-        const imageUrl = result.url;
-        resolve(imageUrl);
+    let url = item.image;
+    if (req.file) {
+      const publicId = extractPublicId(item.image);
+
+      cloudinary.uploader.destroy(publicId, function (error, result) {
+        if (error) console.log('error in delete image from cloudinary');
       });
-    });
- 
+      // Upload image to Cloudinary and get the URL
+      const tempFilePath = await handleTempImage(req);
+      const imageUrl = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(
+          tempFilePath,
+          { folder: 'images/item' },
+          function (error, result) {
+            if (error) {
+              return reject('Failed to upload image to Cloudinary');
+            }
+            const imageUrl = result.url;
+            resolve(imageUrl);
+          }
+        );
+      });
+      url = imageUrl;
+    }
     // Update the item
-    const result = await ItemSchema.updateOne(
+    await ItemSchema.updateOne(
       { _id: req.params.id },
       {
         $set: {
           name: req.body.name,
           qty: req.body.qty,
-          image: imageUrl,
           material: req.body.material,
           size: req.body.size,
           color: req.body.color,
           category: category,
+          image: url,
         },
       }
     );
 
-    if (result.matchedCount !== 0) {
-      return res.status(200).json({ message: 'Item updated successfully' });
-    } else {
-      throw new Error('Item not found');
-    }
+    res.status(200).json({ data: `item updated successfully` });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return next(error);
   }
 };
 
 // Delete item
 
 exports.deleteItem = async (req, res, next) => {
-  // ckech if item exist in itemDetails
-  const items = await itemDetailsSchema.find({ item_id: req.params.id });
-  const itemAuction = await auctionSchema.find({ item_id: req.params.id });
-  if (items) {
-    return res.status(400).json({ error: 'Item is used in itemDetails' });
-  }
-  if (itemAuction) {
-    return res.status(400).json({ error: 'Item is used in auction' });
-  }
+  try {
+    // ckech if item exist in itemDetails
+    const items = await itemDetailsSchema.findOne(
+      { item_id: req.params.id },
+      { _id: 1 }
+    );
+    if (items) {
+      throw new Error(`item is used in item details`);
+    }
+
+    const item = await ItemSchema.findOne({ _id: req.params.id });
+    if (!item) throw new Error('Item not found');
+    if(item.image){
+      const public_id = extractPublicId(item.image);
+      cloudinary.uploader.destroy(public_id, function (error, result) {
+        if (error) next(error);
+      });
+    }
   
-
-  const image = await ItemSchema.find(
-    { _id: req.params.id },
-    { image: 1, _id: 0 }
-  );
-
-  if (image) {
-    const public_id = extractPublicId(image[0].image);
-    cloudinary.uploader.destroy(public_id, function (error, result) {
-      if (error) throw new Error('error cloudinary');
-    });
+    await ItemSchema.deleteOne({ _id: req.params.id });
+    res.status(200).json({ data: `item deleted successfully` });
+  } catch (error) {
+    next(error);
   }
-
-  ItemSchema.deleteOne({ _id: req.params.id })
-    .then((data) => {
-      if (data.deletedCount != 0)
-        res.status(200).json({ message: 'Item deleted successfully' });
-      else throw new Error('Item not found');
-    })
-    .catch((error) => next(error));
 };
 
 // get item by category
