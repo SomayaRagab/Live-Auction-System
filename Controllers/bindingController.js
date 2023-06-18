@@ -7,18 +7,15 @@ const userSchema = mongoose.model('users');
 
 exports.addBidding = async (req, res) => {
   try {
-    const { auction_id, item_id, bide , user_id } = req.body;
+    const { itemDetails_id , bide , user_id } = req.body;
     let amount = req.body.amount || 0;
     // const user_id = req.id;
 
-    // Fetch the item from the database
-    const itemDetails = await itemDetailsSchema.findOne({
-      item_id: item_id,
-      auction_id: auction_id,
-    });
+    //fetch item details from item details table
+    const itemDetails = await itemDetailsSchema.findById({ _id: itemDetails_id});
 
     if (!itemDetails) {
-      res.status(400).json({ success: false, error: 'Invalid item ID' });
+      res.status(400).json({ success: false, error: 'Invalid item Details ID' });
       return;
     }
     // Fetch the user from the database
@@ -31,8 +28,8 @@ exports.addBidding = async (req, res) => {
 
     // Check if the bidding amount is greater than or bidding gap of the item
     if (bide < itemDetails.bidding_gap) {
-      console.log('bide', bide);
-      console.log('itemDetails.bidding_gap', itemDetails.bidding_gap);
+      // console.log('bide', bide);
+      // console.log('itemDetails.bidding_gap', itemDetails.bidding_gap);
       res.status(400).json({
         success: false,
         error: 'Bidding amount is less than the bidding gap of the item',
@@ -40,21 +37,8 @@ exports.addBidding = async (req, res) => {
       return;
     }
 
-    // Create a new bidding instance
-    // amount is current value details + bide
-    // find max amount to be added to bide
-    // last_price = await bindingSchema.find({ auction_id: auction_id, item_id: item_id }).then((data) => {
-    //   console.log(data);
-    //   return data.amount;
-    // });
-    // amount=last_price+bide;
     amount += itemDetails.current_price + bide;
     
-    await itemDetailsSchema.updateOne(
-      { item_id: item_id, auction_id: auction_id },
-      { current_price: amount }
-    );
-
 
     if (amount > itemDetails.max_price) {
       res.status(400).json({
@@ -64,9 +48,14 @@ exports.addBidding = async (req, res) => {
       return;
     }
 
+    await itemDetailsSchema.updateOne(
+      { _id: itemDetails_id},
+      { current_price: amount }
+    );
+
+
     const bidding = new bindingSchema ({
-      auction_id,
-      item_id,
+      itemDetails_id,
       user_id,
       amount,
     });
@@ -78,7 +67,7 @@ exports.addBidding = async (req, res) => {
     res.status(201).json({ success: true, data: bidding });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, error: 'Server Error' });
+    res.status(500).json({ success: false, error: err.message});
   }
 };
 
@@ -100,9 +89,9 @@ exports.getAllBiddings = (request, response, next) => {
 //function to get the max amount for item in auction
 exports.getMaxAmount = async (request, response, next) => {
   try {
-    const { auction_id, item_id } = request.body;
+    const { itemDetails_id } = request.body;
     const max_amount = await bindingSchema
-      .find({ auction_id: auction_id, item_id: item_id })
+      .find({ itemDetails_id:itemDetails_id })
       .sort({ amount: -1 })
       .limit(1)
       .then((data) => {
@@ -118,9 +107,9 @@ exports.getMaxAmount = async (request, response, next) => {
 //function to get the previous value for max amount for item in auction 
 exports.getPreviousMaxAmount = async (request, response, next) => {
   try {
-    const { auction_id, item_id } = request.body;
+    const { itemDetails_id } = request.body;
     const max_amount = await bindingSchema
-      .find({ auction_id: auction_id, item_id: item_id })
+      .find({ itemDetails_id:itemDetails_id })
       .sort({ amount: -1 })
       .limit(2)
       .then((data) => {
