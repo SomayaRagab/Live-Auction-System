@@ -26,6 +26,6 @@ router.route('/auctions/:id/items')
 .get(checkUserORAdmin ,validateParamArray,validateMW,itemDetailsController.getItemDetailsByAuctionId);
 
 router.route('/itemflag/:id')
-.post(checkAdmin ,validateParamArray,itemDetailsController.changeFlag);
+.post(validateParamArray,itemDetailsController.changeFlag);
 
 module.exports = router;
