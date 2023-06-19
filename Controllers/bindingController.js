@@ -25,6 +25,10 @@ exports.addBidding = async (req, res) => {
       res.status(400).json({ success: false, error: 'Invalid user' });
       return;
     }
+    if(itemDetails.flag == false){
+      res.status(400).json({ success: false, error: 'Bidding is closed' });
+      return;
+    }
 
     // Check if the bidding amount is greater than or bidding gap of the item
     if (bide < itemDetails.bidding_gap) {
@@ -81,8 +85,8 @@ exports.getAllBiddings = (request, response, next) => {
   bindingSchema
     .find({})
     .populate({path:'user_id',select:{name:1}})
-    .populate({path:'item_id',select:{name:1 ,image:1}})
-    .populate({path:'auction_id',select:{name:1}})
+    // .populate({path:'item_id',select:{name:1 ,image:1}})
+    .populate({path:'itemDetails_id',select:{name:1}})
     .then((data) => {
       response.status(200).json({ data });
     })
