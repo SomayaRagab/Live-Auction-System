@@ -126,3 +126,24 @@ function addTimeToDate(date, time ) {
  
   return newDate;
 }
+
+
+//change flag for item details
+exports.changeFlag = async (req, res) => {
+  try {
+    const itemDetails = await itemDetailsSchema.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          flag: true,
+        },
+      }
+    );
+    console.log(itemDetails);
+    if (itemDetails.matchedCount == 0)
+      throw new Error('Item  Details not found');
+    res.status(200).json({ message: 'Item Details updated successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}

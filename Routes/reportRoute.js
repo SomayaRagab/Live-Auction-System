@@ -21,6 +21,21 @@ router
         reportController.getAuctionReport,
     );
 
-router.get('/report/top-bidding-users', reportController.getTopBiddingUsers);
+    router.get('/report/top-bidding-users',
+    // checkAdmin,
+    validateMW,
+    reportController.getTopBiddingUsers);
+
+
+router.get('/report/categories',
+    // checkAdmin,
+    validateMW,
+    reportController.getCategoryReport);
+
+router.get('/report/stream', 
+    // checkAdmin,
+    validateMW,
+    reportController.getStreamReport);
+
 
 module.exports = router;
