@@ -28,8 +28,6 @@ exports.addBidding = async (req, res) => {
 
     // Check if the bidding amount is greater than or bidding gap of the item
     if (bide < itemDetails.bidding_gap) {
-      // console.log('bide', bide);
-      // console.log('itemDetails.bidding_gap', itemDetails.bidding_gap);
       res.status(400).json({
         success: false,
         error: 'Bidding amount is less than the bidding gap of the item',
@@ -41,11 +39,16 @@ exports.addBidding = async (req, res) => {
     
 
     if (amount > itemDetails.max_price) {
-      res.status(400).json({
-        success: false,
-        error: 'Bidding amount is greater than the max price of the item',
-      });
-      return;
+      //update the value of flag field in item details table
+      await itemDetailsSchema.updateOne(
+        { _id: itemDetails_id},
+        { flag: false }
+      );
+      // res.status(400).json({
+      //   success: false,
+      //   error: 'Bidding amount is greater than the max price of the item',
+      // });
+      // return;
     }
 
     await itemDetailsSchema.updateOne(
@@ -60,7 +63,7 @@ exports.addBidding = async (req, res) => {
       amount,
     });
 
-
+    
     // Save the bidding to the database
     await bidding.save();
 
@@ -113,7 +116,6 @@ exports.getPreviousMaxAmount = async (request, response, next) => {
       .sort({ amount: -1 })
       .limit(2)
       .then((data) => {
-        // console.log(data);
         return data[1];
       });
     response.status(200).json({ max_amount });

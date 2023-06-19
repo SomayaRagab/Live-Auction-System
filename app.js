@@ -24,6 +24,7 @@ const contactRoutes = require('./Routes/contactRoute');
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 const resetPasswordRoute = require('./Routes/resetPasswordRoute'); 
 const paymentRoute = require('./Routes/paymentRoute');
+const streamRoute = require('./Routes/streamRoute');
 
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
@@ -108,6 +109,7 @@ server.use(categoryRoutes);
 server.use(contactRoutes);
 server.use(calenderRoute);
 server.use(paymentRoute);
+server.use(streamRoute);
 
 
 // not found middleware
