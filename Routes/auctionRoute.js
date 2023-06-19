@@ -23,7 +23,7 @@ router.route('/auctions/:id')
 
 router 
     .route('/auction/:status')
-    .get(checkAdmin , controller.getAuctionsByStatus);
+    .get(checkUserORAdmin , controller.getAuctionsByStatus);
 
 router
     .route('/auction/:name')
