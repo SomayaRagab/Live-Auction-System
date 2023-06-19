@@ -42,6 +42,7 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://auction.nader-mo.tech/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
+    console.log(profile);
     User.findOne({ googleId: profile.id }, function(err, user) {
       if (err) { return done(err); }
       if (user) { return done(null, user); }
