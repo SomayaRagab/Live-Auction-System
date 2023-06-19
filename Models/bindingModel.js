@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const autions=mongoose.model('auctions');
-const items=mongoose.model('items');
+// const autions=mongoose.model('auctions');
+const itemDetails=mongoose.model('itemDetails');
 const users=mongoose.model('users');
 const autoIncrement = require('mongoose-sequence')(mongoose);
 
@@ -8,15 +8,10 @@ const biddingSchema = mongoose.Schema({
     _id: {
         type: Number,
     },
-    auction_id: {
+    itemDetails_id :{
         type: Number,
-        ref: autions,
-        required: [true, 'Auction ID is required']
-    },
-    item_id: {
-        type: Number,
-        ref: items,
-        required: [true, 'Item ID is required']
+        ref: itemDetails,
+        required: [true, 'Item Detailes ID is required']
     },
     user_id: {
         type: Number,

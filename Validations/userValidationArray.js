@@ -1,4 +1,6 @@
 const { body } = require('express-validator');
+require('./../Models/userModel');
+const userSchema = require('mongoose').model('users');
 
 exports.validatePostArray = [
   body('name')
@@ -6,7 +8,12 @@ exports.validatePostArray = [
     .withMessage('name must be string')
     .isLength({ min: 2 })
     .withMessage('name must be at least 2 chars'),
-  body('email').isEmail().withMessage('invalid email'),
+  body('email').isEmail().withMessage('invalid email')
+    .custom(async (value) => {
+      const user = await userSchema.findOne({ email: value }, {email:1});
+      if (user) throw new Error('email already exist');
+    })
+  ,
   body('password')
     .isStrongPassword()
     .withMessage(
@@ -31,7 +38,11 @@ exports.validatePatchArray = [
     .withMessage('name must be string')
     .isLength({ min: 2 })
     .withMessage('name must be at least 2 chars'),
-  body('email').optional().isEmail().withMessage('invalid email'),
+  body('email').optional().isEmail().withMessage('invalid email')
+    .custom(async (value) => {
+      const user = await userSchema.findOne({ email: value } , {email:1});
+      if (user) throw new Error('email already exist');
+      }),
   body('password')
     .optional()
     .isStrongPassword()
