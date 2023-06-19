@@ -25,6 +25,10 @@ exports.addBidding = async (req, res) => {
       res.status(400).json({ success: false, error: 'Invalid user' });
       return;
     }
+    if(itemDetails.flag == false){
+      res.status(400).json({ success: false, error: 'Bidding is closed' });
+      return;
+    }
 
     // Check if the bidding amount is greater than or bidding gap of the item
     if (bide < itemDetails.bidding_gap) {
