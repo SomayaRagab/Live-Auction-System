@@ -51,7 +51,7 @@ exports.updateCategory = (request, response, next) => {
     .then((data) => {
       if (data.matchedCount != 0)
         response.status(200).json({ message: 'category updated successfully' });
-      else throw new Error('category not found');
+      else next(new Error('category not found'));
     })
     .catch((error) => next(error));
 };

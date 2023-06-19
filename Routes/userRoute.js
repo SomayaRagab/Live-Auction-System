@@ -1,12 +1,20 @@
 const express = require('express');
 const multer = require('multer');
 const upload = multer();
-const router = express.Router();
 const controller = require('./../Controllers/usersController');
 const validateMW = require('./../Validations/validateMW');
-const {validatePostArray,validatePatchArray} = require('./../Validations/userValidationArray');
+const {
+  validatePostArray,
+  validatePatchArray,
+} = require('./../Validations/userValidationArray');
 const validateParamArray = require('./../Validations/paramValidationArray');
-const {checkAdmin, checkUser, checkUserORAdmin} = require('../Middleware/authorization');
+const {
+  checkAdmin,
+  checkUser,
+  checkUserORAdmin,
+} = require('../Middleware/authorization');
+
+const router = express.Router();
 
 router
   .route('/users')
@@ -23,8 +31,8 @@ router
   .get(checkUserORAdmin, validateParamArray, validateMW, controller.getUser)
   .patch(
     checkUserORAdmin,
-    validateParamArray,
     upload.single('image'),
+    validateParamArray,
     validatePatchArray,
     validateMW,
     controller.updateUser
@@ -33,6 +41,11 @@ router
 
 router
   .route('/users/:id/block')
-  .patch(checkAdmin, validateParamArray, validateMW, controller.blockOrUnblockUser);
+  .patch(
+    checkAdmin,
+    validateParamArray,
+    validateMW,
+    controller.blockOrUnblockUser
+  );
 
 module.exports = router;

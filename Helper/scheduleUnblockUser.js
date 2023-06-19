@@ -2,6 +2,8 @@ const schedule = require('node-schedule');
 const mongoose = require('mongoose');
 require('../Models/userModel');
 const userSchem =mongoose.model('users');
+const sendEmail = require('./sendEmail');
+
 
 const updateBlock =async(req , res , next)=> {
     try {
@@ -15,6 +17,13 @@ const updateBlock =async(req , res , next)=> {
      next(err);
     }
   }
+
+  // send email to user to notify him that he have auction before 1 day
+
+
+
+  
+
 
 
 

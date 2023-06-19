@@ -37,6 +37,10 @@ const itemDetailsSchema = new Schema({
     match: [/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/, 'Invalid Time'],
     required: [true, 'End Time is required'],
   },
+  flag: {
+    type: Boolean,
+    default: false,
+  },
 });
 itemDetailsSchema.plugin(Autoincrement, {
   id: 'itemDetails_id',

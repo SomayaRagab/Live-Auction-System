@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
 const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
+const categorySchema = mongoose.model('categories');
+const streamSchema = mongoose.model('stream');
 require('../Models/userModel');
 require('../Models/auctionModel');
+require('../Models/categoryModel');
+require('../Models/streamModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
@@ -123,4 +127,58 @@ exports.getTopBiddingUsers = async (request, response, next) => {
     }
 };
 
+exports.getCategoryReport = async (request, response, next) => {
+    try {
+        const categories = await categorySchema.aggregate([
+            {
+                $lookup: {
+                    from: 'auctions',
+                    localField: '_id',
+                    foreignField: 'category',
+                    as: 'auctions',
+                },
+            },
+            {
+                $match: { auctions: { $exists: true, $ne: [] } },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    category_id: '$_id',
+                    category_name: '$name',
+                    auction_count: { $size: '$auctions' },
+                },
+            },
+            {
+                $sort: { auction_count: -1 },
+            },
+        ]);
 
+        response.json(categories);
+        console.log('Category report data sent successfully!');
+    } catch (error) {
+        console.log('Category Report Controller hit');
+        next(error);
+    }
+};
+
+exports.getStreamReport = async (request, response, next) => {
+    try {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+
+        const startDate = new Date(currentYear, currentMonth, 1); // Start of the current month
+        const endDate = new Date(currentYear, currentMonth + 1, 0); // End of the current month
+
+        const streamsCount = await streamSchema.countDocuments({
+            createdAt: { $gte: startDate, $lt: endDate },
+        });
+
+        response.json({ streamsCount });
+        console.log('Stream report data sent successfully!');
+    } catch (error) {
+        console.log('Stream Report Controller hit');
+        next(error);
+    }
+};
