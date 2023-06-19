@@ -48,7 +48,7 @@ exports.addItem = async (req, res, next) => {
     for (let i = 0; i < categoriesLength; i++) {
       const category = await categorySchema.findOne({ _id: categories[i] });
       if (!category) {
-        return res.status(400).json({ error: 'Invalid item ID' });
+        return res.status(400).json({ error: 'Invalid category ID' });
       }
     }
 

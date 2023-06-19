@@ -20,7 +20,6 @@ exports.createItemDetails = async (req, res) => {
     auction.end_date = date;
     await auction.save();
 
-    console.log(date);
     const itemDetails = new itemDetailsSchema({
       _id: req.body.id,
       bidding_gap: req.body.bidding_gap,
