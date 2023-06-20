@@ -9,7 +9,7 @@ const passport = require('passport');
 const uuid = require('uuid');
 
 // run schedule
-require('./Helper/scheduleUnblockUser');
+require('./Helper/schedule');
 
 // routes
 const loginRoute = require('./Routes/loginRoute');

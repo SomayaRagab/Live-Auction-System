@@ -168,13 +168,13 @@ exports.deleteItem = async (req, res, next) => {
 
     const item = await ItemSchema.findOne({ _id: req.params.id });
     if (!item) throw new Error('Item not found');
-    if(item.image){
+    if (item.image) {
       const public_id = extractPublicId(item.image);
       cloudinary.uploader.destroy(public_id, function (error, result) {
         if (error) next(error);
       });
     }
-  
+
     await ItemSchema.deleteOne({ _id: req.params.id });
     res.status(200).json({ data: `item deleted successfully` });
   } catch (error) {
@@ -200,6 +200,18 @@ exports.autocompleteItem = (req, res, next) => {
       { material: { $regex: req.params.name, $options: 'ix' } },
     ],
   })
+    .then((data) => {
+      if (data) res.status(200).json(data);
+      else throw new Error('Item not found');
+    })
+    .catch((error) => next(error));
+};
+
+// new arrival item
+exports.newArrival = (req, res, next) => {
+  ItemSchema.find()
+    .sort({ createdAt: -1 })
+    .limit(6)
     .then((data) => {
       if (data) res.status(200).json(data);
       else throw new Error('Item not found');

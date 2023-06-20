@@ -38,7 +38,7 @@ exports.addAuction = async (req, res, next) => {
       name: req.body.name,
       reference_number: req.body.reference_number,
       start_date: req.body.start_date,
-      end_date: req.body.end_date,
+      end_date: req.body.start_date,
       time: req.body.time,
       fees: req.body.fees,
     });
@@ -122,6 +122,19 @@ exports.getAuctionsByName = (request, response, next) => {
     }
   });
 };
+
+// new arrival auction
+
+exports.newArrivalAuction = (request, response, next) => {
+  auctionSchema
+    .find({})
+    .sort({ start_date: -1 })
+    .limit(3)
+    .then((data) => {
+      response.status(200).json({ data });
+    })
+    .catch((error) => next(error));
+}
 
 
 
