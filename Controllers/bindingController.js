@@ -78,6 +78,24 @@ exports.addBidding = async (req, res) => {
   }
 };
 
+//function to delete biddeing
+exports.deleteBidding = async (req, res) => {
+  try {
+    // const { _id } = req.body;
+    bindingSchema.findByIdAndDelete(req.params.id).then((data) => {
+      // if there is no bidding with this id
+      if (!data) {
+        res.status(404).json({ message: 'Bidding not found' });
+      } else {
+        res.status(200).json({ message: 'Bidding deleted successfully' });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 
 // get all biddings
 
