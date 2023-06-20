@@ -1,6 +1,6 @@
 // require('dotenv').config();
 module.exports = {
-  PORT:8003,
+  PORT:8080,
   SECRET_KEY:"SK",
   CLOUD_NAME:'devnekpsn',
   API_KEY:'716982735537538',

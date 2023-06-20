@@ -5,38 +5,59 @@ const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 require('./../Models/userModel');
 const User = mongoose.model('users');
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = require('./env');
+
+
+function authResponse(id, role, response) {
+  console.log("authResponse");
+  let token = jwt.sign({ id: id, role: role }, SECRET_KEY, { expiresIn: '1h' });
+  console.log(token);
+  response.status(200).json({
+    message: 'Authenticated',
+    token,
+  });
+}
+
 
 passport.use(new FacebookStrategy({
-    clientID: '1271772990442099',
-    clientSecret:'eda962fd94036705489107269e647776',
-    callbackURL: "http://localhost:8080/facebook/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    console.log(profile);
-    User.findOne({ facebookId: profile.id }, function(err, user) {
-      console.log("teeeeeeeeeeeeeeeeeest");
-      if (err) { return done(err); }
-      if (user) { return done(null, user); }
+  clientID: '1271772990442099',
+  clientSecret: 'eda962fd94036705489107269e647776',
+  callbackURL: "http://localhost:8080/facebook/callback",
+  passReqToCallback: true // Add this option
+},
+function(req, accessToken, refreshToken, profile, done) {
+  User.findOne({ facebookId: profile.id }, function(err, user) {
+    if (err) { return done(err); }
+    if (user) {
+      let token = jwt.sign({ id: user._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
+      req.token = token;
+      return done(null, user, token);
+    } else {
       const newUser = new User({
         name: profile.displayName,
         facebookId: profile.id
       });
-      authResponse(user._id, 'user', response)
+
       newUser.save(function(err) {
         if (err) { return done(err); }
-        done(null, newUser,authResponse(newUser._id, 'user'));
+        let token = jwt.sign({ id: newUser._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
+        req.token = token;
+        done(null, newUser, token);
       });
-    });
-  }
-));
+    }
+  });
+}));
+
+
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
+User.findById(id, function(err, user) {
+  done(err, user);
+});
 });
 
 passport.use(new GoogleStrategy({
@@ -62,14 +83,6 @@ passport.use(new GoogleStrategy({
 ));
 
 
-function authResponse(id, role, response) {
-  let token = jwt.sign({ id: id, role: role }, SECRET_KEY, { expiresIn: '1h' });
-  console.log(token);
-  response.status(200).json({
-    message: 'Authenticated',
-    token,
-  });
-}
 
 
 module.exports = passport;

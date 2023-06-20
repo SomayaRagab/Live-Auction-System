@@ -54,6 +54,7 @@ exports.addAuction = async (req, res, next) => {
 //Update Auction
 
 exports.updateAuction = (request, response, next) => {
+  console.log(request.body);
   auctionSchema
     .findByIdAndUpdate(request.params.id, request.body)
     .then((data) => {
