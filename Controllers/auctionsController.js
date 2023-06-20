@@ -122,6 +122,19 @@ exports.getAuctionsByName = (request, response, next) => {
   });
 };
 
+// new arrival auction
+
+exports.newArrivalAuction = (request, response, next) => {
+  auctionSchema
+    .find({})
+    .sort({ start_date: -1 })
+    .limit(3)
+    .then((data) => {
+      response.status(200).json({ data });
+    })
+    .catch((error) => next(error));
+}
+
 
 
 

@@ -24,8 +24,7 @@ exports.getCheckoutSession = async (req, res, next) => {
     // get max amount for item in auction
     const max_price = await bindingSchema
       .find({
-        auction_id: itemDetails.auction_id._id,
-        item_id: itemDetails.item_id._id,
+        itemDetails_id: req.params.id,
       })
       .sort({ amount: -1 })
       .limit(1)
@@ -62,5 +61,3 @@ exports.getCheckoutSession = async (req, res, next) => {
     });
   }
 };
-
-
