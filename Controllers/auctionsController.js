@@ -38,7 +38,7 @@ exports.addAuction = async (req, res, next) => {
       name: req.body.name,
       reference_number: req.body.reference_number,
       start_date: req.body.start_date,
-      end_date: req.body.end_date,
+      end_date: req.body.start_date,
       time: req.body.time,
       fees: req.body.fees,
     });
