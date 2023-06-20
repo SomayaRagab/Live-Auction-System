@@ -23,7 +23,7 @@ function authResponse(id, role, response) {
 passport.use(new FacebookStrategy({
   clientID: '1271772990442099',
   clientSecret: 'eda962fd94036705489107269e647776',
-  callbackURL: "http://localhost:8080/facebook/callback",
+  callbackURL: "http://auction.nader-mo.tech/facebook/callback",
   passReqToCallback: true // Add this option
 },
 function(req, accessToken, refreshToken, profile, done) {
@@ -69,14 +69,20 @@ passport.use(new GoogleStrategy({
     console.log(profile);
     User.findOne({ googleId: profile.id }, function(err, user) {
       if (err) { return done(err); }
-      if (user) { return done(null, user); }
+      if (user) { 
+        let token = jwt.sign({ id: user._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
+      req.token = token;
+      return done(null, user, token);
+        }
       const newUser = new User({
         name: profile.displayName,
         googleId: profile.id
       });
       newUser.save(function(err) {
         if (err) { return done(err); }
-        done(null, newUser);
+        let token = jwt.sign({ id: newUser._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
+        req.token = token;
+        done(null, newUser, token);
       });
     });
   }
