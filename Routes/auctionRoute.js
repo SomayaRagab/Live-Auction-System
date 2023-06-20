@@ -9,6 +9,8 @@ const { checkAdmin , checkUserORAdmin } = require('./../Middleware/authorization
 
 const router = express.Router();
 
+
+
 router.route('/auctions')
     .get(checkUserORAdmin ,controller.getAllAuctions)
     .post(checkAdmin,auctionValidatePostArray , controller.addAuction);
@@ -19,15 +21,15 @@ router.route('/auctions/:id')
     .delete(checkAdmin,validateParamArray, controller.deleteAuction);
 
 
-
-
 router 
-    .route('/auctions/:status')
-    .get(checkAdmin , controller.getAuctionsByStatus);
+    .route('/auction/:status')
+    .get(checkUserORAdmin , controller.getAuctionsByStatus);
 
 router
-    .route('/auctions/:name')
+    .route('/auction/:name')
     .get( checkUserORAdmin,controller.getAuctionsByName)
+
+
 
 
 module.exports = router;

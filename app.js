@@ -47,6 +47,7 @@ server.use(session({
 server.use("/refresh", refresh);
 server.use(passport.initialize());
 server.use(passport.session());
+console.log(PORT);
 
 server.use(authRoutes);
 mongoose

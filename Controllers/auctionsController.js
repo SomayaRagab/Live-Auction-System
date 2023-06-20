@@ -96,6 +96,7 @@ exports.deleteAuction = async (request, response, next) => {
 
 //Get Auctions By Status
 exports.getAuctionsByStatus = (request, response, next) => {
+  console.log(request.params.status);
   auctionSchema
     .find({ status: request.params.status })
     .then((data) => {

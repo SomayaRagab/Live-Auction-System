@@ -16,4 +16,7 @@ router.route('/winners')
 router.route('/previous')
     .get(controller.getPreviousMaxAmount);
 
+router.route('/bidding/:id')
+.delete(controller.deleteBidding);
+
 module.exports = router;
