@@ -11,8 +11,6 @@ exports.addBidding = async (req, res) => {
   try {
     const { itemDetails_id, bide, user_id } = req.body;
     let amount = req.body.amount || 0;
-    // const user_id = req.id;
-
     //fetch item details from item details table
     const itemDetails = await itemDetailsSchema.findById({
       _id: itemDetails_id,

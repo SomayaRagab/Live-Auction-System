@@ -54,6 +54,7 @@ exports.addAuction = async (req, res, next) => {
 //Update Auction
 
 exports.updateAuction = (request, response, next) => {
+  console.log(request.body);
   auctionSchema
     .findByIdAndUpdate(request.params.id, request.body)
     .then((data) => {
@@ -134,6 +135,44 @@ exports.newArrivalAuction = (request, response, next) => {
     })
     .catch((error) => next(error));
 }
+
+exports.startAuction = async (req, res) => {
+  try {
+    const startAuction = await auctionSchema.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          status: "started",
+        },
+        
+      }
+    );
+    if (startAuction.matchedCount == 0)
+      throw new Error('Auction not found');
+    res.status(200).json({ message: 'Auction updated successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+exports.endAuction = async (req, res) => {
+  try {
+    const startAuction = await auctionSchema.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          status: "ended",
+        },
+        
+      }
+    );
+    if (startAuction.matchedCount == 0)
+      throw new Error('Auction not found');
+    res.status(200).json({ message: 'Auction updated successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
 
 
 
