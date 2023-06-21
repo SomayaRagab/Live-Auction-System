@@ -154,6 +154,7 @@ exports.startAuction = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 }
+
 exports.endAuction = async (req, res) => {
   try {
     const startAuction = await auctionSchema.updateOne(
