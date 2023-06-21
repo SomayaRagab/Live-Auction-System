@@ -13,11 +13,10 @@ exports.itemValidatePostArray = [
 
   body('color').isString().withMessage('Color must be a string'),
 
-  // body('category')
-  //   .isArray({ min: 1 })
-  //   .withMessage('Category must be an array of at least 1 number'),
+  body('category')
+    .isInt({ min: 1 })
+    .withMessage('Category must be number'),
 
-  body('category.*').isInt({ min: 1 }).withMessage('Category must be number'),
 ];
 
 exports.itemValidatePatchArray = [
@@ -37,10 +36,8 @@ exports.itemValidatePatchArray = [
 
   body('color').optional().isString().withMessage('Color must be a string'),
 
-  // body('category')
-  //   .optional()
-  //   .isArray({ min: 1 })
-  //   .withMessage('Category must be an array of at least 1 number'),
-
-  // body('category.*').isInt({ min: 1 }).withMessage('Category must be number'),
+  body('category')
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage('Category must be number'),
 ];

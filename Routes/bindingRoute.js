@@ -10,8 +10,8 @@ router.route('/biddings')
 
 router.route('/biddings')
      .get(controller.getAllBiddings);
-router.route('/winners')
-    .get(controller.getMaxAmount);
+router.route('/winner/:itemDetails_id')
+    .get(controller.getWinner);
 
 router.route('/previous')
     .get(controller.getPreviousMaxAmount);
