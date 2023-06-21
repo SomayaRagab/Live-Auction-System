@@ -138,18 +138,27 @@ exports.newArrivalAuction = (request, response, next) => {
 
 exports.startAuction = async (req, res) => {
   try {
-    const startAuction = await auctionSchema.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          status: "started",
-        },
-        
-      }
-    );
-    if (startAuction.matchedCount == 0)
-      throw new Error('Auction not found');
-    res.status(200).json({ message: 'Auction updated successfully' });
+    //find auctions with status started 
+    const auction = await auctionSchema.find({ status: 'started' });
+    //if there is auction with status started return you can't start miiore than one auction at the same time
+    if (auction.length != 0) {
+      throw new Error('You can not start more than one auction at the same time');
+    }
+    //if there is no auction with status started update auction status to started
+    else{
+      const startAuction = await auctionSchema.updateOne(
+        { _id: req.params.id },
+        {
+          $set: {
+            status: "started",
+          },
+          
+        }
+      );
+      if (startAuction.matchedCount == 0)
+        throw new Error('Auction not found');
+      res.status(200).json({ message: 'Auction updated successfully' });
+    }
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -157,6 +166,7 @@ exports.startAuction = async (req, res) => {
 
 exports.endAuction = async (req, res) => {
   try {
+    
     const startAuction = await auctionSchema.updateOne(
       { _id: req.params.id },
       {
