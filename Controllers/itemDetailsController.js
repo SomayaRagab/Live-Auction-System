@@ -27,7 +27,7 @@ exports.createItemDetails = async (req, res) => {
       max_price: req.body.max_price,
       item_id: req.body.item_id,
       auction_id: req.body.auction_id,
-      end_time: req.body.end_time,
+      duration: req.body.duration,
     });
     const savedItem = await itemDetails.save();
     res.status(201).json({ data: savedItem });
@@ -77,7 +77,7 @@ exports.updateItemDetails = async (req, res) => {
           max_price: req.body.max_price,
           item_id: req.body.item_id,
           auction_id: req.body.auction_id,
-          end_time: req.body.end_time,
+          duration: req.body.duration,
         },
       }
     );
@@ -139,6 +139,7 @@ exports.changeFlag = async (req, res) => {
         $set: {
           flag: true,
         },
+
       }
     );
     console.log(itemDetails);
