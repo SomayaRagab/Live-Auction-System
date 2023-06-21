@@ -9,8 +9,6 @@ exports.addBidding = async (req, res) => {
   try {
     const { itemDetails_id , bide , user_id } = req.body;
     let amount = req.body.amount || 0;
-    // const user_id = req.id;
-
     //fetch item details from item details table
     const itemDetails = await itemDetailsSchema.findById({ _id: itemDetails_id});
 
@@ -48,11 +46,6 @@ exports.addBidding = async (req, res) => {
         { _id: itemDetails_id},
         { flag: false }
       );
-      // res.status(400).json({
-      //   success: false,
-      //   error: 'Bidding amount is greater than the max price of the item',
-      // });
-      // return;
     }
 
     await itemDetailsSchema.updateOne(
@@ -120,7 +113,6 @@ exports.getMaxAmount = async (request, response, next) => {
       .sort({ amount: -1 })
       .limit(1)
       .then((data) => {
-        // console.log(data);
         return data[0];
       });
     response.status(200).json({ max_amount });

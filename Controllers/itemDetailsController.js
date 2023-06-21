@@ -14,8 +14,8 @@ exports.createItemDetails = async (req, res) => {
     if (!auction) throw new Error('Auction not found');
 
     // caculate end date
-    const date = addTimeToDate(auction.end_date, req.body.end_time);
-
+    const date = addTimeToDate(auction.end_date, req.body.duration);
+    console.log(end_date);
     // update auction end date
     auction.end_date = date;
     await auction.save();
@@ -119,13 +119,15 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
 
 function addTimeToDate(date, time ) {
   console.log(date);
-  [hours, minutes] = time.split(':').map(Number);
+  // [hours, minutes] = time.split(':').map(Number);
   const newDate = new Date(date);
-  newDate.setHours(date.getHours() + hours);
   newDate.setMinutes(date.getMinutes() + minutes);
- 
+  // newDate.setHours(date.getHours() + hours);
+  // newDate.setMinutes(date.getMinutes() + minutes);
+  
   return newDate;
 }
+
 
 
 //change flag for item details

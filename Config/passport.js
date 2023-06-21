@@ -27,6 +27,7 @@ passport.use(new FacebookStrategy({
   passReqToCallback: true // Add this option
 },
 function(req, accessToken, refreshToken, profile, done) {
+  console.log(profile);
   User.findOne({ facebookId: profile.id }, function(err, user) {
     if (err) { return done(err); }
     if (user) {
@@ -61,32 +62,35 @@ User.findById(id, function(err, user) {
 });
 
 passport.use(new GoogleStrategy({
-    clientID: '195369114062-5bmk8o6kdfkrnpelsk7rlpdn53r3s2b1.apps.googleusercontent.com',
-    clientSecret:'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',
-    callbackURL: "http://auction.nader-mo.tech/google/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-    console.log(profile);
-    User.findOne({ googleId: profile.id }, function(err, user) {
-      if (err) { return done(err); }
-      if (user) { 
-        let token = jwt.sign({ id: user._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
+  clientID: '195369114062-5bmk8o6kdfkrnpelsk7rlpdn53r3s2b1.apps.googleusercontent.com',
+  clientSecret: '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',
+  callbackURL: "http://auction.nader-mo.tech/google/callback"
+},
+function(accessToken, refreshToken, profile, done) {
+  console.log(profile);
+  User.findOne({ googleId: profile.id }, function(err, user) {
+    if (err) { return done(err); }
+    if (user) {
+      let token = jwt.sign({ id: user._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
       req.token = token;
       return done(null, user, token);
-        }
-      const newUser = new User({
-        name: profile.displayName,
-        googleId: profile.id
-      });
-      newUser.save(function(err) {
-        if (err) { return done(err); }
-        let token = jwt.sign({ id: newUser._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
-        req.token = token;
-        done(null, newUser, token);
-      });
+    }
+    if (!profile.emails || profile.emails.length === 0) {
+      return done(new Error("Email not provided by Google profile"));
+    }
+    const newUser = new User({
+      name: profile.displayName,
+      email: profile.emails[0].value,
+      googleId: profile.id
     });
-  }
-));
+    newUser.save(function(err) {
+      if (err) { return done(err); }
+      let token = jwt.sign({ id: newUser._id, role: 'user' }, SECRET_KEY, { expiresIn: '1h' });
+      req.token = token;
+      done(null, newUser, token);
+    });
+  });
+}));
 
 
 
