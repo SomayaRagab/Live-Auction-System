@@ -10,12 +10,13 @@ exports.createItemDetails = async (req, res) => {
   try {
     const item = await items.findById(req.body.item_id);
     const auction = await auctions.findById(req.body.auction_id);
+    console.log(auction);
     if (!item) throw new Error('Item not found');
     if (!auction) throw new Error('Auction not found');
 
     // caculate end date
     const date = addTimeToDate(auction.end_date, req.body.duration);
-    console.log(end_date);
+    console.log(date);
     // update auction end date
     auction.end_date = date;
     await auction.save();
