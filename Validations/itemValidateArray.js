@@ -42,5 +42,5 @@ exports.itemValidatePatchArray = [
   //   .isArray({ min: 1 })
   //   .withMessage('Category must be an array of at least 1 number'),
 
-  body('category.*').isInt({ min: 1 }).withMessage('Category must be number'),
+  // body('category.*').isInt({ min: 1 }).withMessage('Category must be number'),
 ];

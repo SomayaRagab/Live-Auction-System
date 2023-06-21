@@ -109,7 +109,7 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
       .find({
         auction_id: req.params.id,
       })
-      .populate({ path: 'item_id', select: { name: 1, image: 1 } });
+      .populate({ path: 'item_id', select: { name: 1, image: 1 ,material:1 } });
     if (!itemsDetails) throw new Error('Item Details not found');
     res.status(200).json(itemsDetails);
   } catch (err) {
