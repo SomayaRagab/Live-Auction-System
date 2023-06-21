@@ -45,7 +45,7 @@ exports.addBidding = async (req, res) => {
 
     amount += itemDetails.current_price + bide;
 
-    if (amount > itemDetails.max_price) {
+    if (amount >=  itemDetails.max_price) {
       //update the value of flag field in item details table
       await itemDetailsSchema.updateOne(
         { _id: itemDetails_id },
