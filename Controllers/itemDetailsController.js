@@ -121,7 +121,7 @@ function addTimeToDate(date, time ) {
   console.log(date);
   // [hours, minutes] = time.split(':').map(Number);
   const newDate = new Date(date);
-  newDate.setMinutes(date.getMinutes() + minutes);
+  newDate.setMinutes(date.getMinutes() + time);
   // newDate.setHours(date.getHours() + hours);
   // newDate.setMinutes(date.getMinutes() + minutes);
   
