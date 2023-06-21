@@ -110,7 +110,7 @@ const queryAdmin = [
     },
   },
   {
-   $project: {
+    $project: {
       _id: 0,
       name: '$name',
       auction_start_date: '$start_date',
@@ -120,19 +120,18 @@ const queryAdmin = [
 
 // create function to send email to admin before auction start
 const sendEmailBeforeAuctionAdmin = async (req, res, next) => {
-
   try {
     const auctions = await auctionSchema.aggregate(queryAdmin);
     for (let auction of auctions) {
-      const message = `<div dir="rtl"> <h3>مرحبا ${auction.name},</h3>
-    <p> سوف تبدأ مزاد بعد 24 ساعه  ${auction.auction_name} بتاريخ ${auction.auction_start_date} </p>
+      const message = `<div dir="rtl"> <h3>  مرحبا م/ سميه,</h3>
+    <p> سوف يبدأ مزاد بعد 24 ساعه  ${auction.name} بتاريخ ${auction.auction_start_date} </p>
     <p>تمنياتي</p>
     <p>فريق المزاد</p>
     </div>`;
-      
+
       await sendEmail(
-       `somayaragab22@gmail.com`,
-        ` سيبدأ المزاد  قريبًا ${auction.auction_name} `,
+        `somayaragab22@gmail.com`,
+        ` سيبدأ مزاد ${auction.name}  قريبًا  `,
         message
       );
     }
@@ -141,15 +140,11 @@ const sendEmailBeforeAuctionAdmin = async (req, res, next) => {
   }
 };
 
-
-
-
 // create function to remove time from date
 const sendEmailBeforeAuction = async (req, res, next) => {
   try {
     const users = await joinAuctionSchema.aggregate(query);
     for (let user of users) {
-      console.log(user.auction_start_date);
       // message to send arabic right to left
       const message = `<div dir="rtl"> <h3>مرحبا ${user.name},</h3>
     <p> سوف تبدأ مزاد  يسعدنا انضمامك ${user.auction_name} بتاريخ ${user.auction_start_date} </p>
@@ -168,13 +163,12 @@ const sendEmailBeforeAuction = async (req, res, next) => {
   }
 };
 
-
 const date = Date.now() + 5000;
 // do task to send email to admin before auction start
-schedule.scheduleJob(date, sendEmailBeforeAuctionAdmin);
+// schedule.scheduleJob(date, sendEmailBeforeAuctionAdmin);
 
 // do task to send email before auction start
-schedule.scheduleJob(date, sendEmailBeforeAuction);
+// schedule.scheduleJob(date, sendEmailBeforeAuction);
 
 // do task to update the user block and expire_block
 schedule.scheduleJob(date, updateBlock);

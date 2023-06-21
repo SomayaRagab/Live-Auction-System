@@ -9,7 +9,7 @@ const schema = new mongoose.Schema(
     material: { type: String, required: [true, 'Material is required'] },
     size: { type: String, required: [true, 'Size is required'] },
     color: { type: String, required: [true, 'Color is required'] },
-    category: { type: [Number], ref: 'categories' },
+    category: { type: Number, ref: 'categories' },
   },
   { timestamps: true }
 );
