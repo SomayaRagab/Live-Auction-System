@@ -14,8 +14,8 @@ exports.createItemDetails = async (req, res) => {
     if (!auction) throw new Error('Auction not found');
 
     // caculate end date
-    const date = addTimeToDate(auction.end_date, req.body.end_time);
-
+    const date = addTimeToDate(auction.end_date, req.body.duration);
+    console.log(end_date);
     // update auction end date
     auction.end_date = date;
     await auction.save();
@@ -27,7 +27,7 @@ exports.createItemDetails = async (req, res) => {
       max_price: req.body.max_price,
       item_id: req.body.item_id,
       auction_id: req.body.auction_id,
-      end_time: req.body.end_time,
+      duration: req.body.duration,
     });
     const savedItem = await itemDetails.save();
     res.status(201).json({ data: savedItem });
@@ -77,7 +77,7 @@ exports.updateItemDetails = async (req, res) => {
           max_price: req.body.max_price,
           item_id: req.body.item_id,
           auction_id: req.body.auction_id,
-          end_time: req.body.end_time,
+          duration: req.body.duration,
         },
       }
     );
@@ -109,7 +109,7 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
       .find({
         auction_id: req.params.id,
       })
-      .populate({ path: 'item_id', select: { name: 1, image: 1 ,material:1 } });
+      .populate({ path: 'item_id', select: { name: 1, image: 1 ,material:1} });
     if (!itemsDetails) throw new Error('Item Details not found');
     res.status(200).json(itemsDetails);
   } catch (err) {
@@ -119,13 +119,15 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
 
 function addTimeToDate(date, time ) {
   console.log(date);
-  [hours, minutes] = time.split(':').map(Number);
+  // [hours, minutes] = time.split(':').map(Number);
   const newDate = new Date(date);
-  newDate.setHours(date.getHours() + hours);
   newDate.setMinutes(date.getMinutes() + minutes);
- 
+  // newDate.setHours(date.getHours() + hours);
+  // newDate.setMinutes(date.getMinutes() + minutes);
+  
   return newDate;
 }
+
 
 
 //change flag for item details
@@ -137,6 +139,7 @@ exports.changeFlag = async (req, res) => {
         $set: {
           flag: true,
         },
+
       }
     );
     console.log(itemDetails);

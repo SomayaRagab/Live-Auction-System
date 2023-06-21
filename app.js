@@ -9,7 +9,7 @@ const passport = require('passport');
 const uuid = require('uuid');
 
 // run schedule
-require('./Helper/scheduleUnblockUser');
+require('./Helper/schedule');
 
 // routes
 const loginRoute = require('./Routes/loginRoute');
@@ -47,56 +47,56 @@ server.use(session({
 server.use("/refresh", refresh);
 server.use(passport.initialize());
 server.use(passport.session());
+console.log(PORT);
 
-server.use(authRoutes);
 mongoose
-// .connect("mongodb://127.0.0.1:27017/test")
-  .connect(CONNECTION)
-  .then(() => {
-    console.log('DB connected');
-    // listen port
-    server.listen(PORT, () => {
-      console.log('server is listening....', PORT);
-    });
-  })
-  .catch((error) => {
-    console.log('Db Problem ' + error);
+.connect(CONNECTION)
+.then(() => {
+  console.log('DB connected');
+  // listen port
+  server.listen(PORT, () => {
+    console.log('server is listening....', PORT);
   });
+})
+.catch((error) => {
+  console.log('Db Problem ' + error);
+});
 
 server.use(
   cors({
     origin: '*',
   })
-);
-
-morgan(function (tokens, request, res) {
-  return [
-    tokens.method(request, res),
-    tokens.url(request, res),
-    tokens.status(request, res),
-    tokens.res(request, res, 'content-length'),
-    '-',
-    tokens['response-time'](request, res),
-    'ms',
-  ].join(' ');
-});
-morgan('dev');
-server.use(express.json());
-server.use(express.urlencoded({ extended: false }));
-
-
-
-server.use(reportRoute);
-
-// login Route
-server.use(resetPasswordRoute);
-server.use(registrationRoute);
-server.use(loginRoute);
-
-
-
-// auth middleware
-server.use(auth);
+  );
+  
+  morgan(function (tokens, request, res) {
+    return [
+      tokens.method(request, res),
+      tokens.url(request, res),
+      tokens.status(request, res),
+      tokens.res(request, res, 'content-length'),
+      '-',
+      tokens['response-time'](request, res),
+      'ms',
+    ].join(' ');
+  });
+  morgan('dev');
+  server.use(express.json());
+  server.use(express.urlencoded({ extended: false }));
+  
+  
+  
+  server.use(reportRoute);
+  
+  // login Route
+  server.use(resetPasswordRoute);
+  server.use(registrationRoute);
+  server.use(loginRoute);
+  server.use(authRoutes);
+  
+  
+  
+  // auth middleware
+  server.use(auth);
 
 // Routes
 
