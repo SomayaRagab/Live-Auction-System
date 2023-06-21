@@ -26,6 +26,7 @@ const resetPasswordRoute = require('./Routes/resetPasswordRoute');
 const paymentRoute = require('./Routes/paymentRoute');
 const joinAuctionRoute = require('./Routes/joinAuctionRoute');
 const streamRoute = require('./Routes/streamRoute');
+const cardRoute = require('./Routes/cardRoute');
 
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
@@ -112,6 +113,7 @@ server.use(calenderRoute);
 server.use(paymentRoute);
 server.use(joinAuctionRoute);
 server.use(streamRoute);
+server.use(cardRoute);
 
 
 // not found middleware

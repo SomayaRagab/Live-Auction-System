@@ -20,6 +20,11 @@ const cardSchema = mongoose.Schema({
     pay: {
         type: Boolean,
         default: false
+    },
+
+    price: {
+        type: Number,
+        required: [true, 'Price is required']
     }
 }, {
     timestamps: true

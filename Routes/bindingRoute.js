@@ -10,7 +10,7 @@ router.route('/biddings')
 
 router.route('/biddings')
      .get(controller.getAllBiddings);
-router.route('/winners')
+router.route('/winner/:itemDetails_id')
     .get(controller.getWinner);
 
 router.route('/previous')

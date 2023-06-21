@@ -51,12 +51,16 @@ exports.addBidding = async (req, res) => {
         { _id: itemDetails_id },
         { flag: false }
       );
+      console.log(user_id);
+      console.log(itemDetails_id);
+      console.log(amount);
       // create card for the winner
-      const card = await new cardSchema({
-        user_id,
-        itemDetails_id,
-      });
-      await card.save();
+      // const card = await new cardSchema({
+      //   user_id,
+      //   itemDetails_id,
+      //   price: amount,
+      // });
+      // await card.save();
     }
 
     await itemDetailsSchema.updateOne(
@@ -117,7 +121,7 @@ exports.getWinner = async (request, response, next) => {
     const winner = await bindingSchema
       .findOne(
         {
-          itemDetails_id: req.params.id,
+          itemDetails_id: req.params.itemDetails_id,
         },
         {
           user_id: 1,
@@ -137,7 +141,7 @@ exports.getWinner = async (request, response, next) => {
 
     await new cardSchema({
       user_id: winner.user_id._id,
-      itemDetails_id: req.params.id,
+      itemDetails_id: req.params.itemDetails_id,
     }).save();
 
   } catch (error) {
