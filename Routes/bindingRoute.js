@@ -11,7 +11,7 @@ router.route('/biddings')
 router.route('/biddings')
      .get(controller.getAllBiddings);
 router.route('/winners')
-    .get(controller.getMaxAmount);
+    .get(controller.getWinner);
 
 router.route('/previous')
     .get(controller.getPreviousMaxAmount);
