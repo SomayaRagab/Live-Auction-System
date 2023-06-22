@@ -6,6 +6,13 @@ const contactValidation = require('./../Validations/contactValidation').contactV
 const { checkAdmin, checkUserORAdmin } = require('../Middleware/authorization');
 
 
-router.route('/contact').post(contactValidation, validateMW, contactController.addContact);
+router
+    .route('/contact')
+    .post(contactValidation, validateMW, contactController.addContact)
+    .get(contactValidation, validateMW, contactController.getAllContact);
+
+router
+    .route('/contact/:id')  
+    .delete(contactValidation, validateMW, contactController.deleteContact);
 
 module.exports = router; 
