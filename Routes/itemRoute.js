@@ -23,6 +23,9 @@ router
     itemController.addItem
   );
 
+
+  router.get('/newArrivalItem',checkUserORAdmin, itemController.newArrival);
+
 router
   .route('/items/:id')
   .get(checkUserORAdmin, validateParamArray,validateMW, itemController.getItem)

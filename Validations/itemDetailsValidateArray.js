@@ -17,15 +17,9 @@ exports.itemDetailsValidatePostArray = [
     .isInt({ min: 1 })
     .withMessage('Item Id must be a number greater than 0'),
 
-  body('end_time')
-    .isString()
-    .withMessage('End Time must be a date')
-    .custom((value) => {
-      if (!/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/.test(value)) {
-        throw new Error('Value must be time with HH:MM format');
-      }
-      return true;
-    }),
+  body('duration')
+    .isInt()
+    .withMessage('Duration must be minutes '),
 ];
 
 exports.itemDetailsValidatePatchArray = [
@@ -54,14 +48,8 @@ exports.itemDetailsValidatePatchArray = [
     .isInt({ min: 1 })
     .withMessage('Auction Id must be a number greater than 0'),
 
-  body('end_time')
+  body('duration')
     .optional()
-    .isString()
-    .withMessage('End Time must be a date')
-    .custom((value) => {
-      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
-        throw new Error('Value must be time with HH:MM format');
-      }
-      return true;
-    }),
+    .isInt()
+    .withMessage('Duration must be a number greater than 0'), 
 ];

@@ -3,7 +3,7 @@ exports.auctionValidatePostArray = [
   body('name').isString().withMessage('Name is required'),
   body('reference_number').isInt().withMessage('Reference Number is required'),
   body('start_date').isDate().withMessage('Start Date is required'),
-  body('end_date').isDate().withMessage('End Date is required'),
+  // body('end_date').isDate().withMessage('End Date is required'),
   body('time')
     .isString()
     .withMessage('Time must be a time formatted')
@@ -23,7 +23,7 @@ exports.auctionValidatePatchArray = [
     .isInt()
     .withMessage('Reference Number must be number'),
   body('start_date').optional().isDate().withMessage('Start Date must be date'),
-  body('end_date').optional().isDate().withMessage('End Date must be date'),
+  // body('end_date').optional().isDate().withMessage('End Date must be date'),
   body('time')
     .optional()
     .isString()

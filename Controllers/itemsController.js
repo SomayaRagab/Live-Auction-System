@@ -42,15 +42,6 @@ exports.getItem = (req, res, next) => {
 
 exports.addItem = async (req, res, next) => {
   try {
-    // Check if all items in array are valid item IDs in the category schema
-    const categories = req.body.category;
-    const categoriesLength = categories.length;
-    for (let i = 0; i < categoriesLength; i++) {
-      const category = await categorySchema.findOne({ _id: categories[i] });
-      if (!category) {
-        return res.status(400).json({ error: 'Invalid category ID' });
-      }
-    }
 
     // Upload image to Cloudinary and get the URL
     const tempFilePath = await handleTempImage(req);
@@ -68,6 +59,15 @@ exports.addItem = async (req, res, next) => {
       );
     });
 
+    // Check if category exist
+    const categoryExist = await categorySchema.findOne({
+      _id: req.body.category,
+    });
+    if (!categoryExist) {
+      throw new Error('Category not found');
+    }
+
+
     // Create and save the new item
     const newItem = new ItemSchema({
       _id: req.body.id,
@@ -77,7 +77,7 @@ exports.addItem = async (req, res, next) => {
       material: req.body.material,
       size: req.body.size,
       color: req.body.color,
-      category: categories,
+      category: req.body.category,
     });
 
     const savedItem = await newItem.save();
@@ -95,15 +95,9 @@ exports.updateItem = async (req, res, next) => {
       return res.status(400).json({ error: 'Invalid item ID' });
     }
     const { category } = req.body;
-    // Check if all categories in array are valid item IDs in the category schema
-    if (category) {
-      const categoriesLength = category.length;
-      for (let i = 0; i < categoriesLength; i++) {
-        const item = await categorySchema.findOne({ _id: category[i] });
-        if (!item) {
-          return res.status(400).json({ error: 'Invalid category ID' });
-        }
-      }
+    const categoryExist = await categorySchema.findOne({ _id: category });
+    if (!categoryExist) {
+      throw new Error('Category not found');
     }
 
     // Upload image to Cloudinary and get the URL
@@ -168,13 +162,13 @@ exports.deleteItem = async (req, res, next) => {
 
     const item = await ItemSchema.findOne({ _id: req.params.id });
     if (!item) throw new Error('Item not found');
-    if(item.image){
+    if (item.image) {
       const public_id = extractPublicId(item.image);
       cloudinary.uploader.destroy(public_id, function (error, result) {
         if (error) next(error);
       });
     }
-  
+
     await ItemSchema.deleteOne({ _id: req.params.id });
     res.status(200).json({ data: `item deleted successfully` });
   } catch (error) {
@@ -200,6 +194,18 @@ exports.autocompleteItem = (req, res, next) => {
       { material: { $regex: req.params.name, $options: 'ix' } },
     ],
   })
+    .then((data) => {
+      if (data) res.status(200).json(data);
+      else throw new Error('Item not found');
+    })
+    .catch((error) => next(error));
+};
+
+// new arrival item
+exports.newArrival = (req, res, next) => {
+  ItemSchema.find()
+    .sort({ createdAt: -1 })
+    .limit(6)
     .then((data) => {
       if (data) res.status(200).json(data);
       else throw new Error('Item not found');

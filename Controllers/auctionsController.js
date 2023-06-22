@@ -38,7 +38,7 @@ exports.addAuction = async (req, res, next) => {
       name: req.body.name,
       reference_number: req.body.reference_number,
       start_date: req.body.start_date,
-      end_date: req.body.end_date,
+      end_date: req.body.start_date,
       time: req.body.time,
       fees: req.body.fees,
     });
@@ -54,6 +54,7 @@ exports.addAuction = async (req, res, next) => {
 //Update Auction
 
 exports.updateAuction = (request, response, next) => {
+  console.log(request.body);
   auctionSchema
     .findByIdAndUpdate(request.params.id, request.body)
     .then((data) => {
@@ -121,6 +122,68 @@ exports.getAuctionsByName = (request, response, next) => {
     }
   });
 };
+
+// new arrival auction
+
+exports.newArrivalAuction = (request, response, next) => {
+  auctionSchema
+    .find({})
+    .sort({ start_date: -1 })
+    .limit(3)
+    .then((data) => {
+      response.status(200).json({ data });
+    })
+    .catch((error) => next(error));
+}
+
+exports.startAuction = async (req, res) => {
+  try {
+    //find auctions with status started 
+    const auction = await auctionSchema.find({ status: 'started' });
+    //if there is auction with status started return you can't start miiore than one auction at the same time
+    if (auction.length != 0) {
+      throw new Error('You can not start more than one auction at the same time');
+    }
+    //if there is no auction with status started update auction status to started
+    else{
+      const startAuction = await auctionSchema.updateOne(
+        { _id: req.params.id },
+        {
+          $set: {
+            status: "started",
+          },
+          
+        }
+      );
+      if (startAuction.matchedCount == 0)
+        throw new Error('Auction not found');
+      res.status(200).json({ message: 'Auction updated successfully' });
+    }
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
+exports.endAuction = async (req, res) => {
+  try {
+    
+    const startAuction = await auctionSchema.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          status: "ended",
+        },
+        
+      }
+    );
+    if (startAuction.matchedCount == 0)
+      throw new Error('Auction not found');
+    res.status(200).json({ message: 'Auction updated successfully' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
+
 
 
 
