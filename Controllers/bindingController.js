@@ -6,6 +6,7 @@ const bindingSchema = mongoose.model('biddings');
 const itemDetailsSchema = mongoose.model('itemDetails');
 const userSchema = mongoose.model('users');
 const cardSchema = mongoose.model('cards');
+const Pusher = require("pusher");
 
 exports.addBidding = async (req, res) => {
   try {
@@ -45,29 +46,43 @@ exports.addBidding = async (req, res) => {
 
     amount += itemDetails.current_price + bide;
 
-    if (amount >=  itemDetails.max_price) {
+    if (amount >= itemDetails.max_price) {
       //update the value of flag field in item details table
       await itemDetailsSchema.updateOne(
         { _id: itemDetails_id },
         { flag: false }
       );
-      console.log(user_id);
-      console.log(itemDetails_id);
-      console.log(amount);
+      // console.log(user_id);
+      // console.log(itemDetails_id);
+      // console.log(amount);
       // create card for the winner
-      // const card = await new cardSchema({
-      //   user_id,
-      //   itemDetails_id,
-      //   price: amount,
-      // });
-      // await card.save();
+      const card = await new cardSchema({
+        user_id,
+        item_id,
+        price: amount,
+      });
+      await card.save();
     }
-
+    //create function to update the current price in item details table using pusher
+    const pusher = new Pusher({
+      appId: "1623189",
+      key: "6674d9bc1d0e463c0241",
+      secret: "ba6883242149b4e12a0b",
+      cluster: "eu",
+      useTLS: true
+    });
+    
+    // Update the current_price
     await itemDetailsSchema.updateOne(
       { _id: itemDetails_id },
       { current_price: amount }
     );
-
+    
+    // Trigger the event to notify clients
+    pusher.trigger("Auction_id", "itemDetails_id" , {
+      current_price: amount // Include the updated current_price in the event data
+    });
+    
     const bidding = new bindingSchema({
       itemDetails_id,
       user_id,
@@ -116,7 +131,7 @@ exports.getAllBiddings = (request, response, next) => {
 };
 
 //function to get the max amount for item in auction
-exports.getWinner = async (request, response, next) => {
+exports.getWinner = async (req, res, next) => {
   try {
     const winner = await bindingSchema
       .findOne(
@@ -129,6 +144,8 @@ exports.getWinner = async (request, response, next) => {
         }
       )
       .populate({ path: 'user_id', select: { email: 1, name: 1 } })
+      .populate({ path: 'itemDetails_id', select: { item_id: 1 } })
+
       .sort({ amount: -1 })
       .limit(1)
       .then((data) => {
@@ -142,8 +159,12 @@ exports.getWinner = async (request, response, next) => {
     await new cardSchema({
       user_id: winner.user_id._id,
       itemDetails_id: req.params.itemDetails_id,
+      price: winner.amount,
     }).save();
 
+    // get item from item details table
+
+    res.status(200).json({ winner });
   } catch (error) {
     next(error);
   }

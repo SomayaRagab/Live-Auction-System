@@ -43,3 +43,34 @@ exports.addContact = (request, response, next) => {
         }
     });
 };
+
+exports.getAllContact = async (request, response, next) => {
+    await contactSchema
+        .find({})
+        .then((data) => {
+            response.status(200).json({ data });
+        })
+        .catch((error) => next(error));
+}
+
+exports.deleteContact = (request, response, next) => {
+    contactSchema
+        .findOne({ _id: request.params.id })
+        .then((data) => {
+            if (!data) {
+                throw new Error("Contact not found");
+            } else {
+                return contactSchema.deleteOne({ _id: request.params.id });
+            }
+        })
+        .then((data) => {
+            if (data.deletedCount > 0) {
+                response.status(200).json({ message: 'Contact deleted successfully' });
+            } else {
+                throw new Error("Contact deletion failed");
+            }
+        })
+        .catch((error) => {
+            next(error);
+        });
+};

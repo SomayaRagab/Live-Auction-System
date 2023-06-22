@@ -46,7 +46,7 @@ exports.addAuction = async (req, res, next) => {
     const newAuction = await auction.save();
     res.status(201).json(newAuction);
   } catch (err) {
-    console.error(err);
+
     res.status(500).json({ error: err.message });
   }
 };
@@ -54,7 +54,6 @@ exports.addAuction = async (req, res, next) => {
 //Update Auction
 
 exports.updateAuction = (request, response, next) => {
-  console.log(request.body);
   auctionSchema
     .findByIdAndUpdate(request.params.id, request.body)
     .then((data) => {
@@ -70,12 +69,6 @@ exports.updateAuction = (request, response, next) => {
 
 //Delete Auction
 exports.deleteAuction = async (request, response, next) => {
-  // const Auctions = await itemDetailsSchema.find({ auction_id: request.params.id });
-  // console.log(Auctions);
-  // if (Auctions) {
-  //   return response.status(400).json({ error: 'Auctions is used in itemDetails' });
-
-  // }
   auctionSchema.findById(request.params.id).then(async (data) => {
     if (!data) {
       response.status(404).json({ message: 'Auction not found' });
@@ -97,7 +90,6 @@ exports.deleteAuction = async (request, response, next) => {
 
 //Get Auctions By Status
 exports.getAuctionsByStatus = (request, response, next) => {
-  console.log(request.params.status);
   auctionSchema
     .find({ status: request.params.status })
     .then((data) => {
@@ -138,18 +130,27 @@ exports.newArrivalAuction = (request, response, next) => {
 
 exports.startAuction = async (req, res) => {
   try {
-    const startAuction = await auctionSchema.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          status: "started",
-        },
-        
-      }
-    );
-    if (startAuction.matchedCount == 0)
-      throw new Error('Auction not found');
-    res.status(200).json({ message: 'Auction updated successfully' });
+    //find auctions with status started 
+    const auction = await auctionSchema.find({ status: 'started' });
+    //if there is auction with status started return you can't start miiore than one auction at the same time
+    if (auction.length != 0) {
+      throw new Error('You can not start more than one auction at the same time');
+    }
+    //if there is no auction with status started update auction status to started
+    else{
+      const startAuction = await auctionSchema.updateOne(
+        { _id: req.params.id },
+        {
+          $set: {
+            status: "started",
+          },
+          
+        }
+      );
+      if (startAuction.matchedCount == 0)
+        throw new Error('Auction not found');
+      res.status(200).json({ message: 'Auction updated successfully' });
+    }
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -157,6 +158,7 @@ exports.startAuction = async (req, res) => {
 
 exports.endAuction = async (req, res) => {
   try {
+    
     const startAuction = await auctionSchema.updateOne(
       { _id: req.params.id },
       {

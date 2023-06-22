@@ -30,7 +30,7 @@ const cardRoute = require('./Routes/cardRoute');
 
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
-const reportRoute = require('./Routes/reportRoute');
+// const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
 const refresh = require("./refresh")
 
@@ -86,7 +86,7 @@ server.use(
   
   
   
-  server.use(reportRoute);
+  // server.use(reportRoute);
   
   // login Route
   server.use(resetPasswordRoute);
