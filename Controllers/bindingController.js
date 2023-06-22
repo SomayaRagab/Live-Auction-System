@@ -80,7 +80,6 @@ exports.addBidding = async (req, res) => {
     
     // Trigger the event to notify clients
     pusher.trigger("Auction_id", "itemDetails_id" , {
-      // message: "hello world",
       current_price: amount // Include the updated current_price in the event data
     });
     
