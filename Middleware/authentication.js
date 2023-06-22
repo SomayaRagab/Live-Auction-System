@@ -9,7 +9,7 @@ module.exports = (request, response, next) => {
         request.id = decodedToken.id;
         request.role = decodedToken.role;                                                                   
         //to go to the next layers(end point) with id ,role
-        console.log(request.id);
+        // console.log(request.id);
         next();
     }
     catch (error) {

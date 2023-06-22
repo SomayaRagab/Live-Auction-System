@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 require('./../Models/auctionModel');
 require('./../Models/itemDetailsModel');
+const {addTimeToDate} = require('./../Helper/calculateDate')
 
 const auctionSchema = mongoose.model('auctions');
 const itemDetailsSchema = mongoose.model('itemDetails');
@@ -37,7 +38,7 @@ exports.addAuction = async (req, res, next) => {
     const auction = new auctionSchema({
       name: req.body.name,
       reference_number: req.body.reference_number,
-      start_date: req.body.start_date,
+      start_date: addTimeToDate(req.body.start_date,req.body.time),
       end_date: req.body.start_date,
       time: req.body.time,
       fees: req.body.fees,
