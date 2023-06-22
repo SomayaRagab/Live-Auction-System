@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
 const categorySchema = mongoose.model('categories');
 const streamSchema = mongoose.model('stream');
+const itemsSchema = mongoose.model('items');
+const cardsSchema = mongoose.model('cards');
 require('../Models/userModel');
 require('../Models/auctionModel');
 require('../Models/categoryModel');
 require('../Models/streamModel');
+require('../Models/itemModel');
+require('../Models/cardModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
@@ -60,107 +65,134 @@ exports.getUserReport = async (request, response, next) => {
 
 exports.getAuctionReport = async (request, response, next) => {
     try {
-        const totalAuctionsCount = await auctionSchema.countDocuments();
-        const auctions = await auctionSchema.find({});
-
-        const reportData = {
-            totalAuctions: totalAuctionsCount,
-            auctionData: auctions.map(auction => ({
-                name: auction.name,
-                reference_number: auction.reference_number,
-                start_date: auction.start_date,
-                end_date: auction.end_date,
-                time: auction.time,
-                fees: auction.fees,
-                status: auction.status
-            }))
-        };
-
-        response.json(reportData);
-        console.log('Auction report data sent successfully!');
-    } catch (error) {
-        console.log('Auction Report Controller hit');
-        next(error);
+        const currentYear = moment().year();
+        const currentMonth = moment().month() + 1;
+    
+        const pipeline = [
+          {
+            $match: {
+              start_date: {
+                $gte: moment().startOf('year').toDate(),
+                $lte: moment().endOf('year').toDate()
+              }
+            }
+          },
+          {
+            $group: {
+              _id: { $month: '$start_date' },
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $sort: { _id: 1 }
+          }
+        ];
+    
+        const auctionCounts = await auctionSchema.aggregate(pipeline);
+    
+        const result = {};
+    
+        auctionCounts.forEach(auction => {
+          const month = auction._id;
+          const count = auction.count;
+    
+          result[month] = count;
+        });
+    
+        const currentMonthCount = result[currentMonth] || 0;
+    
+        response.json({
+          currentMonthCount,
+          monthlyCounts: result
+        });
+      } catch (error) {
+        response.status(500).json({ error: error.message });
+      }
     }
-};
 
-exports.getTopBiddingUsers = async (request, response, next) => {
-    try {
-        const topUsers = await auctionSchema.aggregate([
-            {
-                $group: {
-                    _id: '$user',
-                    totalBids: { $sum: 1 },
-                },
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'user',
-                },
-            },
-            {
-                $unwind: '$user',
-            },
-            {
-                $sort: { totalBids: -1 },
-            },
-            {
-                $limit: 10,
-            },
-            {
-                $project: {
-                    _id: 0,
-                    username: '$user.username', // Replace with the actual field containing the username in your user model
-                    totalBids: 1,
-                },
-            },
-        ]);
+// exports.getTopBiddingUsers = async (request, response, next) => {
+//     try {
+//         const topUsers = await auctionSchema.aggregate([
+//             {
+//                 $group: {
+//                     _id: '$user',
+//                     totalBids: { $sum: 1 },
+//                 },
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'users',
+//                     localField: '_id',
+//                     foreignField: '_id',
+//                     as: 'user',
+//                 },
+//             },
+//             {
+//                 $unwind: '$user',
+//             },
+//             {
+//                 $sort: { totalBids: -1 },
+//             },
+//             {
+//                 $limit: 10,
+//             },
+//             {
+//                 $project: {
+//                     _id: 0,
+//                     username: '$user.username', // Replace with the actual field containing the username in your user model
+//                     totalBids: 1,
+//                 },
+//             },
+//         ]);
 
-        response.json(topUsers);
-        console.log('Top bidding users data sent successfully!');
-    } catch (error) {
-        console.log('Top Bidding Users Controller hit');
-        next(error);
-    }
-};
+//         response.json(topUsers);
+//         console.log('Top bidding users data sent successfully!');
+//     } catch (error) {
+//         console.log('Top Bidding Users Controller hit');
+//         next(error);
+//     }
+// };
 
 exports.getCategoryReport = async (request, response, next) => {
     try {
-        const categories = await categorySchema.aggregate([
+        const categoryCounts = await itemsSchema.aggregate([
             {
-                $lookup: {
-                    from: 'auctions',
-                    localField: '_id',
-                    foreignField: 'category',
-                    as: 'auctions',
-                },
+                $group: {
+                    _id: '$category',
+                    count: { $sum: 1 }
+                }
             },
             {
-                $match: { auctions: { $exists: true, $ne: [] } },
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'category'
+                }
             },
             {
                 $project: {
                     _id: 0,
-                    category_id: '$_id',
-                    category_name: '$name',
-                    auction_count: { $size: '$auctions' },
-                },
+                    categoryName: { $arrayElemAt: ['$category.name', 0] },
+                    count: 1
+                }
             },
             {
-                $sort: { auction_count: -1 },
+                $sort: { count: -1 }
             },
+            {
+                $limit: 1
+            }
         ]);
-
-        response.json(categories);
-        console.log('Category report data sent successfully!');
+        if (categoryCounts.length > 0) {
+            const mostUsedCategory = categoryCounts[0];
+            response.json({ 'Most used category:': mostUsedCategory.categoryName, 'Count:': mostUsedCategory.count });
+        } else 
+            response.json('No items found.');
     } catch (error) {
-        console.log('Category Report Controller hit');
         next(error);
     }
-};
+}
 
 exports.getStreamReport = async (request, response, next) => {
     try {
@@ -178,7 +210,40 @@ exports.getStreamReport = async (request, response, next) => {
         response.json({ streamsCount });
         console.log('Stream report data sent successfully!');
     } catch (error) {
-        console.log('Stream Report Controller hit');
         next(error);
     }
 };
+
+exports.getProfitReport = async (request, response, next) => {
+    try {
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: {
+                        $gte: moment().startOf('year').toDate(),
+                        $lte: moment().endOf('year').toDate()
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$createdAt' },
+                    totalRevenue: { $sum: '$price' }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ];
+        const revenueReport = await cardsSchema.aggregate(pipeline);
+        const result = {};
+        revenueReport.forEach(report => {
+            const month = report._id;
+            const totalRevenue = report.totalRevenue;
+            result[month] = totalRevenue;
+        });
+        response.json(result);
+    } catch (error) {
+        next(error);
+    }
+}

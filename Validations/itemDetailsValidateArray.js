@@ -13,13 +13,24 @@ exports.itemDetailsValidatePostArray = [
     .isInt({ min: 1 })
     .withMessage('Max Price must be a number greater than 0'),
 
+  body('duration').isInt().withMessage('Duration must be minutes '),
   body('item_id')
     .isInt({ min: 1 })
     .withMessage('Item Id must be a number greater than 0'),
+  // format of date is yyyy-mm-dd
+  body('start_date')
+    .isDate()
+    .withMessage('Start Date must be a date'),
 
-  body('duration')
-    .isInt()
-    .withMessage('Duration must be minutes '),
+    body('start_time')
+    .isString()
+    .withMessage('start time must be formatted')
+    .custom((value) => {
+      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
+        throw new Error('Value must be time with HH:MM format');
+      }
+      return true;
+    }),
 ];
 
 exports.itemDetailsValidatePatchArray = [
@@ -51,5 +62,21 @@ exports.itemDetailsValidatePatchArray = [
   body('duration')
     .optional()
     .isInt()
-    .withMessage('Duration must be a number greater than 0'), 
+    .withMessage('Duration must be a number greater than 0'),
+
+  body('start_date')
+    .optional()
+    .isDate()
+    .withMessage('Start Date must be a date'),
+
+  body('start_time')
+    .optional()
+    .isString()
+    .withMessage('start time must be formatted')
+    .custom((value) => {
+      if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(value)) {
+        throw new Error('Value must be time with HH:MM format');
+      }
+      return true;
+    }),
 ];
