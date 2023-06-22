@@ -5,11 +5,13 @@ const auctionSchema = mongoose.model('auctions');
 const categorySchema = mongoose.model('categories');
 const streamSchema = mongoose.model('stream');
 const itemsSchema = mongoose.model('items');
+const cardsSchema = mongoose.model('cards');
 require('../Models/userModel');
 require('../Models/auctionModel');
 require('../Models/categoryModel');
 require('../Models/streamModel');
 require('../Models/itemModel');
+require('../Models/cardModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
@@ -211,3 +213,37 @@ exports.getStreamReport = async (request, response, next) => {
         next(error);
     }
 };
+
+exports.getProfitReport = async (request, response, next) => {
+    try {
+        const pipeline = [
+            {
+                $match: {
+                    createdAt: {
+                        $gte: moment().startOf('year').toDate(),
+                        $lte: moment().endOf('year').toDate()
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$createdAt' },
+                    totalRevenue: { $sum: '$price' }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ];
+        const revenueReport = await cardsSchema.aggregate(pipeline);
+        const result = {};
+        revenueReport.forEach(report => {
+            const month = report._id;
+            const totalRevenue = report.totalRevenue;
+            result[month] = totalRevenue;
+        });
+        response.json(result);
+    } catch (error) {
+        next(error);
+    }
+}
