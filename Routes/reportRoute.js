@@ -21,10 +21,10 @@ router
         reportController.getAuctionReport,
     );
 
-    router.get('/report/top-bidding-users',
-    // checkAdmin,
-    validateMW,
-    reportController.getTopBiddingUsers);
+    // router.get('/report/top-bidding-users',
+    // // checkAdmin,
+    // validateMW,
+    // reportController.getTopBiddingUsers);
 
 
 router.get('/report/categories',
