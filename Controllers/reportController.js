@@ -3,10 +3,12 @@ const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
 const categorySchema = mongoose.model('categories');
 const streamSchema = mongoose.model('stream');
+const itemsSchema = mongoose.model('items');
 require('../Models/userModel');
 require('../Models/auctionModel');
 require('../Models/categoryModel');
 require('../Models/streamModel');
+require('../Models/itemModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
@@ -129,39 +131,50 @@ exports.getTopBiddingUsers = async (request, response, next) => {
 
 exports.getCategoryReport = async (request, response, next) => {
     try {
-        const categories = await categorySchema.aggregate([
-            {
-                $lookup: {
-                    from: 'auctions',
-                    localField: '_id',
-                    foreignField: 'category',
-                    as: 'auctions',
-                },
-            },
-            {
-                $match: { auctions: { $exists: true, $ne: [] } },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    category_id: '$_id',
-                    category_name: '$name',
-                    auction_count: { $size: '$auctions' },
-                },
-            },
-            {
-                $sort: { auction_count: -1 },
-            },
+        const categoryCounts = await itemsSchema.aggregate([
+          {
+            $group: {
+              _id: '$category',
+              count: { $sum: 1 }
+            }
+          },
+          {
+            $lookup: {
+              from: 'categories',
+              localField: '_id',
+              foreignField: '_id',
+              as: 'category'
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              categoryName: { $arrayElemAt: ['$category.name', 0] },
+              count: 1
+            }
+          },
+          {
+            $sort: { count: -1 }
+          },
+          {
+            $limit: 1
+          }
         ]);
+    
+        if (categoryCounts.length > 0) {
+          const mostUsedCategory = categoryCounts[0];
+            response.json({ 'Most used category:': mostUsedCategory.categoryName ,'Count:': mostUsedCategory.count});
 
-        response.json(categories);
-        console.log('Category report data sent successfully!');
-    } catch (error) {
-        console.log('Category Report Controller hit');
+          console.log('Most used category:', mostUsedCategory.categoryName);
+          console.log('Count:', mostUsedCategory.count);
+        } else {
+          console.log('No items found.');
+        }
+      } catch (error) {
         next(error);
+      }
     }
-};
-
+  
 exports.getStreamReport = async (request, response, next) => {
     try {
         const currentDate = new Date();
@@ -178,7 +191,6 @@ exports.getStreamReport = async (request, response, next) => {
         response.json({ streamsCount });
         console.log('Stream report data sent successfully!');
     } catch (error) {
-        console.log('Stream Report Controller hit');
         next(error);
     }
 };
