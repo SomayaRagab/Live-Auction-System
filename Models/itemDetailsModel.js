@@ -17,11 +17,10 @@ const itemDetailsSchema = new Schema({
     type: Number,
     required: [true, 'Max Price is required'],
   },
-  current_price :{
+  current_price: {
     type: Number,
     default: 0,
-  }
-  ,
+  },
   item_id: {
     type: Number,
     ref: 'items',
@@ -32,11 +31,16 @@ const itemDetailsSchema = new Schema({
     ref: 'auctions',
     required: [true, 'Auction Id is required'],
   },
-  duration:{
+  start_date: {
+    type: Date,
+    required: [true, 'Start Date is required'],
+  },
+
+  duration: {
     type: Number,
     required: [true, 'Duration is required'],
   },
-  flag: {
+  is_open: {
     type: Boolean,
     default: false,
   },
