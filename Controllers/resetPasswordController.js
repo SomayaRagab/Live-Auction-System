@@ -41,7 +41,7 @@ exports.sendResetPasswordEmail = async (req, res, next) => {
     ).replace(/\//g, '-');
 
     // Send email with reset password link
-    const resetPasswordLink = `http://localhost:3000/reset-password/${user.token}/${hashedVerifyCode}`;
+    const resetPasswordLink = `http://localhost:3000/reset-password/code/${user.token}/${hashedVerifyCode}`;
     const emailSubject = 'Reset your password iBid website';
     const emailText = `<b>Dear ${user.name},</b> <br><br> You are receiving this email from <b>iBid website</b> because you (or someone else) have requested the reset of the password for your account.\n\n
           Please click on the following link, or paste this into your browser to complete the process:<br><br>

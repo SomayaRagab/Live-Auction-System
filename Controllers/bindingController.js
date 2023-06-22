@@ -6,6 +6,7 @@ const bindingSchema = mongoose.model('biddings');
 const itemDetailsSchema = mongoose.model('itemDetails');
 const userSchema = mongoose.model('users');
 const cardSchema = mongoose.model('cards');
+const Pusher = require("pusher");
 
 exports.addBidding = async (req, res) => {
   try {
@@ -51,6 +52,9 @@ exports.addBidding = async (req, res) => {
         { _id: itemDetails_id },
         { flag: false }
       );
+      // console.log(user_id);
+      // console.log(itemDetails_id);
+      // console.log(amount);
       // create card for the winner
       const card = await new cardSchema({
         user_id,
@@ -59,12 +63,26 @@ exports.addBidding = async (req, res) => {
       });
       await card.save();
     }
-
+    //create function to update the current price in item details table using pusher
+    const pusher = new Pusher({
+      appId: "1623189",
+      key: "6674d9bc1d0e463c0241",
+      secret: "ba6883242149b4e12a0b",
+      cluster: "eu",
+      useTLS: true
+    });
+    
+    // Update the current_price
     await itemDetailsSchema.updateOne(
       { _id: itemDetails_id },
       { current_price: amount }
     );
-
+    
+    // Trigger the event to notify clients
+    pusher.trigger("Auction_id", "itemDetails_id" , {
+      current_price: amount // Include the updated current_price in the event data
+    });
+    
     const bidding = new bindingSchema({
       itemDetails_id,
       user_id,
