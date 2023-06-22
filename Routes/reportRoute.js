@@ -37,5 +37,9 @@ router.get('/report/stream',
     validateMW,
     reportController.getStreamReport);
 
+router.get('/report/profit', 
+    // checkAdmin,
+    validateMW,
+    reportController.getProfitReport);
 
 module.exports = router;

@@ -13,7 +13,6 @@ exports.createCheckoutSession = async (req, res, next) => {
     const userData = await cardSchema
       .findOne({ itemDetails_id: req.params.id, user_id: req.id })
       .populate({ path: 'user_id', select: { email: 1 } });
-    console.log(userData);
     if (!userData) {
       res.status(404).json({ status: 'fail', message: 'no winner found' });
     }
@@ -51,8 +50,11 @@ exports.createCheckoutSession = async (req, res, next) => {
       ],
     });
 
-    // res.redirect(303, session.url);
-    res.status(200).json({status:'success',session})
+    res.status(200).json({
+      status: 'success',
+      session,
+    });
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
