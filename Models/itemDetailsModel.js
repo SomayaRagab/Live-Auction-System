@@ -42,7 +42,7 @@ const itemDetailsSchema = new Schema({
   },
   is_open: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 });
 itemDetailsSchema.plugin(Autoincrement, {
