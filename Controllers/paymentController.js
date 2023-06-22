@@ -1,80 +1,57 @@
 const mongoose = require('mongoose');
-require('../Models/bindingModel');
 require('../Models/itemDetailsModel');
-const bindingSchema = mongoose.model('biddings');
+require('../Models/cardModel');
+const bcrypt = require('bcrypt');
+const cardSchema = mongoose.model('cards');
 const itemDetailsSchema = mongoose.model('itemDetails');
-const userSchema = mongoose.model('users');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.createCheckoutSession = async (req, res, next) => {
   try {
-    const itemDetails = await itemDetailsSchema
-      .findOne(
-        {
-          _id: req.params.id,
-        },
-        { item_id: 1, auction_id: 1 }
-      )
-      .populate({ path: 'item_id', select: { name: 1, image: 1 } })
-      .populate({ path: 'auction_id', select: { name: 1 } });
+    // get item name , image , auction name , user email for winner in logged and itemDetails id from cardSchema with aggregate
+
+    const userData = await cardSchema
+      .findOne({ itemDetails_id: req.params.id, user_id: req.id })
+      .populate({ path: 'user_id', select: { email: 1 } });
+    console.log(userData);
+    if (!userData) {
+      res.status(404).json({ status: 'fail', message: 'no winner found' });
+    }
+    const itemDetails = await itemDetailsSchema.findById(req.params.id);
     if (!itemDetails) {
-      res.status(400).json({ success: false, error: 'Invalid item ID' });
-      return;
+      res.status(404).json({ status: 'fail', message: 'no itemDetails found' });
     }
 
-    // get max amount for item in auction
-    const winner = await bindingSchema
-      .findOne(
-        {
-          itemDetails_id: req.params.id,
-        },
-        {
-          user_id: 1,
-          amount: 1,
-        }
-      )
-      .populate({ path: 'user_id', select: { email: 1 , name:1 } })
-      .sort({ amount: -1 })
-      .limit(1)
-      .then((data) => {
-        return data;
-      });
-
-    if (!winner) {
-      res.status(400).json({ success: false, error: 'no winner' });
-      return;
-    }
-
-    // get user id
-    const user = await userSchema.findOne({ _id: req.id });
+    const winner = await itemDetailsSchema
+      .findById(req.params.id)
+      .populate({ path: 'auction_id', select: { name: 1 } })
+      .populate({ path: 'item_id', select: { name: 1, image: 1 } });
 
     // create checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment', // specify the payment mode at the top level
-      success_url: `${req.protocol}://${req.get('host')}/success`,
-      cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
-      customer_email: winner.user_id.email,
+      success_url: `${req.protocol}://${req.get('host')}/success/?success=true`,
+      cancel_url: `${req.protocol}://${req.get('host')}/cancel/?success=false`,
+      customer_email: userData.email,
       client_reference_id: req.params.id,
       line_items: [
         {
           price_data: {
             currency: 'egp',
-            unit_amount: winner.amount * 100,
+            unit_amount: userData.price,
             product_data: {
-              name: itemDetails.item_id.name,
-              description: `item ${itemDetails.auction_id.name} in auction`,
-              images: [itemDetails.item_id.image],
+              name: winner.item_id.name,
+              description: `you are winner in auction ${winner.auction_id.name} with item ${winner.item_id.name}`,
+              images: [winner.item_id.image],
             },
           },
           quantity: 1,
         },
       ],
     });
-    res.status(200).json({
-      status: 'success',
-      session,
-    });
+
+    res.redirect(303, session.url);
   } catch (error) {
     console.log(error);
     res.status(500).json({

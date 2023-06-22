@@ -5,7 +5,7 @@ const controller = require('./../Controllers/paymentController');
 
 const router = express.Router();
 
-router.post('/checkout-session/:id' , controller.createCheckoutSession);
+router.get('/checkout-session/:id' , controller.createCheckoutSession);
 
 
 

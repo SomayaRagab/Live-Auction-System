@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment');
 const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
 const categorySchema = mongoose.model('categories');
@@ -62,119 +63,135 @@ exports.getUserReport = async (request, response, next) => {
 
 exports.getAuctionReport = async (request, response, next) => {
     try {
-        const totalAuctionsCount = await auctionSchema.countDocuments();
-        const auctions = await auctionSchema.find({});
-
-        const reportData = {
-            totalAuctions: totalAuctionsCount,
-            auctionData: auctions.map(auction => ({
-                name: auction.name,
-                reference_number: auction.reference_number,
-                start_date: auction.start_date,
-                end_date: auction.end_date,
-                time: auction.time,
-                fees: auction.fees,
-                status: auction.status
-            }))
-        };
-
-        response.json(reportData);
-        console.log('Auction report data sent successfully!');
-    } catch (error) {
-        console.log('Auction Report Controller hit');
-        next(error);
-    }
-};
-
-exports.getTopBiddingUsers = async (request, response, next) => {
-    try {
-        const topUsers = await auctionSchema.aggregate([
-            {
-                $group: {
-                    _id: '$user',
-                    totalBids: { $sum: 1 },
-                },
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'user',
-                },
-            },
-            {
-                $unwind: '$user',
-            },
-            {
-                $sort: { totalBids: -1 },
-            },
-            {
-                $limit: 10,
-            },
-            {
-                $project: {
-                    _id: 0,
-                    username: '$user.username', // Replace with the actual field containing the username in your user model
-                    totalBids: 1,
-                },
-            },
-        ]);
-
-        response.json(topUsers);
-        console.log('Top bidding users data sent successfully!');
-    } catch (error) {
-        console.log('Top Bidding Users Controller hit');
-        next(error);
-    }
-};
-
-exports.getCategoryReport = async (request, response, next) => {
-    try {
-        const categoryCounts = await itemsSchema.aggregate([
+        const currentYear = moment().year();
+        const currentMonth = moment().month() + 1;
+    
+        const pipeline = [
+          {
+            $match: {
+              start_date: {
+                $gte: moment().startOf('year').toDate(),
+                $lte: moment().endOf('year').toDate()
+              }
+            }
+          },
           {
             $group: {
-              _id: '$category',
+              _id: { $month: '$start_date' },
               count: { $sum: 1 }
             }
           },
           {
-            $lookup: {
-              from: 'categories',
-              localField: '_id',
-              foreignField: '_id',
-              as: 'category'
-            }
-          },
-          {
-            $project: {
-              _id: 0,
-              categoryName: { $arrayElemAt: ['$category.name', 0] },
-              count: 1
-            }
-          },
-          {
-            $sort: { count: -1 }
-          },
-          {
-            $limit: 1
+            $sort: { _id: 1 }
           }
-        ]);
+        ];
     
-        if (categoryCounts.length > 0) {
-          const mostUsedCategory = categoryCounts[0];
-            response.json({ 'Most used category:': mostUsedCategory.categoryName ,'Count:': mostUsedCategory.count});
-
-          console.log('Most used category:', mostUsedCategory.categoryName);
-          console.log('Count:', mostUsedCategory.count);
-        } else {
-          console.log('No items found.');
-        }
+        const auctionCounts = await auctionSchema.aggregate(pipeline);
+    
+        const result = {};
+    
+        auctionCounts.forEach(auction => {
+          const month = auction._id;
+          const count = auction.count;
+    
+          result[month] = count;
+        });
+    
+        const currentMonthCount = result[currentMonth] || 0;
+    
+        response.json({
+          currentMonthCount,
+          monthlyCounts: result
+        });
       } catch (error) {
-        next(error);
+        response.status(500).json({ error: error.message });
       }
     }
-  
+
+// exports.getTopBiddingUsers = async (request, response, next) => {
+//     try {
+//         const topUsers = await auctionSchema.aggregate([
+//             {
+//                 $group: {
+//                     _id: '$user',
+//                     totalBids: { $sum: 1 },
+//                 },
+//             },
+//             {
+//                 $lookup: {
+//                     from: 'users',
+//                     localField: '_id',
+//                     foreignField: '_id',
+//                     as: 'user',
+//                 },
+//             },
+//             {
+//                 $unwind: '$user',
+//             },
+//             {
+//                 $sort: { totalBids: -1 },
+//             },
+//             {
+//                 $limit: 10,
+//             },
+//             {
+//                 $project: {
+//                     _id: 0,
+//                     username: '$user.username', // Replace with the actual field containing the username in your user model
+//                     totalBids: 1,
+//                 },
+//             },
+//         ]);
+
+//         response.json(topUsers);
+//         console.log('Top bidding users data sent successfully!');
+//     } catch (error) {
+//         console.log('Top Bidding Users Controller hit');
+//         next(error);
+//     }
+// };
+
+exports.getCategoryReport = async (request, response, next) => {
+    try {
+        const categoryCounts = await itemsSchema.aggregate([
+            {
+                $group: {
+                    _id: '$category',
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'category'
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    categoryName: { $arrayElemAt: ['$category.name', 0] },
+                    count: 1
+                }
+            },
+            {
+                $sort: { count: -1 }
+            },
+            {
+                $limit: 1
+            }
+        ]);
+        if (categoryCounts.length > 0) {
+            const mostUsedCategory = categoryCounts[0];
+            response.json({ 'Most used category:': mostUsedCategory.categoryName, 'Count:': mostUsedCategory.count });
+        } else 
+            response.json('No items found.');
+    } catch (error) {
+        next(error);
+    }
+}
+
 exports.getStreamReport = async (request, response, next) => {
     try {
         const currentDate = new Date();
