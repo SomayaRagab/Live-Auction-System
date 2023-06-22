@@ -51,7 +51,8 @@ exports.createCheckoutSession = async (req, res, next) => {
       ],
     });
 
-    res.redirect(303, session.url);
+    // res.redirect(303, session.url);
+    res.status(200).json({status:'success',session})
   } catch (error) {
     console.log(error);
     res.status(500).json({
