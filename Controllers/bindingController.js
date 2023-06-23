@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 require('./../Models/bindingModel');
 require('./../Models/itemDetailsModel');
 require('./../Models/cardModel');
-const { addTimeToDate } = require('./../Helper/calculateDate');
+const { end_date_auction } = require('./../Helper/calculateDate');
 const bindingSchema = mongoose.model('biddings');
 const itemDetailsSchema = mongoose.model('itemDetails');
 const userSchema = mongoose.model('users');
@@ -32,10 +32,11 @@ exports.addBidding = async (req, res) => {
       res.status(400).json({ success: false, error: 'Invalid user' });
       return;
     }
-    // check if start_date , duration greater than current date
 
+    // check if start_date , duration greater than current date
+    console.log(itemDetails.start_date, itemDetails.duration);
     if (
-      addTimeToDate(itemDetails.start_date, itemDetails.duration) > new Date(Date.now())
+      end_date_auction(itemDetails.start_date, itemDetails.duration) < new Date(Date.now())
     ) {
       itemDetails.is_open = false;
       await itemDetails.save();
@@ -70,8 +71,8 @@ exports.addBidding = async (req, res) => {
       );
 
       const card = await new cardSchema({
-        user_id,
-        item_id,
+        user_id:req.id,
+        itemDetails_id,
         price: amount,
       });
       await card.save();
@@ -98,7 +99,7 @@ exports.addBidding = async (req, res) => {
 
     const bidding = new bindingSchema({
       itemDetails_id,
-      user_id,
+      user_id:req.id,
       amount,
     });
 
@@ -170,7 +171,7 @@ exports.getWinner = async (req, res, next) => {
     }
 
     await new cardSchema({
-      user_id: winner.user_id._id,
+      user_id:req.id,
       itemDetails_id: req.params.itemDetails_id,
       price: winner.amount,
     }).save();
