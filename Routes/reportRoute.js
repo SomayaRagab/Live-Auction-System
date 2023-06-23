@@ -4,11 +4,10 @@ const reportController = require('./../Controllers/reportController');
 const validateMW = require('./../Validations/validateMW');
 const { checkAdmin } = require('../Middleware/authorization');
 
-
 router
     .route('/report/user')
     .get(
-        // checkAdmin,
+        checkAdmin,
         validateMW,
         reportController.getUserReport,
         );
@@ -16,29 +15,28 @@ router
 router
     .route('/report/auction')
     .get(
-        // checkAdmin,
+        checkAdmin,
         validateMW,
         reportController.getAuctionReport,
     );
 
-    // router.get('/report/top-bidding-users',
-    // // checkAdmin,
-    // validateMW,
-    // reportController.getTopBiddingUsers);
-
-
 router.get('/report/categories',
-    // checkAdmin,
+    checkAdmin,
     validateMW,
     reportController.getCategoryReport);
 
 router.get('/report/stream', 
-    // checkAdmin,
+    checkAdmin,
     validateMW,
     reportController.getStreamReport);
 
+router.get('/report/top-bidding-users',
+    checkAdmin,
+    validateMW,
+    reportController.getTop10Users);
+
 router.get('/report/profit', 
-    // checkAdmin,
+    checkAdmin,
     validateMW,
     reportController.getProfitReport);
 
