@@ -9,16 +9,17 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 exports.createCheckoutSession = async (req, res, next) => {
   try {
     // get item name , image , auction name , user email for winner in logged and itemDetails id from cardSchema with aggregate
-
     const userData = await cardSchema
-      .findOne({ itemDetails_id: req.params.id, user_id: req.id })
+      .findOne({ itemDetails_id: req.params.id, user_id: req.id, pay: false })
       .populate({ path: 'user_id', select: { email: 1 } });
     if (!userData) {
       res.status(404).json({ status: 'fail', message: 'no winner found' });
+      return;
     }
     const itemDetails = await itemDetailsSchema.findById(req.params.id);
     if (!itemDetails) {
       res.status(404).json({ status: 'fail', message: 'no itemDetails found' });
+      return;
     }
 
     const winner = await itemDetailsSchema
@@ -38,7 +39,7 @@ exports.createCheckoutSession = async (req, res, next) => {
         {
           price_data: {
             currency: 'egp',
-            unit_amount: userData.price,
+            unit_amount: userData.price * 100,
             product_data: {
               name: winner.item_id.name,
               description: `you are winner in auction ${winner.auction_id.name} with item ${winner.item_id.name}`,
@@ -54,7 +55,6 @@ exports.createCheckoutSession = async (req, res, next) => {
       status: 'success',
       session,
     });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -64,11 +64,17 @@ exports.createCheckoutSession = async (req, res, next) => {
   }
 };
 
-// check if payment success or not
+// check if payment success or not after redirect from stripe
+
 exports.checkPayment = async (req, res, next) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(req.params.id);
     if (session.payment_status === 'paid') {
+      // update cardSchema for this itemDetails_id
+      await cardSchema.findOneAndUpdate(
+        { itemDetails_id: session.client_reference_id },
+        { pay: true }
+      );
       res.status(200).json({
         status: 'success',
         message: 'payment success',
@@ -86,4 +92,4 @@ exports.checkPayment = async (req, res, next) => {
       error,
     });
   }
-}
+};

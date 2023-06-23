@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.post('/checkout-session/:id' , controller.createCheckoutSession);
 
+router.get('/checkPayment/:id' , controller.checkPayment);
+
 
 
 

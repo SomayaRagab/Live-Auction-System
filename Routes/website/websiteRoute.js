@@ -2,7 +2,7 @@ const express = require('express');
 const validateParamArray = require('./../../Validations/paramValidationArray');
 const contactValidation = require('./../../Validations/contactValidation').contactValidation;
 const validateMW = require('./../../Validations/validateMW');
-const {getAllAuctions ,getAuctionById,newArrivalAuction} =require('./../../Controllers/auctionsController');
+const {getAllAuctions ,getAuctionById,newArrivalAuction,getAuctionsByStatus} =require('./../../Controllers/auctionsController');
 const{getItemDetailsByAuctionId,getItemDetailsById , getItemDetails} =require('./../../Controllers/itemDetailsController');
 const{newArrival ,getAllItems ,getItem} =require('./../../Controllers/itemsController');
 const {addContact} = require('./../../Controllers/contactController');
@@ -15,6 +15,7 @@ const router = express.Router();
 router.get('/website/auctions',getAllAuctions)
 router.get('/website/auctions/:id',validateParamArray,validateMW, getAuctionById)
 router.get('/website/newArrivalAuction',newArrivalAuction)
+router.get('/website/auction/:status',getAuctionsByStatus)
 
 
 // route itemDetails
