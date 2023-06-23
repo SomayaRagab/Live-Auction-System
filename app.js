@@ -21,7 +21,6 @@ const auctionRoutes = require('./Routes/auctionRoute');
 const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
-const reportRoute = require('./Routes/reportRoute')
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
 const resetPasswordRoute = require('./Routes/resetPasswordRoute');
 const paymentRoute = require('./Routes/paymentRoute');
@@ -112,7 +111,6 @@ server.use(bindingRoute);
 server.use(categoryRoutes);
 server.use(categoryRoutes);
 server.use(calenderRoute);
-server.use(reportRoute);
 server.use(paymentRoute);
 server.use(joinAuctionRoute);
 server.use(streamRoute);

@@ -79,20 +79,16 @@ exports.addUser = async (request, response, next) => {
 
 exports.updateUser = async (request, response, next) => {
   try {
-    // if (request.id != request.params.id) {
-    //   throw new Error('not have permission');
-    // }
+    if (request.id != request.params.id) {
+      throw new Error('not have permission');
+    }
 
     const user = await userSchema.findOne({ _id: request.params.id });
     if (!user) {
       throw new Error('User not found');
     }
 
-    let password;
-    if (request.body.password) {
-      password = bcrypt.hashSync(request.body.password, saltRounds);
-    }
-
+    let url = user.image;
     if (request.file) {
       const publicId = extractPublicId(user.image);
 
@@ -114,17 +110,24 @@ exports.updateUser = async (request, response, next) => {
           }
         );
       });
-      user.image = imageUrl;
+      url = imageUrl;
     }
+ // update user
+    const updatedUser = await userSchema.updateOne(
+      { _id: request.params.id },
+      {
+        $set: {
+          name: request.body.name,
+          phone: request.body.phone,
+          image: url,
+          'address.city': request.body.city,
+          'address.street': request.body.street,
+          'address.building_number': request.body.building,
+          role: request.body.role,
+        },
+      }
+    );
 
-    user.name = request.body.name;
-    user.phone = request.body.phone;
-    user.address.city = request.body.city;
-    user.address.street = request.body.street;
-    user.address.building_number = request.body.building;
-    user.role = request.body.role;
-
-    await user.save();
 
     response.status(200).json({ data: 'user updated successfully' });
   } catch (error) {
