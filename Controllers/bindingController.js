@@ -2,16 +2,18 @@ const mongoose = require('mongoose');
 require('./../Models/bindingModel');
 require('./../Models/itemDetailsModel');
 require('./../Models/cardModel');
+const { addTimeToDate } = require('./../Helper/calculateDate');
 const bindingSchema = mongoose.model('biddings');
 const itemDetailsSchema = mongoose.model('itemDetails');
 const userSchema = mongoose.model('users');
 const cardSchema = mongoose.model('cards');
-const Pusher = require("pusher");
+const Pusher = require('pusher');
 
 exports.addBidding = async (req, res) => {
   try {
-    const { itemDetails_id, bide, user_id } = req.body;
+    const { itemDetails_id, bide } = req.body;
     let amount = req.body.amount || 0;
+
     //fetch item details from item details table
     const itemDetails = await itemDetailsSchema.findById({
       _id: itemDetails_id,
@@ -24,14 +26,28 @@ exports.addBidding = async (req, res) => {
       return;
     }
     // Fetch the user from the database
-    const user = await userSchema.findOne({ _id: user_id });
+    const user = await userSchema.findOne({ _id: req.id });
 
     if (!user || user.block) {
       res.status(400).json({ success: false, error: 'Invalid user' });
       return;
     }
-    if (itemDetails.flag == false) {
-      res.status(400).json({ success: false, error: 'Bidding is closed' });
+    // check if start_date , duration greater than current date
+
+    if (
+      addTimeToDate(itemDetails.start_date, itemDetails.duration) > new Date(Date.now())
+    ) {
+      itemDetails.is_open = false;
+      await itemDetails.save();
+      res
+        .status(400)
+        .json({ success: false, error: 'Bidding on this item is closed' });
+      return;
+    }
+    if (itemDetails.is_open == false) {
+      res
+        .status(400)
+        .json({ success: false, error: 'Bidding on this item is closed' });
       return;
     }
 
@@ -47,15 +63,12 @@ exports.addBidding = async (req, res) => {
     amount += itemDetails.current_price + bide;
 
     if (amount >= itemDetails.max_price) {
-      //update the value of flag field in item details table
+      //update the value of is_open field in item details table
       await itemDetailsSchema.updateOne(
         { _id: itemDetails_id },
-        { flag: false }
+        { is_open: false }
       );
-      // console.log(user_id);
-      // console.log(itemDetails_id);
-      // console.log(amount);
-      // create card for the winner
+
       const card = await new cardSchema({
         user_id,
         item_id,
@@ -65,24 +78,24 @@ exports.addBidding = async (req, res) => {
     }
     //create function to update the current price in item details table using pusher
     const pusher = new Pusher({
-      appId: "1623189",
-      key: "6674d9bc1d0e463c0241",
-      secret: "ba6883242149b4e12a0b",
-      cluster: "eu",
-      useTLS: true
+      appId: '1623189',
+      key: '6674d9bc1d0e463c0241',
+      secret: 'ba6883242149b4e12a0b',
+      cluster: 'eu',
+      useTLS: true,
     });
-    
+
     // Update the current_price
     await itemDetailsSchema.updateOne(
       { _id: itemDetails_id },
       { current_price: amount }
     );
-    
+
     // Trigger the event to notify clients
-    pusher.trigger("Auction_id", "itemDetails_id" , {
-      current_price: amount // Include the updated current_price in the event data
+    pusher.trigger('Auction_id', 'itemDetails_id', {
+      current_price: amount, // Include the updated current_price in the event data
     });
-    
+
     const bidding = new bindingSchema({
       itemDetails_id,
       user_id,

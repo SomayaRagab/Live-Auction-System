@@ -34,8 +34,10 @@ const calenderRoute = require('./Routes/calenderRoute');
 const { PORT, CONNECTION } = require('./Config/env');
 const refresh = require("./refresh")
 
+console.log();  
+
 //  open server using express
-const server = express();
+const server = express(PORT);
 mongoose.set('strictQuery', true);
 
 //facebook and google auth
