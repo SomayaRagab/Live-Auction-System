@@ -17,12 +17,10 @@ exports.itemDetailsValidatePostArray = [
   body('item_id')
     .isInt({ min: 1 })
     .withMessage('Item Id must be a number greater than 0'),
-  // format of date is yyyy-mm-dd
-  body('start_date')
-    .isDate()
-    .withMessage('Start Date must be a date'),
 
-    body('start_time')
+  body('start_date').isDate().withMessage('Start Date must be a date'),
+
+  body('start_time')
     .isString()
     .withMessage('start time must be formatted')
     .custom((value) => {

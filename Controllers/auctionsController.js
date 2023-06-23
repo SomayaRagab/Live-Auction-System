@@ -39,8 +39,7 @@ exports.addAuction = async (req, res, next) => {
       name: req.body.name,
       reference_number: req.body.reference_number,
       start_date: addTimeToDate(req.body.start_date,req.body.time),
-      end_date: req.body.start_date,
-      time: req.body.time,
+      end_date:addTimeToDate(req.body.start_date,req.body.time),
       fees: req.body.fees,
     });
 
@@ -62,7 +61,11 @@ exports.updateAuction = (request, response, next) => {
       if (data.length == 0) {
         response.status(404).json({ message: 'Auction not found' });
       } else {
-        response.status(200).json({ data });
+        if(data.status != 'not started'){
+          response.status(400).json({ message: 'Cannot update Started or ended Auction ' });
+        }else{
+          response.status(200).json({ message: 'Auction updated successfully' });
+        }
       }
     })
     .catch((error) => next(error));

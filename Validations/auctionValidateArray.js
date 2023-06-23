@@ -1,9 +1,29 @@
 const { body } = require('express-validator');
+require('./../Models/auctionModel');
+const auctionSchema = require('mongoose').model('auctions');
+
 exports.auctionValidatePostArray = [
   body('name').isString().withMessage('Name is required'),
-  body('reference_number').isInt().withMessage('Reference Number is required'),
-  body('start_date').isDate().withMessage('Start Date is required'),
-  // body('end_date').isDate().withMessage('End Date is required'),
+  body('reference_number')
+    .isInt()
+    .withMessage('Reference Number is required')
+    .custom(async (value) => {
+      const auction = await auctionSchema.findOne({ reference_number: value });
+      if (auction) throw new Error('Reference Number already exist');
+    }),
+  // validate start date is greater than current date
+  body('start_date')
+    .isDate()
+    .withMessage('start date is required')
+    .custom((value) => {
+      if (
+        new Date(value) < new Date(Date.now()).toISOString().substring(0, 10)
+      ) {
+        throw new Error('start date must be greater than current date');
+      }
+      return true;
+    }),
+
   body('time')
     .isString()
     .withMessage('Time must be a time formatted')
@@ -18,12 +38,19 @@ exports.auctionValidatePostArray = [
 
 exports.auctionValidatePatchArray = [
   body('name').optional().isString().withMessage('Name must be string'),
-  body('reference_number')
+  body('start_date')
     .optional()
-    .isInt()
-    .withMessage('Reference Number must be number'),
-  body('start_date').optional().isDate().withMessage('Start Date must be date'),
-  // body('end_date').optional().isDate().withMessage('End Date must be date'),
+    .isDate()
+    .withMessage('Start Date must be date')
+    .custom((value) => {
+      if (
+        new Date(value.toISOString().substring(0, 10)) <
+        new Date(Date.now()).toISOString().substring(0, 10)
+      ) {
+        throw new Error('start date must be greater than current date');
+      }
+      return true;
+    }),
   body('time')
     .optional()
     .isString()

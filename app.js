@@ -21,85 +21,86 @@ const auctionRoutes = require('./Routes/auctionRoute');
 const bindingRoute = require('./Routes/bindingRoute');
 const categoryRoutes = require('./Routes/categoryRoute');
 const contactRoutes = require('./Routes/contactRoute');
+const reportRoute = require('./Routes/reportRoute')
 const itemDetailsRoutes = require('./Routes/itemDetailsRoute');
-const resetPasswordRoute = require('./Routes/resetPasswordRoute'); 
+const resetPasswordRoute = require('./Routes/resetPasswordRoute');
 const paymentRoute = require('./Routes/paymentRoute');
 const joinAuctionRoute = require('./Routes/joinAuctionRoute');
 const streamRoute = require('./Routes/streamRoute');
 const cardRoute = require('./Routes/cardRoute');
+const websiteRoute = require('./Routes/website/websiteRoute');
 
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
-// const reportRoute = require('./Routes/reportRoute');
+const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
-const refresh = require("./refresh")
+const refresh = require('./refresh');
 
-console.log();  
+console.log();
 
 //  open server using express
 const server = express(PORT);
 mongoose.set('strictQuery', true);
 
 //facebook and google auth
-server.use(session({
-  secret: uuid.v4(),
-  resave: false,
-  saveUninitialized: false
-}));
+server.use(
+  session({
+    secret: uuid.v4(),
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-server.use("/refresh", refresh);
+server.use('/refresh', refresh);
 server.use(passport.initialize());
 server.use(passport.session());
 
 mongoose
-// .connect("mongodb://127.0.0.1:27017/test")
-.connect(CONNECTION)
-.then(() => {
-  console.log('DB connected');
-  // listen port
-  server.listen(PORT, () => {
-    console.log('server is listening....', PORT);
+  // .connect("mongodb://127.0.0.1:27017/test")
+  .connect(CONNECTION)
+  .then(() => {
+    console.log('DB connected');
+    // listen port
+    server.listen(PORT, () => {
+      console.log('server is listening....', PORT);
+    });
+  })
+  .catch((error) => {
+    console.log('Db Problem ' + error);
   });
-})
-.catch((error) => {
-  console.log('Db Problem ' + error);
-});
 
 server.use(
   cors({
     origin: '*',
   })
-  );
-  
-  morgan(function (tokens, request, res) {
-    return [
-      tokens.method(request, res),
-      tokens.url(request, res),
-      tokens.status(request, res),
-      tokens.res(request, res, 'content-length'),
-      '-',
-      tokens['response-time'](request, res),
-      'ms',
-    ].join(' ');
-  });
-  morgan('dev');
-  server.use(express.json());
-  server.use(express.urlencoded({ extended: false }));
-  
-  
-  
-  // server.use(reportRoute);
-  
-  // login Route
-  server.use(resetPasswordRoute);
-  server.use(registrationRoute);
-  server.use(loginRoute);
-  server.use(authRoutes);
-  
-  
-  
-  // auth middleware
-  server.use(auth);
+);
+
+morgan(function (tokens, request, res) {
+  return [
+    tokens.method(request, res),
+    tokens.url(request, res),
+    tokens.status(request, res),
+    tokens.res(request, res, 'content-length'),
+    '-',
+    tokens['response-time'](request, res),
+    'ms',
+  ].join(' ');
+});
+morgan('dev');
+server.use(express.json());
+server.use(express.urlencoded({ extended: false }));
+
+
+
+// login Route
+server.use(resetPasswordRoute);
+server.use(registrationRoute);
+server.use(loginRoute);
+server.use(authRoutes);
+server.use(websiteRoute);
+
+// auth middleware
+server.use(auth);
 
 // Routes
 
@@ -107,16 +108,17 @@ server.use(userRoutes);
 server.use(itemRoutes);
 server.use(auctionRoutes);
 server.use(itemDetailsRoutes);
-server.use( bindingRoute);
-server.use( categoryRoutes);
+server.use(bindingRoute);
 server.use(categoryRoutes);
-server.use(contactRoutes);
+server.use(categoryRoutes);
 server.use(calenderRoute);
+server.use(reportRoute);
 server.use(paymentRoute);
 server.use(joinAuctionRoute);
 server.use(streamRoute);
 server.use(cardRoute);
-
+server.use(contactRoutes);
+server.use(reportRoute);
 
 // not found middleware
 server.use((request, response, next) => {
@@ -129,4 +131,3 @@ server.use((error, request, response, next) => {
   let status = error.status || 500;
   response.status(status).json({ message: error + '' });
 });
-
