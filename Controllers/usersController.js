@@ -53,7 +53,6 @@ exports.addUser = async (request, response, next) => {
       );
     });
 
-
     const user = new userSchema({
       _id: request.body.id,
       name: request.body.name,
@@ -89,19 +88,16 @@ exports.updateUser = async (request, response, next) => {
       throw new Error('User not found');
     }
 
-
-
     let password;
     if (request.body.password) {
       password = bcrypt.hashSync(request.body.password, saltRounds);
     }
 
-    if (request.file ) {
+    if (request.file) {
       const publicId = extractPublicId(user.image);
 
       cloudinary.uploader.destroy(publicId, function (error, result) {
         if (error) console.log('error in delete image from cloudinary');
-
       });
       // Upload image to Cloudinary and get the URL
       const tempFilePath = await handleTempImage(request);
@@ -122,8 +118,6 @@ exports.updateUser = async (request, response, next) => {
     }
 
     user.name = request.body.name;
-    user.email = request.body.email;
-    user.password = password;
     user.phone = request.body.phone;
     user.address.city = request.body.city;
     user.address.street = request.body.street;
@@ -209,8 +203,6 @@ function addMonthToDate() {
   return futureDate;
 }
 
-
-
 // join user for auction
 
 // exports.joinUserForAuction = async (request, response, next) => {
@@ -234,5 +226,3 @@ function addMonthToDate() {
 //     next(err);
 //   }
 // }
-
-

@@ -16,7 +16,7 @@ const router = express.Router();
 router
   .route('/auctions')
   .get(checkUserORAdmin, controller.getAllAuctions)
-  .post(checkAdmin, auctionValidatePostArray, controller.addAuction);
+  .post(checkAdmin, auctionValidatePostArray,validateMW, controller.addAuction);
 
 router
   .route('/auctions/:id')
@@ -24,6 +24,7 @@ router
     checkUserORAdmin,
     checkAdmin,
     validateParamArray,
+    validateMW,
     controller.getAuctionById
   )
   .patch(
@@ -33,7 +34,7 @@ router
     validateMW,
     controller.updateAuction
   )
-  .delete(checkAdmin, validateParamArray, controller.deleteAuction);
+  .delete(checkAdmin, validateParamArray,validateMW, controller.deleteAuction);
 
 router
   .route('/auction/:status')

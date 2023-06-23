@@ -18,13 +18,11 @@ exports.createItemDetails = async (req, res) => {
     if (!auction) throw new Error('المزاد غير موجود');
 
     // check start date item is greater than start date auction
-    if (!(new Date(req.body.start_date) < new Date(auction.start_date)))
-    {      
+    if (!(new Date(req.body.start_date) < new Date(auction.start_date))) {
       throw new Error(
-          'تاريخ بدايه المنتج يجب ان يكون نفس وم المزاد او بعده من تاريخ بدايه المزاد'
-        );
+        'تاريخ بدايه المنتج يجب ان يكون نفس وم المزاد او بعده من تاريخ بدايه المزاد'
+      );
     }
-    
 
     // caculate end date
     const itemDate = addTimeToDate(req.body.start_date, req.body.start_time);
@@ -42,7 +40,6 @@ exports.createItemDetails = async (req, res) => {
       auction_id: req.body.auction_id,
       duration: req.body.duration,
       start_date: itemDate,
-      is_open:true,
     });
     const savedItem = await itemDetails.save();
     res.status(201).json({ data: savedItem });
@@ -113,14 +110,15 @@ exports.updateItemDetails = async (req, res) => {
       await auction.save();
 
       req.body.start_date = itemDate;
-    } else {
-      delete req.body.start_date;
-      delete req.body.start_time;
-
-      throw new Error(
-        'انت يجب تغيير تاريخ بدايه المنتج و وقت بدايته و مدته  معا'
-      );
     }
+    //  else {
+    //   delete req.body.start_date;
+    //   delete req.body.start_time;
+
+    //   throw new Error(
+    //     'انت يجب تغيير تاريخ بدايه المنتج و وقت بدايته و مدته  معا'
+    //   );
+    // }
 
     await itemDetailsSchema.updateOne(
       { _id: req.params.id },
