@@ -3,15 +3,17 @@ const moment = require('moment');
 const userSchema = mongoose.model('users');
 const auctionSchema = mongoose.model('auctions');
 const categorySchema = mongoose.model('categories');
-const streamSchema = mongoose.model('stream');
+// const streamSchema = mongoose.model('stream');
 const itemsSchema = mongoose.model('items');
 const cardsSchema = mongoose.model('cards');
+const joinAuctionSchema = mongoose.model('joinAuctions');
 require('../Models/userModel');
 require('../Models/auctionModel');
 require('../Models/categoryModel');
 require('../Models/streamModel');
 require('../Models/itemModel');
 require('../Models/cardModel');
+require('../Models/joinAuctionModel');
 
 exports.getUserReport = async (request, response, next) => {
     try {
@@ -67,91 +69,48 @@ exports.getAuctionReport = async (request, response, next) => {
     try {
         const currentYear = moment().year();
         const currentMonth = moment().month() + 1;
-    
+
         const pipeline = [
-          {
-            $match: {
-              start_date: {
-                $gte: moment().startOf('year').toDate(),
-                $lte: moment().endOf('year').toDate()
-              }
+            {
+                $match: {
+                    start_date: {
+                        $gte: moment().startOf('year').toDate(),
+                        $lte: moment().endOf('year').toDate()
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$start_date' },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
             }
-          },
-          {
-            $group: {
-              _id: { $month: '$start_date' },
-              count: { $sum: 1 }
-            }
-          },
-          {
-            $sort: { _id: 1 }
-          }
         ];
-    
+
         const auctionCounts = await auctionSchema.aggregate(pipeline);
-    
+
         const result = {};
-    
+
         auctionCounts.forEach(auction => {
-          const month = auction._id;
-          const count = auction.count;
-    
-          result[month] = count;
+            const month = auction._id;
+            const count = auction.count;
+
+            result[month] = count;
         });
-    
+
         const currentMonthCount = result[currentMonth] || 0;
-    
+
         response.json({
-          currentMonthCount,
-          monthlyCounts: result
+            currentMonthCount,
+            monthlyCounts: result
         });
-      } catch (error) {
+    } catch (error) {
         response.status(500).json({ error: error.message });
-      }
     }
-
-// exports.getTopBiddingUsers = async (request, response, next) => {
-//     try {
-//         const topUsers = await auctionSchema.aggregate([
-//             {
-//                 $group: {
-//                     _id: '$user',
-//                     totalBids: { $sum: 1 },
-//                 },
-//             },
-//             {
-//                 $lookup: {
-//                     from: 'users',
-//                     localField: '_id',
-//                     foreignField: '_id',
-//                     as: 'user',
-//                 },
-//             },
-//             {
-//                 $unwind: '$user',
-//             },
-//             {
-//                 $sort: { totalBids: -1 },
-//             },
-//             {
-//                 $limit: 10,
-//             },
-//             {
-//                 $project: {
-//                     _id: 0,
-//                     username: '$user.username', // Replace with the actual field containing the username in your user model
-//                     totalBids: 1,
-//                 },
-//             },
-//         ]);
-
-//         response.json(topUsers);
-//         console.log('Top bidding users data sent successfully!');
-//     } catch (error) {
-//         console.log('Top Bidding Users Controller hit');
-//         next(error);
-//     }
-// };
+}
 
 exports.getCategoryReport = async (request, response, next) => {
     try {
@@ -187,7 +146,7 @@ exports.getCategoryReport = async (request, response, next) => {
         if (categoryCounts.length > 0) {
             const mostUsedCategory = categoryCounts[0];
             response.json({ 'Most used category:': mostUsedCategory.categoryName, 'Count:': mostUsedCategory.count });
-        } else 
+        } else
             response.json('No items found.');
     } catch (error) {
         next(error);
@@ -245,5 +204,29 @@ exports.getProfitReport = async (request, response, next) => {
         response.json(result);
     } catch (error) {
         next(error);
+    }
+}
+
+exports.getTop10Users = async (request, response, next) => {
+    try {
+        const topUsers = await joinAuctionSchema.aggregate([
+            { $group: { _id: '$user_id', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 },
+        ]);
+
+        const userIDs = topUsers.map((user) => user._id);
+
+        const users = await userSchema.find({ _id: { $in: userIDs } });
+
+        const report = users.map((user) => {
+            const count = topUsers.find((u) => u._id.toString() === user._id.toString()).count;
+            return { username: user.name, joinCount: count };
+        });
+
+        response.json(report);
+    } catch (err) {
+        console.error(err);
+        response.status(500).json({ error: 'Internal Server Error' });
     }
 }
