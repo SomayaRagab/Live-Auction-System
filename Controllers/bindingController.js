@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 require('./../Models/bindingModel');
 require('./../Models/itemDetailsModel');
 require('./../Models/cardModel');
-const { end_date_auction } = require('./../Helper/calculateDate');
+const { addDurationToDate } = require('./../Helper/calculateDate');
 const bindingSchema = mongoose.model('biddings');
 const itemDetailsSchema = mongoose.model('itemDetails');
 const userSchema = mongoose.model('users');
@@ -36,7 +36,7 @@ exports.addBidding = async (req, res) => {
     // check if start_date , duration greater than current date
     console.log(itemDetails.start_date, itemDetails.duration);
     if (
-      end_date_auction(itemDetails.start_date, itemDetails.duration) < new Date(Date.now())
+      addDurationToDate(itemDetails.start_date, itemDetails.duration) < new Date(Date.now())
     ) {
       itemDetails.is_open = false;
       await itemDetails.save();
