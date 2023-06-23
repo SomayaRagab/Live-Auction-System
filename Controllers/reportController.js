@@ -69,48 +69,48 @@ exports.getAuctionReport = async (request, response, next) => {
     try {
         const currentYear = moment().year();
         const currentMonth = moment().month() + 1;
-    
+
         const pipeline = [
-          {
-            $match: {
-              start_date: {
-                $gte: moment().startOf('year').toDate(),
-                $lte: moment().endOf('year').toDate()
-              }
+            {
+                $match: {
+                    start_date: {
+                        $gte: moment().startOf('year').toDate(),
+                        $lte: moment().endOf('year').toDate()
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$start_date' },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
             }
-          },
-          {
-            $group: {
-              _id: { $month: '$start_date' },
-              count: { $sum: 1 }
-            }
-          },
-          {
-            $sort: { _id: 1 }
-          }
         ];
-    
+
         const auctionCounts = await auctionSchema.aggregate(pipeline);
-    
+
         const result = {};
-    
+
         auctionCounts.forEach(auction => {
-          const month = auction._id;
-          const count = auction.count;
-    
-          result[month] = count;
+            const month = auction._id;
+            const count = auction.count;
+
+            result[month] = count;
         });
-    
+
         const currentMonthCount = result[currentMonth] || 0;
-    
+
         response.json({
-          currentMonthCount,
-          monthlyCounts: result
+            currentMonthCount,
+            monthlyCounts: result
         });
-      } catch (error) {
+    } catch (error) {
         response.status(500).json({ error: error.message });
-      }
     }
+}
 
 exports.getCategoryReport = async (request, response, next) => {
     try {
@@ -146,7 +146,7 @@ exports.getCategoryReport = async (request, response, next) => {
         if (categoryCounts.length > 0) {
             const mostUsedCategory = categoryCounts[0];
             response.json({ 'Most used category:': mostUsedCategory.categoryName, 'Count:': mostUsedCategory.count });
-        } else 
+        } else
             response.json('No items found.');
     } catch (error) {
         next(error);
@@ -229,3 +229,4 @@ exports.getTop10Users = async (request, response, next) => {
         console.error(err);
         response.status(500).json({ error: 'Internal Server Error' });
     }
+}
