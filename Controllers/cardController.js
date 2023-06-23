@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 require('./../Models/cardModel');
 const cardSchema = mongoose.model('cards');
 
+
+// get all cardSchema
+
 // get all winner to the database
 
 exports.getAllWinner = async (req, res) => {
@@ -52,7 +55,7 @@ exports.getAllWinner = async (req, res) => {
       $unwind: '$users',
     },
     {
-      // get user name and email , item name and image , auction name
+      // get user name and email , item name and image , auction name createdAt
       $project: {
         _id: 1,
         user_id: 1,
@@ -63,6 +66,9 @@ exports.getAllWinner = async (req, res) => {
         'items.name': 1,
         'items.image': 1,
         'auctions.name': 1,
+        pay:1,
+        createdAt: 1,
+        
       },
     },
   ];

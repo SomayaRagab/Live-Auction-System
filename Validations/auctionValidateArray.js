@@ -44,7 +44,7 @@ exports.auctionValidatePatchArray = [
     .withMessage('Start Date must be date')
     .custom((value) => {
       if (
-        new Date(value.toISOString().substring(0, 10)) <
+        new Date(value) <
         new Date(Date.now()).toISOString().substring(0, 10)
       ) {
         throw new Error('start date must be greater than current date');

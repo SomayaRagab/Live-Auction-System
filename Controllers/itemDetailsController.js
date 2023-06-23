@@ -7,7 +7,7 @@ const itemDetailsSchema = mongoose.model('itemDetails');
 
 const {
   addTimeToDate,
-  end_date_auction,
+  addDurationToDate,
 } = require('./../Helper/calculateDate');
 
 exports.createItemDetails = async (req, res) => {
@@ -28,7 +28,7 @@ exports.createItemDetails = async (req, res) => {
     const itemDate = addTimeToDate(req.body.start_date, req.body.start_time);
 
     // update auction end date
-    auction.end_date = end_date_auction(itemDate, req.body.duration);
+    auction.end_date = addDurationToDate(itemDate, req.body.duration);
     await auction.save();
 
     const itemDetails = new itemDetailsSchema({
@@ -106,19 +106,11 @@ exports.updateItemDetails = async (req, res) => {
 
       // update auction end date
       const auction = await auctions.findById(itemDetails.auction_id._id);
-      auction.end_date = end_date_auction(itemDate, req.body.duration);
+      auction.end_date = addDurationToDate(itemDate, req.body.duration);
       await auction.save();
 
       req.body.start_date = itemDate;
     }
-    //  else {
-    //   delete req.body.start_date;
-    //   delete req.body.start_time;
-
-    //   throw new Error(
-    //     'انت يجب تغيير تاريخ بدايه المنتج و وقت بدايته و مدته  معا'
-    //   );
-    // }
 
     await itemDetailsSchema.updateOne(
       { _id: req.params.id },
@@ -165,6 +157,18 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
         select: { name: 1, image: 1, material: 1 },
       });
     if (!itemsDetails) throw new Error('تفاصيل المنتج غير موجودة');
+
+    // update flag for item details if start date item , start time item and duration item is less than now
+    const now = new Date();
+    for (let itemDetails of itemsDetails) {
+      if (
+        addDurationToDate(itemDetails.start_date, itemDetails.duration) <
+        new Date(Date.now())
+      ) {
+        itemDetails.is_open = false;
+        await itemDetails.save();
+      }
+    }
     res.status(200).json(itemsDetails);
   } catch (err) {
     res.status(404).json({ error: err.message });

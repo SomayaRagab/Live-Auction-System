@@ -1,6 +1,6 @@
 // calculate function end date for auction from start date and duration
 
- exports.end_date_auction = (date, duration)=> {
+ exports.addDurationToDate = (date, duration)=> {
     const newDate = new Date(date);
     newDate.setMinutes(date.getMinutes() + duration);
   
