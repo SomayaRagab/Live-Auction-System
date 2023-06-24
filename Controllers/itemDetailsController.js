@@ -14,7 +14,7 @@ exports.createItemDetails = async (req, res) => {
   try {
     const item = await items.findById(req.body.item_id);
     const auction = await auctions.findById(req.body.auction_id);
-    if (!item) throw new Error('المنتج غير موجود');
+    if (!item || item.qty == 0) throw new Error('المنتج غير موجود');
     if (!auction) throw new Error('المزاد غير موجود');
 
     // check start date item is greater than start date auction
@@ -81,7 +81,10 @@ exports.updateItemDetails = async (req, res) => {
     if (!itemDetails) throw new Error('تفاصيل المنتج غير موجودة');
 
     // check if item exist
-    if (req.body.item_id && !(await items.findById(req.body.item_id)))
+    if (
+      req.body.item_id &&
+      !(await items.findOne({ _id: req.body.item_id, qty: 0 }))
+    )
       throw new Error('المنتج غير موجود');
 
     // check if auction exist
@@ -159,12 +162,12 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
     if (!itemsDetails) throw new Error('تفاصيل المنتج غير موجودة');
 
     // update flag for item details if start date item , start time item and duration item is less than now
-    const now = new Date();
     for (let itemDetails of itemsDetails) {
+      const now = Date.now() + 180 * 60000;
       if (
         addDurationToDate(itemDetails.start_date, itemDetails.duration) <
-          new Date(Date.now()) &&
-        itemDetails.start_date < now
+          new Date(now).toISOString() &&
+        itemDetails.start_date < new Date(now).toISOString()
       ) {
         itemDetails.is_open = false;
         await itemDetails.save();

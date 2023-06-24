@@ -19,7 +19,7 @@ const checkMailAndPassword = async (model, request, response, next) => {
 };
 //response generator general function
 function authResponse(id, role, response) {
-  let token = jwt.sign({ id: id, role: role }, SECRET_KEY, { expiresIn: '1h' });
+  let token = jwt.sign({ id: id, role: role }, SECRET_KEY);
   response.status(200).json({
     message: 'Authenticated',
     token,
