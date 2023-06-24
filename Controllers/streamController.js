@@ -110,3 +110,16 @@ exports.activateStream = (request, response, next) => {
         })
         .catch((error) => next(error));
 } 
+exports.deactivateStream = (request, response, next) => {
+    streamSchema
+        .updateOne({ _id: request.params.id }, { status: 'inactive' })
+        .then((data) => {
+            // if there is no stream with this id
+            if (!data) {
+                response.status(404).json({ message: 'Stream not found' });
+            } else {
+                response.status(200).json({ message: 'Stream status updated successfully' });
+            }
+        })
+        .catch((error) => next(error));
+} 
