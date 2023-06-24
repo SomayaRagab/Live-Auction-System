@@ -7,7 +7,10 @@ router.route('/winners/items').get(controller.getWinnerItems);
 
 router
   .route('/cards/:id')
-  // .get(controller.getAllItemDetails)
   .delete(controller.deleteCard);
+  
+router.get('/getPayedItems' , controller.getPayedItems);
+
+router.get('/getNotPayedItems' , controller.getNotPayedItems);
 
 module.exports = router;

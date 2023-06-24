@@ -7,18 +7,18 @@ const itemDetailsSchema = mongoose.model('itemDetails');
 
 const {
   addTimeToDate,
-  end_date_auction,
+  addDurationToDate,
 } = require('./../Helper/calculateDate');
 
 exports.createItemDetails = async (req, res) => {
   try {
     const item = await items.findById(req.body.item_id);
     const auction = await auctions.findById(req.body.auction_id);
-    if (!item) throw new Error('المنتج غير موجود');
+    if (!item || item.qty == 0) throw new Error('المنتج غير موجود');
     if (!auction) throw new Error('المزاد غير موجود');
 
     // check start date item is greater than start date auction
-    if ((new Date(req.body.start_date) < new Date(auction.start_date))) {
+    if (new Date(req.body.start_date) < new Date(auction.start_date)) {
       throw new Error(
         'تاريخ بدايه المنتج يجب ان يكون نفس يوم المزاد او بعده من تاريخ بدايه المزاد'
       );
@@ -28,7 +28,7 @@ exports.createItemDetails = async (req, res) => {
     const itemDate = addTimeToDate(req.body.start_date, req.body.start_time);
 
     // update auction end date
-    auction.end_date = end_date_auction(itemDate, req.body.duration);
+    auction.end_date = addDurationToDate(itemDate, req.body.duration);
     await auction.save();
 
     const itemDetails = new itemDetailsSchema({
@@ -81,7 +81,10 @@ exports.updateItemDetails = async (req, res) => {
     if (!itemDetails) throw new Error('تفاصيل المنتج غير موجودة');
 
     // check if item exist
-    if (req.body.item_id && !(await items.findById(req.body.item_id)))
+    if (
+      req.body.item_id &&
+      !(await items.findOne({ _id: req.body.item_id, qty: 0 }))
+    )
       throw new Error('المنتج غير موجود');
 
     // check if auction exist
@@ -106,19 +109,11 @@ exports.updateItemDetails = async (req, res) => {
 
       // update auction end date
       const auction = await auctions.findById(itemDetails.auction_id._id);
-      auction.end_date = end_date_auction(itemDate, req.body.duration);
+      auction.end_date = addDurationToDate(itemDate, req.body.duration);
       await auction.save();
 
       req.body.start_date = itemDate;
     }
-    //  else {
-    //   delete req.body.start_date;
-    //   delete req.body.start_time;
-
-    //   throw new Error(
-    //     'انت يجب تغيير تاريخ بدايه المنتج و وقت بدايته و مدته  معا'
-    //   );
-    // }
 
     await itemDetailsSchema.updateOne(
       { _id: req.params.id },
@@ -165,6 +160,19 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
         select: { name: 1, image: 1, material: 1 },
       });
     if (!itemsDetails) throw new Error('تفاصيل المنتج غير موجودة');
+
+    // update flag for item details if start date item , start time item and duration item is less than now
+    for (let itemDetails of itemsDetails) {
+      const now = Date.now() + 180 * 60000;
+      if (
+        addDurationToDate(itemDetails.start_date, itemDetails.duration) <
+          new Date(now).toISOString() &&
+        itemDetails.start_date < new Date(now).toISOString()
+      ) {
+        itemDetails.is_open = false;
+        await itemDetails.save();
+      }
+    }
     res.status(200).json(itemsDetails);
   } catch (err) {
     res.status(404).json({ error: err.message });

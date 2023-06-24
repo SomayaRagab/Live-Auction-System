@@ -3,14 +3,17 @@ const mongoose = require('mongoose');
 require('../Models/userModel');
 require('../Models/joinAuctionModel');
 require('../Models/auctionModel');
+require('./../Models/cardModel')
 const userSchema = mongoose.model('users');
 const joinAuctionSchema = mongoose.model('joinAuctions');
 const auctionSchema = mongoose.model('auctions');
+const cardSchema = mongoose.model('cards');
 const sendEmail = require('./sendEmail');
 
 // get all user expire block and update the block and expire_block
 const updateBlock = async (req, res, next) => {
   try {
+
     const users = await userSchema.find({ expire_block: { $gte: Date.now() } });
     for (let user of users) {
       user.block = false;
@@ -163,6 +166,42 @@ const sendEmailBeforeAuction = async (req, res, next) => {
   }
 };
 
+
+// create function to check if all crate auction is payed after 3 days or not if not update user itemNotPayed add 1 for itemNotPayed
+const checkIfPayed = async (req, res, next) => {
+  try {
+    const date = Date.now() - 3 * 24 * 60 * 60 * 1000;
+    const cards = await cardSchema.find({
+      createdAt: { $lte: date },
+      pay: false,
+    });
+    for (let card of cards) {
+      const user = await userSchema.findById(card.user_id);
+      user.itemNotPayed += 1;
+      await user.save();
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+// check if itemNotPayed >= 3 block user for 1 month
+const blockUser = async (req, res, next) => {
+  try {
+    const users = await userSchema.find({ itemNotPayed: { $gte: 3 } });
+    for (let user of users) {
+      user.block = true;
+      user.expire_block = Date.now() + 30 * 24 * 60 * 60 * 1000;
+      user.itemNotPayed = 0;
+      await user.save();
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
 const date = Date.now() + 5000;
 // do task to send email to admin before auction start
 // schedule.scheduleJob(date, sendEmailBeforeAuctionAdmin);
@@ -173,6 +212,12 @@ const date = Date.now() + 5000;
 // do task to update the user block and expire_block
 schedule.scheduleJob(date, updateBlock);
 
+// do task to check if all crate auction is payed after 2 days or not if not update user itemNotPayed add 1 for itemNotPayed
+schedule.scheduleJob(date, checkIfPayed);
+
+// do task to check if itemNotPayed >= 3 block user for 1 month
+schedule.scheduleJob(date, blockUser);
+
 // repeat schudle every day at 12:00 am
 schedule.scheduleJob('0 0 0 * *', updateBlock);
 
@@ -181,3 +226,10 @@ schedule.scheduleJob('0 0 0 * *', sendEmailBeforeAuction);
 
 // repeat schudle every day at 12:00 am
 schedule.scheduleJob('0 0 0 * *', sendEmailBeforeAuctionAdmin);
+
+// repeat schudle every day at 12:00 am
+schedule.scheduleJob('0 0 0 * *', checkIfPayed);
+
+// repeat schudle every day at 12:00 am
+schedule.scheduleJob('0 0 0 * *', blockUser);
+

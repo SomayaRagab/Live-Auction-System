@@ -77,3 +77,33 @@ exports.getJoinedAuctions = async (req, res) => {
         });
     }
     }
+
+    // check if user joined auction
+
+    exports.checkIfUserJoinedAuction = async (req, res) => {
+        try {
+            const joined = await joinAuctionSchema.findOne({
+                auction_id: req.params.id,
+                user_id: req.id,
+            });
+            if (joined) {
+                return res.status(200).json({
+                    success: true,
+                    message: 'User joined this auction...',
+                    data: joined,
+                });
+            } else {
+                return res.status(200).json({
+                    success: true,
+                    message: 'User not joined this auction...',
+                    data: joined,
+                });
+            }
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Unable to check if user joined auction...',
+                error: error.message,
+            });
+        }
+    }
