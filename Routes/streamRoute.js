@@ -15,9 +15,6 @@ router.route('/streams/:id')
     .get(checkUserORAdmin ,checkAdmin,validateParamArray,controller.getStreamById)
     .delete(checkAdmin,validateParamArray, controller.deleteStream);
 
-router.route('/auctionstream/:id')
-    .get(checkUserORAdmin ,checkAdmin,validateParamArray,controller.getStreamByAuctionId);
-
 router.route('/streamstatus/:id')
 .get(checkAdmin,validateParamArray,controller.changeStreamStatus);
 

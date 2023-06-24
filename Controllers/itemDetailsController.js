@@ -111,6 +111,7 @@ exports.updateItemDetails = async (req, res) => {
       const auction = await auctions.findById(itemDetails.auction_id._id);
       auction.end_date = addDurationToDate(itemDate, req.body.duration);
       await auction.save();
+      
 
       req.body.start_date = itemDate;
     }
@@ -169,11 +170,7 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
         addDurationToDate(itemDetails.start_date, itemDetails.duration) <
         new Date(now).toISOString()
       ) {
-        console.log(new Date(now).toISOString());
-        console.log(
-          addDurationToDate(itemDetails.start_date, itemDetails.duration)
-        );
-        itemDetails.is_open = false;
+          itemDetails.is_open = false;
         await itemDetails.save();
       }
     }

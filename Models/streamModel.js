@@ -19,11 +19,6 @@ const streamSchema = mongoose.Schema(
             type: String,
             required: [true, 'link is required']
         },
-        auction_id: {
-            type: Number,
-            ref: autions,
-            required: [true, 'auction_id is required']
-        },
         status: {
             type: String,
             enum: ['active', 'inactive'],

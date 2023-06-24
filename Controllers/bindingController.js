@@ -8,6 +8,7 @@ const itemDetailsSchema = mongoose.model('itemDetails');
 const userSchema = mongoose.model('users');
 const cardSchema = mongoose.model('cards');
 const Pusher = require('pusher');
+const { it, tr, el } = require('date-fns/locale');
 
 exports.addBidding = async (req, res, next) => {
   try {
@@ -34,9 +35,11 @@ exports.addBidding = async (req, res, next) => {
     }
 
     // check if start_date , duration greater than current date
-    console.log(itemDetails.start_date, itemDetails.duration);
+    const now = Date.now() + 180 * 60000;
+
     if (
-      addDurationToDate(itemDetails.start_date, itemDetails.duration) < new Date(Date.now())
+      addDurationToDate(itemDetails.start_date, itemDetails.duration) <
+      new Date(now).toISOString()
     ) {
       itemDetails.is_open = false;
       await itemDetails.save();
@@ -71,7 +74,7 @@ exports.addBidding = async (req, res, next) => {
       );
 
       const card = await new cardSchema({
-        user_id:req.id,
+        user_id: req.id,
         itemDetails_id,
         price: amount,
       });
@@ -99,7 +102,7 @@ exports.addBidding = async (req, res, next) => {
 
     const bidding = new bindingSchema({
       itemDetails_id,
-      user_id:req.id,
+      user_id: req.id,
       amount,
     });
 
@@ -108,12 +111,12 @@ exports.addBidding = async (req, res, next) => {
 
     res.status(201).json({ success: true, data: bidding });
   } catch (err) {
-   next(err);
+    next(err);
   }
 };
 
 //function to delete biddeing
-exports.deleteBidding = async (req, res,next) => {
+exports.deleteBidding = async (req, res, next) => {
   try {
     // const { _id } = req.body;
     bindingSchema.findByIdAndDelete(req.params.id).then((data) => {
@@ -125,7 +128,7 @@ exports.deleteBidding = async (req, res,next) => {
       }
     });
   } catch (err) {
-   next(err);
+    next(err);
   }
 };
 
@@ -156,8 +159,8 @@ exports.getWinner = async (req, res, next) => {
           amount: 1,
         }
       )
-      .populate({ path: 'user_id', select: { email: 1, name: 1 } })
-      .populate({ path: 'itemDetails_id', select: { item_id: 1 } })
+      .populate({ path: 'user_id', select: { email: 1, name: 1, _id: 1 } })
+      .populate({ path: 'itemDetails_id', select: { item_id: 1, is_open: 1 } })
 
       .sort({ amount: -1 })
       .limit(1)
@@ -168,22 +171,26 @@ exports.getWinner = async (req, res, next) => {
     if (!winner) {
       throw new Error('no winner');
     }
-//  check if the winner is exist in cardSchema
-if(await cardSchema.findOne({user_id:req.id,itemDetails_id:req.params.itemDetails_id})){
-  res.status(200).json({ winner });
-}else{
-    const winner= await new cardSchema({
-      user_id:req.id,
-      itemDetails_id: req.params.itemDetails_id,
-      price: winner.amount,
-    }).save();
+    //  check if the winner is exist in cardSchema
+    if (
+      !(await cardSchema.findOne({
+        user_id: winner.user_id._id,
+        itemDetails_id: req.params.itemDetails_id,
+      })) &&
+      winner.itemDetails_id.is_open == false
+    ) {
+      const newWinner = await new cardSchema({
+        user_id: winner.user_id._id,
+        itemDetails_id: req.params.itemDetails_id,
+        price: winner.amount,
+      }).save();
 
-    res.status(200).json({ winner });
-  }
+      res.status(200).json({ newWinner });
+    } else {
+      res.status(200).json({ winner });
+    }
 
     // get item from item details table
-
-    res.status(200).json({ winner });
   } catch (error) {
     next(error);
   }

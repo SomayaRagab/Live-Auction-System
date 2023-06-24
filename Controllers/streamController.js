@@ -55,7 +55,6 @@ exports.addStream = (request, response, next) => {
         title: request.body.title,
         description: request.body.description,
         link: request.body.link,
-        auction_id: request.body.auction_id,
     })
         .save()
         .then((data) => {
@@ -81,20 +80,6 @@ exports.updateStreamStatus = (request, response, next) => {
 };
 
 
-//get stream for specific auction 
-exports.getStreamByAuctionId = (request, response, next) => {
-    streamSchema
-        .find({ auction_id: request.params.id })
-        .then((data) => {
-            // if there is no stream with this id
-            if (!data) {
-                response.status(404).json({ message: 'Stream not found' });
-            } else {
-                response.status(200).json({ data });
-            }
-        })
-        .catch((error) => next(error));
-};
 
 //change stream status to active
 exports.changeStreamStatus = (request, response, next) => {
