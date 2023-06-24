@@ -31,6 +31,21 @@ exports.getStreamById = (request, response, next) => {
         .catch((error) => next(error));
 }
 
+//get stream using status
+exports.getActiveStream = (request, response, next) => {
+    streamSchema
+        .find({ status: "active" })
+        .then((data) => {
+            // if there is no stream with this status
+            if (data.length == 0) {
+                response.status(404).json({ message: 'Stream not found.' });
+            } else {
+                response.status(200).json({ data });
+            }
+        })
+        .catch((error) => next(error));
+};
+
 
 //delete a stream
 exports.deleteStream = (request, response, next) => {
@@ -82,7 +97,7 @@ exports.updateStreamStatus = (request, response, next) => {
 
 
 //change stream status to active
-exports.changeStreamStatus = (request, response, next) => {
+exports.activateStream = (request, response, next) => {
     streamSchema
         .updateOne({ _id: request.params.id }, { status: 'active' })
         .then((data) => {
