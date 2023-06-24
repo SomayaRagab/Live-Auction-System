@@ -25,10 +25,10 @@ router.route('/itemDetails/:id')
 router.route('/auctions/:id/items')
 .get(checkUserORAdmin ,validateParamArray,validateMW,itemDetailsController.getItemDetailsByAuctionId);
 
-router.route('/itemflag/:id')
-.post(validateParamArray,itemDetailsController.changeFlag);
+router.route('/openBide/:id')
+.post(validateParamArray,itemDetailsController.openBide);
 
-router.route('/falseFlag/:id')
-.post(validateParamArray,itemDetailsController.changeFlagToFalse);
+router.route('/closeBide/:id')
+.post(validateParamArray,itemDetailsController.closeBide);
 
 module.exports = router;

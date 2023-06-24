@@ -180,13 +180,13 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
 };
 
 //change flag for item details
-exports.changeFlag = async (req, res) => {
+exports.openBide = async (req, res) => {
   try {
     const itemDetails = await itemDetailsSchema.updateOne(
       { _id: req.params.id },
       {
         $set: {
-          flag: true,
+          is_open: true,
         },
       }
     );
@@ -199,13 +199,13 @@ exports.changeFlag = async (req, res) => {
   }
 };
 
-exports.changeFlagToFalse = async (req, res) => {
+exports.closeBide = async (req, res) => {
   try {
     const itemDetails = await itemDetailsSchema.updateOne(
       { _id: req.params.id },
       {
         $set: {
-          flag: false,
+          is_open: false,
         },
       }
     );
