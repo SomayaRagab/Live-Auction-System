@@ -184,13 +184,32 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
 };
 
 //change flag for item details
-exports.changeFlag = async (req, res) => {
+exports.openBide = async (req, res) => {
   try {
     const itemDetails = await itemDetailsSchema.updateOne(
       { _id: req.params.id },
       {
         $set: {
-          flag: true,
+          is_open: true,
+        },
+      }
+    );
+
+    if (itemDetails.matchedCount == 0)
+      throw new Error('تفاصيل المنتج غير موجودة');
+    res.status(200).json({ message: ' تفاصيل المنتج تغيره نجاح ' });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.closeBide = async (req, res) => {
+  try {
+    const itemDetails = await itemDetailsSchema.updateOne(
+      { _id: req.params.id },
+      {
+        $set: {
+          is_open: false,
         },
       }
     );
