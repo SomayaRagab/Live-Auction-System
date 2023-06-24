@@ -9,7 +9,7 @@ const userSchema = mongoose.model('users');
 const cardSchema = mongoose.model('cards');
 const Pusher = require('pusher');
 
-exports.addBidding = async (req, res) => {
+exports.addBidding = async (req, res, next) => {
   try {
     const { itemDetails_id, bide } = req.body;
     let amount = req.body.amount || 0;
@@ -108,13 +108,12 @@ exports.addBidding = async (req, res) => {
 
     res.status(201).json({ success: true, data: bidding });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
+   next(err);
   }
 };
 
 //function to delete biddeing
-exports.deleteBidding = async (req, res) => {
+exports.deleteBidding = async (req, res,next) => {
   try {
     // const { _id } = req.body;
     bindingSchema.findByIdAndDelete(req.params.id).then((data) => {
@@ -126,7 +125,7 @@ exports.deleteBidding = async (req, res) => {
       }
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+   next(err);
   }
 };
 
@@ -169,12 +168,18 @@ exports.getWinner = async (req, res, next) => {
     if (!winner) {
       throw new Error('no winner');
     }
-
-    await new cardSchema({
+//  check if the winner is exist in cardSchema
+if(await cardSchema.findOne({user_id:req.id,itemDetails_id:req.params.itemDetails_id})){
+  res.status(200).json({ winner });
+}else{
+    const winner= await new cardSchema({
       user_id:req.id,
       itemDetails_id: req.params.itemDetails_id,
       price: winner.amount,
     }).save();
+
+    res.status(200).json({ winner });
+  }
 
     // get item from item details table
 
