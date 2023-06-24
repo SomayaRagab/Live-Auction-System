@@ -6,7 +6,7 @@ const {addTimeToDate} = require('./../Helper/calculateDate')
 
 const auctionSchema = mongoose.model('auctions');
 const itemDetailsSchema = mongoose.model('itemDetails');
-const joinAuctionSchema = mongoose.model('joinAuction');
+const joinAuctionSchema = mongoose.model('joinAuctions');
 
 //Get All Auctions
 exports.getAllAuctions = (request, response, next) => {
@@ -108,7 +108,10 @@ exports.getAuctionsByStatus = (request, response, next) => {
     })
     .catch((error) => next(error));
 };
+
+//get user started auction
 exports.userAuctions = (request, response, next) => {
+  const userId=request.id;
   auctionSchema
     .find({ status: "started" })
     .then((data) => {
