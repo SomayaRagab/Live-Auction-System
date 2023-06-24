@@ -60,7 +60,7 @@ mongoose
   .then(() => {
     console.log('DB connected');
     // listen port
-    server.listen(8080, () => {
+    server.listen(PORT, () => {
       console.log('server is listening....', PORT);
     });
   })
