@@ -162,7 +162,7 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
     const now = new Date();
     for (let itemDetails of itemsDetails) {
       if (
-        addDurationToDate(itemDetails.start_date, itemDetails.duration) <
+        addDurationToDate(itemDetails.start_date, itemDetails.duration) >
         new Date(Date.now())
       ) {
         itemDetails.is_open = false;
