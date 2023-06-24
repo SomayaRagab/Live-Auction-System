@@ -31,8 +31,8 @@ exports.createCheckoutSession = async (req, res, next) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment', // specify the payment mode at the top level
-      success_url: `${req.protocol}://${req.get('host')}/sucess`,
-      cancel_url: `${req.protocol}://${req.get('host')}`,
+      success_url: 'http://localhost:3000/payment-status/success',
+      cancel_url: 'http://localhost:3000/payment-status/fail',
       customer_email: userData.email,
       client_reference_id: req.params.id,
       line_items: [
