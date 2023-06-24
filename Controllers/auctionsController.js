@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 require('./../Models/auctionModel');
 require('./../Models/itemDetailsModel');
+require('./../Models/joinAuctionModel');
 const {addTimeToDate} = require('./../Helper/calculateDate')
 
 const auctionSchema = mongoose.model('auctions');
 const itemDetailsSchema = mongoose.model('itemDetails');
+const joinAuctionSchema = mongoose.model('joinAuction');
 
 //Get All Auctions
 exports.getAllAuctions = (request, response, next) => {
@@ -103,6 +105,29 @@ exports.getAuctionsByStatus = (request, response, next) => {
       } else {
         response.status(200).json({ data });
       }
+    })
+    .catch((error) => next(error));
+};
+exports.userAuctions = (request, response, next) => {
+  auctionSchema
+    .find({ status: "started" })
+    .then((data) => {
+      joinAuctionSchema
+        .find({ auction_id: { $in: data.map(auction => auction._id) } })
+        .then((joinData) => {
+          if (joinData.length === 0) {
+            response.status(404).json({ message: 'Auction not found.' });
+          } else {
+            const result = data.filter(auction => joinData.some(join => join.userId === auction.userId));
+
+            if (result.length === 0) {
+              response.status(404).json({ message: 'Auction not found.' });
+            } else {
+              response.status(200).json({ data: result });
+            }
+          }
+        })
+        .catch((error) => next(error));
     })
     .catch((error) => next(error));
 };
