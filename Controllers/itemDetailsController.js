@@ -164,11 +164,15 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
     // update flag for item details if start date item , start time item and duration item is less than now
     for (let itemDetails of itemsDetails) {
       const now = Date.now() + 180 * 60000;
+
       if (
         addDurationToDate(itemDetails.start_date, itemDetails.duration) <
-          new Date(now).toISOString() &&
-        itemDetails.start_date < new Date(now).toISOString()
+        new Date(now).toISOString()
       ) {
+        console.log(new Date(now).toISOString());
+        console.log(
+          addDurationToDate(itemDetails.start_date, itemDetails.duration)
+        );
         itemDetails.is_open = false;
         await itemDetails.save();
       }
