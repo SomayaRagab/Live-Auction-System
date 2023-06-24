@@ -31,8 +31,8 @@ exports.createCheckoutSession = async (req, res, next) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment', // specify the payment mode at the top level
-      success_url: `${req.protocol}://${req.get('host')}/success`,
-      cancel_url: `${req.protocol}://${req.get('host')}/cancel`,
+      success_url: `${req.protocol}://${req.get('host')}`,
+      cancel_url: `${req.protocol}://${req.get('host')}`,
       customer_email: userData.email,
       client_reference_id: req.params.id,
       line_items: [
@@ -56,11 +56,7 @@ exports.createCheckoutSession = async (req, res, next) => {
       session,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: 'fail',
-      error,
-    });
+    next(error);
   }
 };
 
@@ -86,10 +82,6 @@ exports.checkPayment = async (req, res, next) => {
       });
     }
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: 'fail',
-      error,
-    });
+    next(error);
   }
 };
