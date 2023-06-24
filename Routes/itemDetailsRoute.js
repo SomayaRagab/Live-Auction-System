@@ -28,4 +28,7 @@ router.route('/auctions/:id/items')
 router.route('/itemflag/:id')
 .post(validateParamArray,itemDetailsController.changeFlag);
 
+router.route('/falseFlag/:id')
+.post(validateParamArray,itemDetailsController.changeFlagToFalse);
+
 module.exports = router;
