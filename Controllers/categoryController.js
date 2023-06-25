@@ -19,7 +19,7 @@ exports.getCategory = (request, response, next) => {
     .findOne({ _id: request.params.id })
     .then((data) => {
       if (data) response.status(200).json({ data });
-      else throw new Error('category not found');
+      else throw new Error('التصنيف غير موجود');
     })
     .catch((error) => next(error));
 };
@@ -50,8 +50,8 @@ exports.updateCategory = (request, response, next) => {
     )
     .then((data) => {
       if (data.matchedCount != 0)
-        response.status(200).json({ message: 'category updated successfully' });
-      else next(new Error('category not found'));
+        response.status(200).json({ message: 'تم تحديث التصنيف بنجاح' });
+      else next(new Error('التصنيف غير موجود'));
     })
     .catch((error) => next(error));
 };
@@ -62,14 +62,14 @@ exports.deleteCategory = async (request, response, next) => {
   const items = await ItemSchema.findOne({ category: request.params.id });
 
   if (items) {
-    return response.status(400).json({ error: 'category is used in item' });
+    return response.status(400).json({ error: 'التصنيف مستخدم في منتج' });
   }
   categorySchema
     .deleteOne({ _id: request.params.id })
     .then((data) => {
       if (data.deletedCount != 0)
-        response.status(200).json({ message: 'category deleted successfully' });
-      else throw new Error('category not found');
+        response.status(200).json({ message: 'تم حذف التصنيف بنجاح' });
+      else throw new Error('التصنيف غير موجود');
     })
     .catch((error) => next(error));
 };

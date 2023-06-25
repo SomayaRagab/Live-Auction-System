@@ -35,7 +35,7 @@ exports.getItem = (req, res, next) => {
     })
     .then((item) => {
       if (item) res.status(200).json(item);
-      else throw new Error('Item not found');
+      else throw new Error('المنتج غير موجود');
     })
     .catch((error) => next(error));
 };
@@ -51,7 +51,7 @@ exports.addItem = async (req, res, next) => {
         { folder: 'images/item' },
         function (error, result) {
           if (error) {
-            return reject('Failed to upload image to Cloudinary');
+            return reject('فشل تحميل الصورة إلى Cloudinary');
           }
           const imageUrl = result.url;
           resolve(imageUrl);
@@ -64,7 +64,7 @@ exports.addItem = async (req, res, next) => {
       _id: req.body.category,
     });
     if (!categoryExist) {
-      throw new Error('Category not found');
+      throw new Error('التصنيف غير موجود');
     }
 
 
@@ -92,12 +92,12 @@ exports.updateItem = async (req, res, next) => {
   try {
     const item = await ItemSchema.findOne({ _id: req.params.id });
     if (!item) {
-      return res.status(400).json({ error: 'Invalid item ID' });
+      return res.status(400).json({ error: 'معرف المنتج غير صالح' });
     }
     const { category } = req.body;
     const categoryExist = await categorySchema.findOne({ _id: category });
     if (!categoryExist) {
-      throw new Error('Category not found');
+      throw new Error('التصنيف غير موجود');
     }
 
     // Upload image to Cloudinary and get the URL
@@ -106,7 +106,7 @@ exports.updateItem = async (req, res, next) => {
       const publicId = extractPublicId(item.image);
 
       cloudinary.uploader.destroy(publicId, function (error, result) {
-        if (error) console.log('error in delete image from cloudinary');
+        if (error) console.log('خطأ في حذف الصورة من Cloudinary');
       });
       // Upload image to Cloudinary and get the URL
       const tempFilePath = await handleTempImage(req);
@@ -116,7 +116,7 @@ exports.updateItem = async (req, res, next) => {
           { folder: 'images/item' },
           function (error, result) {
             if (error) {
-              return reject('Failed to upload image to Cloudinary');
+              return reject('فشل تحميل الصورة إلى Cloudinary');
             }
             const imageUrl = result.url;
             resolve(imageUrl);
@@ -141,7 +141,7 @@ exports.updateItem = async (req, res, next) => {
       }
     );
 
-    res.status(200).json({ data: `item updated successfully` });
+    res.status(200).json({ data: `تم تحديث المنتج بنجاح` });
   } catch (error) {
     return next(error);
   }
@@ -157,11 +157,11 @@ exports.deleteItem = async (req, res, next) => {
       { _id: 1 }
     );
     if (items) {
-      throw new Error(`item is used in item details`);
+      throw new Error(`المنتج يستخدم في تفاصيل العنصر`);
     }
 
     const item = await ItemSchema.findOne({ _id: req.params.id });
-    if (!item) throw new Error('Item not found');
+    if (!item) throw new Error('المنتج غير موجود');
     if (item.image) {
       const public_id = extractPublicId(item.image);
       cloudinary.uploader.destroy(public_id, function (error, result) {
@@ -170,7 +170,7 @@ exports.deleteItem = async (req, res, next) => {
     }
 
     await ItemSchema.deleteOne({ _id: req.params.id });
-    res.status(200).json({ data: `item deleted successfully` });
+    res.status(200).json({ data: `تم حذف المنتج بنجاح` });
   } catch (error) {
     next(error);
   }
@@ -181,7 +181,7 @@ exports.getItemsByCategory = (req, res, next) => {
   ItemSchema.find({ category: req.params.id }, { category: 0 })
     .then((data) => {
       if (data) res.status(200).json(data);
-      else throw new Error('Item not found');
+      else throw new Error('المنتج غير موجود');
     })
     .catch((error) => next(error));
 };
@@ -196,7 +196,7 @@ exports.autocompleteItem = (req, res, next) => {
   })
     .then((data) => {
       if (data) res.status(200).json(data);
-      else throw new Error('Item not found');
+      else throw new Error('المنتج غير موجود');
     })
     .catch((error) => next(error));
 };
@@ -208,7 +208,7 @@ exports.newArrival = (req, res, next) => {
     .limit(6)
     .then((data) => {
       if (data) res.status(200).json(data);
-      else throw new Error('Item not found');
+      else throw new Error('المنتج غير موجود');
     })
     .catch((error) => next(error));
 };

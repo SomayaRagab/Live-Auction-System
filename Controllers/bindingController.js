@@ -23,14 +23,14 @@ exports.addBidding = async (req, res, next) => {
     if (!itemDetails) {
       res
         .status(400)
-        .json({ success: false, error: 'Invalid item Details ID' });
+        .json({ success: false, error: 'معرّف تفاصيل المنتج غير صالح' });
       return;
     }
     // Fetch the user from the database
     const user = await userSchema.findOne({ _id: req.id });
 
     if (!user || user.block) {
-      res.status(400).json({ success: false, error: 'Invalid user' });
+      res.status(400).json({ success: false, error: 'مستخدم غير صالح' });
       return;
     }
 
@@ -45,13 +45,13 @@ exports.addBidding = async (req, res, next) => {
       await itemDetails.save();
       res
         .status(400)
-        .json({ success: false, error: 'Bidding on this item is closed' });
+        .json({ success: false, error: 'المزايدة على هذا المنتج مغلقة' });
       return;
     }
     if (itemDetails.is_open == false) {
       res
         .status(400)
-        .json({ success: false, error: 'Bidding on this item is closed' });
+        .json({ success: false, error: 'المزايدة على هذا المنتج مغلقة' });
       return;
     }
 
@@ -59,7 +59,7 @@ exports.addBidding = async (req, res, next) => {
     if (bide < itemDetails.bidding_gap) {
       res.status(400).json({
         success: false,
-        error: 'Bidding amount is less than the bidding gap of the item',
+        error: 'مبلغ المزايدة أقل من مقدار المزايدة المنتج',
       });
       return;
     }
@@ -122,9 +122,9 @@ exports.deleteBidding = async (req, res, next) => {
     bindingSchema.findByIdAndDelete(req.params.id).then((data) => {
       // if there is no bidding with this id
       if (!data) {
-        res.status(404).json({ message: 'Bidding not found' });
+        res.status(404).json({ message: 'لم يتم العثور على المزايدة' });
       } else {
-        res.status(200).json({ message: 'Bidding deleted successfully' });
+        res.status(200).json({ message: 'تم حذف المزايدة بنجاح' });
       }
     });
   } catch (err) {
@@ -169,7 +169,7 @@ exports.getWinner = async (req, res, next) => {
       });
 
     if (!winner) {
-      throw new Error('no winner');
+      throw new Error('لا يوجد فائز');
     }
     //  check if the winner is exist in cardSchema
     if (
