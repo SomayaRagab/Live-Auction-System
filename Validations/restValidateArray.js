@@ -1,21 +1,21 @@
 const { body } = require('express-validator');
 
 exports.resetValidatePostArray = [
-  body('email').isEmail().withMessage('Please enter a valid email'),
+  body('email').isEmail().withMessage('بريد إلكتروني غير صالح'),
 ];
 
 exports.resetValidatePatchArray = [
   body('password')
     .isStrongPassword()
     .withMessage(
-      'password must be at least 8 chars, one uppercase letter, one lowercase letter,one special char, and one number'
+      'الرقم السري يجب أن يكون على الأقل 8 أحرف ويحتوي على حرف كبير وحرف صغير ورقم ورمز خاص'
     ),
   body('confirmPassword')
   .isStrongPassword()
-  .withMessage( 'password must be at least 8 chars, one uppercase letter, one lowercase letter,one special char, and one number')
+  .withMessage( 'الرقم السري يجب أن يكون على الأقل 8 أحرف ويحتوي على حرف كبير وحرف صغير ورقم ورمز خاص')
   .custom((value, { req }) => {
     if (value !== req.body.password) {
-      throw new Error('Password confirmation does not match password');
+      throw new Error('كلمة المرور غير متطابقة');
     }
     return true;
   }),
@@ -25,33 +25,33 @@ exports.resetValidatePatchArray = [
 exports.validateCode = [
   body('numberOne')
     .isString()
-    .withMessage('code must be a number')
+    .withMessage('الرمز يجب أن يكون رقمًا')
     .isLength({ min: 1, max: 1 })
-    .withMessage('code must be one digit '),
+    .withMessage('الرمز يجب أن يكون رقمًا واحدًا'),
 
   body('numberTwo')
     .isString()
-    .withMessage('code must be a number')
+    .withMessage('الرمز يجب أن يكون رقمًا')
     .isLength({ min: 1, max: 1 })
-    .withMessage('code must be one digit '),
+    .withMessage('الرمز يجب أن يكون رقمًا واحدًا '),
 
   body('numberThree')
     .isString()
-    .withMessage('code must be a number')
+    .withMessage('الرمز يجب أن يكون رقمً')
     .isLength({ min: 1, max: 1 })
-    .withMessage('code must be one digit '),
+    .withMessage('لرمز يجب أن يكون رقمًا واحدًا '),
 
   body('numberFour')
     .isString()
-    .withMessage('code must be a number')
+    .withMessage('الرمز يجب أن يكون رقمً')
     .isLength({ min: 1, max: 1 })
-    .withMessage('code must be one digit'),
+    .withMessage('لرمز يجب أن يكون رقمًا واحدًا'),
 
   body('numberFive')
     .isString()
-    .withMessage('code must be a number')
+    .withMessage('الرمز يجب أن يكون رقمً')
     .isLength({ min: 1, max: 1 })
-    .withMessage('code must be one digit'),
+    .withMessage('لرمز يجب أن يكون رقمًا واحدًا'),
 
 
 

@@ -5,49 +5,49 @@ const userSchema = require('mongoose').model('users');
 exports.validatePostArray = [
   body('name')
     .isString()
-    .withMessage('name must be string')
+    .withMessage('اسم المستخدم يجب أن يكون نصا')
     .isLength({ min: 2 })
-    .withMessage('name must be at least 2 chars'),
+    .withMessage('اسم المستخدم يجب أن يتكون من حرفين على الأقل'),
   body('email')
     .isEmail()
-    .withMessage('invalid email')
+    .withMessage('البريد الإلكتروني غير صالح')
     .custom(async (value) => {
       const user = await userSchema.findOne({ email: value }, { email: 1 });
-      if (user) throw new Error('email already exist');
+      if (user) throw new Error('البريد الإلكتروني موجود بالفعل');
     }),
   body('password')
     .isStrongPassword()
     .withMessage(
-      'password must be at least 8 chars, one uppercase letter, one lowercase letter,one special char, and one number'
+      'الرقم السري يجب أن يكون على الأقل 8 أحرف ويحتوي على حرف كبير وحرف صغير ورقم ورمز خاص'
     ),
-  body('city').isString().withMessage('city must be string'),
-  body('street').isString().withMessage('street must be string'),
-  body('building').isString().withMessage('building must be string'),
+  body('city').isString().withMessage('المدينة يجب أن تكون نصا'),
+  body('street').isString().withMessage('الشارع يجب أن يكون نصا'),
+  body('building').isString().withMessage('المبنى يجب أن يكون نصا'),
   body('phone')
     .isString()
-    .withMessage('phone must be string')
+    .withMessage('رقم الهاتف يجب أن يكون نصا')
     .isLength({ min: 11, max: 11 })
-    .withMessage('phone must be  11 chars')
+    .withMessage('رقم الهاتف يجب أن يكون 11 رقما')
     .matches(/^01[0125][0-9]{8}$/)
-    .withMessage('invalid phone number'),
+    .withMessage('رقم الهاتف غير صالح'),
 ];
 
 exports.validatePatchArray = [
   body('name')
     .optional()
     .isString()
-    .withMessage('name must be string')
+    .withMessage('اسم المستخدم غير صالح ')
     .isLength({ min: 2 })
-    .withMessage('name must be at least 2 chars'),
-  body('city').optional().isString().withMessage('city must be string'),
-  body('street').optional().isString().withMessage('street must be string'),
-  body('building').optional().isString().withMessage('building must be string'),
+    .withMessage('اسم المستخدم يجب أن يتكون من حرفين على الأقل'),
+  body('city').optional().isString().withMessage('المدينة يجب أن تكون نصا'),
+  body('street').optional().isString().withMessage('الشارع يجب أن يكون نصا'),
+  body('building').optional().isString().withMessage('المبنى يجب أن يكون نصا'),
   body('phone')
     .optional()
     .isString()
-    .withMessage('phone must be string')
+    .withMessage('رقم الهاتف يجب أن يكون نصا')
     .isLength({ min: 11, max: 11 })
-    .withMessage('phone must be  11 chars')
+    .withMessage('')
     .matches(/^01[0125][0-9]{8}$/)
     .withMessage('invalid phone number'),
 ];

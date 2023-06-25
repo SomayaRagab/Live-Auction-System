@@ -1,43 +1,43 @@
 const { body } = require('express-validator');
 
 exports.itemValidatePostArray = [
-  body('name').isString().withMessage('Name must be a string'),
+  body('name').isString().withMessage('يجب أن يكون الاسم نصًا'),
 
   body('qty')
     .isInt({ min: 1 })
-    .withMessage('Qty must be a number greater than 0'),
+    .withMessage('يجب أن يكون الكمية عددًا أكبر من 0'),
 
-  body('material').isString().withMessage('Material must be a string'),
+  body('material').isString().withMessage('يجب أن يكون المادة الخام نصًا'),
 
-  body('size').isString().withMessage('Size must be a string'),
+  body('size').isString().withMessage('يجب أن يكون الحجم نصًا'),
 
-  body('color').isString().withMessage('Color must be a string'),
+  body('color').isString().withMessage('يجب أن يكون اللون نصًا'),
 
   body('category')
     .isInt({ min: 1 })
-    .withMessage('Category must be number'),
+    .withMessage('يجب أن تكون الفئة رقمًا'),
 
 ];
 
 exports.itemValidatePatchArray = [
-  body('name').optional().isString().withMessage('Name must be a string'),
+  body('name').optional().isString().withMessage('يجب أن يكون الاسم نصًا'),
 
   body('qty')
     .optional()
     .isInt({ min: 1 })
-    .withMessage('Qty must be a number greater than 0'),
+    .withMessage('يجب أن يكون الكمية عددًا أكبر من 0'),
 
   body('material')
     .optional()
     .isString()
-    .withMessage('Material must be a string'),
+    .withMessage('يجب أن يكون المادة الخام نصًا'),
 
-  body('size').optional().isString().withMessage('Size must be a string'),
+  body('size').optional().isString().withMessage('يجب أن يكون الحجم نصًا'),
 
-  body('color').optional().isString().withMessage('Color must be a string'),
+  body('color').optional().isString().withMessage('يجب أن يكون اللون نصًا'),
 
   body('category')
     .optional()
     .isInt({ min: 1 })
-    .withMessage('Category must be number'),
+    .withMessage('يجب أن تكون الفئة رقمًا'),
 ];
