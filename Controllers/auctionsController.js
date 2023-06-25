@@ -109,34 +109,21 @@ exports.getAuctionsByStatus = (request, response, next) => {
     .catch((error) => next(error));
 };
 
-//get user started auction
-exports.userAuctions = (request, response, next) => {
+exports.userAuctions = async(request, response, next) => {
   const userId = request.id;
-  auctionSchema
-    .find({ status: "started" })
-    .then((data) => {
-      joinAuctionSchema
-        .find({ user_id: userId, auction_id: { $in: data.map(auction => auction._id) } })
-        .then((joinData) => {
-          if (joinData.length === 0) {
-            response.status(404).json({ message: 'Auction not found.' });
-          } else {
-            const result = joinData.map(join => {
-              const auction = data.find(auction => auction._id.equals(join.auction_id));
-              return { ...auction._doc, join_id: join._id };
-            });
-
-            if (result.length === 0) {
-              response.status(404).json({ message: 'Auction not found.' });
-            } else {
-              response.status(200).json({ data: result });
-            }
-          }
-        })
-        .catch((error) => next(error));
-    })
-    .catch((error) => next(error));
+  const startedAuction = await auctionSchema.find({ status: "started" });
+  joinAuctionSchema.find({ user_id: userId, auction_id: startedAuction})
+.then((data) => {
+  if (data.length === 0) {
+    response.status(404).json({ message: 'لم تشترك في هذا لمزاد' });
+  }
+  else{
+    response.status(200).json({ data });
+  }
+})
+.catch((error) => next(error));
 };
+
 
 
 //Get Auctions By Name

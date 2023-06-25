@@ -4,7 +4,7 @@ module.exports.checkAdmin = (request, response, next) => {
         next();
     }
     else {
-        let error = new Error("Not authorized lol");
+        let error = new Error("Not authorized");
         error.status = 403;
         next(error);
     }
