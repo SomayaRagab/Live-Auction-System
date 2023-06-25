@@ -111,17 +111,20 @@ exports.getAuctionsByStatus = (request, response, next) => {
 
 //get user started auction
 exports.userAuctions = (request, response, next) => {
-  const userId=request.id;
+  const userId = request.id;
   auctionSchema
     .find({ status: "started" })
     .then((data) => {
       joinAuctionSchema
-        .find({ auction_id: { $in: data.map(auction => auction._id) } })
+        .find({ user_id: userId, auction_id: { $in: data.map(auction => auction._id) } })
         .then((joinData) => {
           if (joinData.length === 0) {
             response.status(404).json({ message: 'Auction not found.' });
           } else {
-            const result = data.filter(auction => joinData.some(join => join.userId === auction.userId));
+            const result = joinData.map(join => {
+              const auction = data.find(auction => auction._id.equals(join.auction_id));
+              return { ...auction._doc, join_id: join._id };
+            });
 
             if (result.length === 0) {
               response.status(404).json({ message: 'Auction not found.' });
@@ -134,6 +137,7 @@ exports.userAuctions = (request, response, next) => {
     })
     .catch((error) => next(error));
 };
+
 
 //Get Auctions By Name
 exports.getAuctionsByName = (request, response, next) => {

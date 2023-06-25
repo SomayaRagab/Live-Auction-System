@@ -15,8 +15,13 @@ router.route('/streams/:id')
     .get(checkUserORAdmin ,checkAdmin,validateParamArray,controller.getStreamById)
     .delete(checkAdmin,validateParamArray, controller.deleteStream);
 
-router.route('/streamstatus/:id')
-.get(checkAdmin,validateParamArray,controller.changeStreamStatus);
+router.route('/activatestream/:id')
+.get(checkAdmin,validateParamArray,controller.activateStream);
+router.route('/deactivatestream/:id')
+.get(checkAdmin,validateParamArray,controller.deactivateStream);
+
+router.route('/activestream')
+.get(checkUserORAdmin,controller.getActiveStream);
 
 
 module.exports = router;
