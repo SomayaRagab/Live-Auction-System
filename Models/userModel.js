@@ -11,42 +11,41 @@ const userSchema = new Schema(
     },
     name: {
       type: String,
-      required: [true, 'required name'],
+      required: [true, 'اسم المستخدم مطلوب'],
     },
     email: {
       type: String,
-      // match: [/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/, ' Invalid Email'],
-      // required: [true, 'required email'],
-      unique: [true, 'email already exists'],
+      
+      unique: [true, 'البريد الإلكتروني مستخدم بالفعل'],
     },
     password: {
       type: String,
-      // required: [true, 'required password'],
+      
     },
     phone: {
       type: String,
-      match: [/^01[0125][0-9]{8}$/, 'Invalid phoneNumber'],
-      // required: [true, 'required phone'],
+      match: [/^01[0125][0-9]{8}$/, 'رقم الهاتف غير صحيح'],
+      
     },
     address: {
       type: Object,
       city: {
         type: String,
-        // required: [true, 'required city'],
+        
       },
       street: {
         type: String,
-        // required: [true, 'required street'],
+        
       },
       building_number: {
         type: String,
-        // required: [true, 'required building number'],
+        
       },
-      // required: [true, 'required address'],
+      
     },
     image: {
       type: String,
-      // required: [true, 'required image'],
+      
     },
     role: {
       type: String,

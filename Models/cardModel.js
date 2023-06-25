@@ -10,12 +10,12 @@ const cardSchema = mongoose.Schema({
     user_id: {
         type: Number,
         ref: 'users',
-        required: [true, 'User ID is required']
+        required: [true, 'معرف المستخدم مطلوب']
     },
     itemDetails_id: {
         type: Number,
         ref: 'itemDetails',
-        required: [true, 'Item Details ID is required']
+        required: [true, 'معرف تفاصيل المنتج مطلوب']
     },
     pay: {
         type: Boolean,
@@ -24,7 +24,7 @@ const cardSchema = mongoose.Schema({
 
     price: {
         type: Number,
-        required: [true, 'Price is required']
+        required: [true, 'السعر مطلوب']
     }
 }, {
     timestamps: true

@@ -25,7 +25,7 @@ exports.getAuctionById = (request, response, next) => {
     .then((data) => {
       // if there is no auction with this id
       if (!data) {
-        response.status(404).json({ message: 'Auction not found' });
+        response.status(404).json({ message: 'هذاالمزاد غير متوفر' });
       } else {
         response.status(200).json({ data });
       }
@@ -61,12 +61,12 @@ exports.updateAuction = (request, response, next) => {
     .then((data) => {
       // if there is no auction with this id
       if (data.length == 0) {
-        response.status(404).json({ message: 'Auction not found' });
+        response.status(404).json({ message: 'هذا المزاد غير متوفر' });
       } else {
         if(data.status != 'not started'){
-          response.status(400).json({ message: 'Cannot update Started or ended Auction ' });
+          response.status(400).json({ message: ' لا يمكن تعديل المزاد عند البدء المزاد او انتهائه' });
         }else{
-          response.status(200).json({ message: 'Auction updated successfully' });
+          response.status(200).json({ message: 'تم تعديل المزاد بنجاح' });
         }
       }
     })
@@ -77,16 +77,16 @@ exports.updateAuction = (request, response, next) => {
 exports.deleteAuction = async (request, response, next) => {
   auctionSchema.findById(request.params.id).then(async (data) => {
     if (!data) {
-      response.status(404).json({ message: 'Auction not found' });
+      response.status(404).json({ message: 'هذا المزاد غير متوفر' });
     } else {
       if (data.status != 'not started') {
-        response.status(400).json({ message: 'Cannot delete Started Auction ' });
+        response.status(400).json({ message: ' لا يمكن مسح المزاد بعد البدء به ' });
       } else {
         await auctionSchema.findByIdAndDelete(request.params.id).then(async (deletedData) => {
           // Delete all item details with this auction id
           await itemDetailsSchema.deleteMany({ auction_id: deletedData._id });
           
-          response.status(200).json({ message: 'Auction deleted successfully.' });
+          response.status(200).json({ message: 'تم مسح المزاد بنجاح' });
         }).catch((error) => next(error));
       }
     }
@@ -101,7 +101,7 @@ exports.getAuctionsByStatus = (request, response, next) => {
     .then((data) => {
       // if there is no auction with this status
       if (data.length == 0) {
-        response.status(404).json({ message: 'Auction not found.' });
+        response.status(404).json({ message: 'هذا المزاد غير متوفر' });
       } else {
         response.status(200).json({ data });
       }
@@ -118,7 +118,7 @@ exports.userAuctions = async(request, response, next) => {
     response.status(404).json({ message: 'لم تشترك في هذا لمزاد' });
   }
   else{
-    response.status(200).json({ data });
+    response.status(200).json({ startedAuction });
   }
 })
 .catch((error) => next(error));
@@ -136,7 +136,7 @@ exports.getAuctionsByName = (request, response, next) => {
   }).then((data) => {
     // if there is no auction with this name
     if (data.length == 0) {
-      response.status(404).json({ message: 'Auction not found' });
+      response.status(404).json({ message: 'هذا المزاد غير متوفر' });
     } else {
       response.status(200).json({ data });
     }
@@ -161,7 +161,7 @@ exports.startAuction = async (req, res) => {
     const auction = await auctionSchema.find({ status: 'started' });
     //if there is auction with status started return you can't start miiore than one auction at the same time
     if (auction.length != 0) {
-      throw new Error('You can not start more than one auction at the same time');
+      throw new Error('لا يمكن بدأ اكتر من مزاد في نفس التوقيت');
     }
     //if there is no auction with status started update auction status to started
     else{
@@ -175,8 +175,8 @@ exports.startAuction = async (req, res) => {
         }
       );
       if (startAuction.matchedCount == 0)
-        throw new Error('Auction not found');
-      res.status(200).json({ message: 'Auction updated successfully' });
+        throw new Error('هذا المزاد غير متوفر');
+      res.status(200).json({ message: 'تم تعديل المزاد بنجاح' });
     }
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -196,8 +196,8 @@ exports.endAuction = async (req, res) => {
       }
     );
     if (startAuction.matchedCount == 0)
-      throw new Error('Auction not found');
-    res.status(200).json({ message: 'Auction updated successfully' });
+      throw new Error('هذا المزاد غير متوفر');
+    res.status(200).json({ message: 'تم تعديل المزاد بنجاح' });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

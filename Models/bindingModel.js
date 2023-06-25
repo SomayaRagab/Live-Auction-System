@@ -11,16 +11,16 @@ const biddingSchema = mongoose.Schema({
     itemDetails_id :{
         type: Number,
         ref: itemDetails,
-        required: [true, 'Item Detailes ID is required']
+        required: [true, 'معرف تفاصيل المنتج مطلوب']
     },
     user_id: {
         type: Number,
         ref: users,
-        required: [true, 'User ID is required']
+        required: [true, 'معرف المستخدم مطلوب']
     },
     amount: {
         type: Number,
-        required: [true, 'Amount is required'],
+        required: [true, 'المبلغ مطلوب'],
         default:0
     },
 }

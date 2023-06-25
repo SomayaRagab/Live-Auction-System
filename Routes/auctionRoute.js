@@ -56,7 +56,7 @@ router.get(
 );
 
 router.patch('/startAuction/:id', checkAdmin, controller.startAuction);
-router.patch('/endAuction/:id', checkAdmin, controller.endAuction);
+router.patch('/endAuction/:id', checkUserORAdmin, controller.endAuction);
 
 router.get('/userAuctions', checkUserORAdmin, controller.userAuctions);
 

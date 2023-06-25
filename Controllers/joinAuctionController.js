@@ -51,13 +51,13 @@ exports.getJoinedAuctions = async (req, res) => {
       .populate({ path: 'auction_id', select: { name: 1, start_date: 1 } });
     res.status(200).json({
       success: true,
-      message: 'Joined auctions fetched successfully...',
+      message: 'تم جلب المزادات المشترك فيها بنجاح...',
       data: joinedAuctions,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Unable to fetch joined auctions...',
+      message: 'تعذر جلب المزادات المشترك فيها...',
       error: error.message,
     });
   }

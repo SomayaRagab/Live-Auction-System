@@ -7,15 +7,15 @@ const itemDetailsSchema = new Schema({
   },
   bidding_gap: {
     type: Number,
-    required: [true, 'Bidding Gap is required'],
+    required: [true, 'فارق المزايدة مطلوب'],
   },
   start_bidding: {
     type: Number,
-    required: [true, 'Start Bidding is required'],
+    required: [true, 'بدء المزايدة مطلوب'],
   },
   max_price: {
     type: Number,
-    required: [true, 'Max Price is required'],
+    required: [true, 'السعر الأقصى مطلوب'],
   },
   current_price: {
     type: Number,
@@ -24,21 +24,21 @@ const itemDetailsSchema = new Schema({
   item_id: {
     type: Number,
     ref: 'items',
-    required: [true, 'Item Id is required'],
+    required: [true, 'معرف المنتج مطلوب'],
   },
   auction_id: {
     type: Number,
     ref: 'auctions',
-    required: [true, 'Auction Id is required'],
+    required: [true, 'معرف المزاد مطلوب'],
   },
   start_date: {
     type: Date,
-    required: [true, 'Start Date is required'],
+    required: [true, 'تاريخ البدء مطلوب'],
   },
 
   duration: {
     type: Number,
-    required: [true, 'Duration is required'],
+    required: [true, 'المدة مطلوبة'],
   },
   is_open: {
     type: Boolean,

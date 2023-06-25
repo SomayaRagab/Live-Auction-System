@@ -5,8 +5,8 @@ const schema = new mongoose.Schema(
     _id: Number,
     name: {
       type: String,
-      required: [true, 'required name'],
-      unique: [true, 'name already exists '],
+      required: [true, 'الاسم مطلوب'],
+      unique: [true, 'الاسم بالفعل موجود '],
     },
   },
   { timestamps: true }
