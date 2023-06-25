@@ -33,7 +33,7 @@ exports.auctionValidatePostArray = [
       }
       return true;
     }),
-  body('fees').isInt({ min: 1 }).withMessage('Fees is required'),
+  body('fees').isInt({ min: 0 }).withMessage('تامين يحب ان يكون  صفر او اكبر '),
 ];
 
 exports.auctionValidatePatchArray = [
@@ -61,5 +61,8 @@ exports.auctionValidatePatchArray = [
       }
       return true;
     }),
-  body('fees').optional().isInt({ min: 1 }).withMessage('Fees is required'),
-];
+ 
+    body('fees').optional().isInt({ min: 0 }).withMessage('تامين يحب ان يكون  صفر او اكبر '),
+  ];
+  
+
