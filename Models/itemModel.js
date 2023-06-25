@@ -3,12 +3,12 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const schema = new mongoose.Schema(
   {
     _id: Number,
-    name: { type: String, required: [true, 'Name is required...'] },
-    qty: { type: Number, required: [true, 'Qty is required'] },
-    image: { type: String, required: [true, 'Image is required'] },
-    material: { type: String, required: [true, 'Material is required'] },
-    size: { type: String, required: [true, 'Size is required'] },
-    color: { type: String, required: [true, 'Color is required'] },
+    name: { type: String, required: [true, 'الاسم مطلوب'] },
+    qty: { type: Number, required: [true, 'الكمية مطلوبة'] },
+    image: { type: String, required: [true, 'الصورة مطلوبة'] },
+    material: { type: String, required: [true, 'المادة  الخام مطلوبة'] },
+    size: { type: String, required: [true, 'الحجم مطلوب'] },
+    color: { type: String, required: [true, 'اللون مطلوب'] },
     category: { type: Number, ref: 'categories' },
   },
   { timestamps: true }

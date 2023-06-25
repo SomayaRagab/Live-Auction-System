@@ -72,7 +72,7 @@ exports.getAllWinner = async (req, res,next) => {
   try {
     const allWinner = await cardSchema.aggregate(query);
     if(allWinner.length===0){
-      throw new Error('No winners items');
+      throw new Error('لا توجد فائزين');
     }
     res.status(200).json({ data: allWinner });
   } catch (err) {
@@ -140,7 +140,7 @@ exports.getWinnerItems = async (req, res, next) => {
   try {
     const itemWinner = await cardSchema.aggregate(query);
     if (itemWinner.length === 0) {
-      throw new Error('No winner items');
+      throw new Error('لا توجد فائزين');
     }
     res.status(200).json({ data: itemWinner });
   } catch (err) {
@@ -156,9 +156,9 @@ exports.deleteCard = async (req, res, next) => {
       _id: req.params.id,
     });
     if (!card) {
-      throw new Error('Card not found');
+      throw new Error('لم يتم العثور على البطاقة');
     }
-    res.status(200).json({ message: 'Card deleted successfully' });
+    res.status(200).json({ message: 'تم حذف البطاقه بنجاح' });
   } catch (err) {
     next(err);
   }
@@ -224,7 +224,7 @@ exports.getPayedItems = async (req, res, next) => {
     ];
     const payedItems = await cardSchema.aggregate(qury);
     if (payedItems.length === 0) {
-      throw new Error('No payed items');
+      throw new Error('لا توجد منتجات مدفوعة');
     }
     res.status(200).json({
       status: 'success',
@@ -296,7 +296,7 @@ exports.getNotPayedItems = async (req, res, next) => {
 
     const notPayedItems = await cardSchema.aggregate(qury);
     if (notPayedItems.length === 0) {
-      throw new Error('No not payed items');
+      throw new Error('لا توجد منتجات مدفوعة');
     }
     res.status(200).json({
       status: 'success',

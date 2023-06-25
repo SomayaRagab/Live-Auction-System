@@ -32,7 +32,7 @@ exports.createCheckoutSession = async (req, res, next) => {
     });
     const itemDetails = await itemDetailsSchema.findById(req.params.id);
     if (!itemDetails) {
-      res.status(404).json({ status: 'fail', message: 'no itemDetails found' });
+      res.status(404).json({ status: 'fail', message: 'لا يوجد تفاصيل للمنتج' });
       return;
     }
 
@@ -101,9 +101,9 @@ exports.checkPayment = async (req, res, next) => {
         { new: true }
       );
 
-      res.status(200).json({ status: 'success', message: 'payment success' });
+      res.status(200).json({ status: 'success', message: 'تم الدفع بنجاح' });
     } else if (req.params.status === 'fail') {
-      res.status(200).json({ status: 'fail', message: 'payment fail' });
+      res.status(200).json({ status: 'fail', message: 'فشل الدفع' });
     }
   } catch (error) {
     next(error);
@@ -187,9 +187,9 @@ exports.checkFeesPayment = async (req, res, next) => {
       });
       await joinAuction.save();
 
-      res.status(200).json({ status: 'success', message: 'payment success' });
+      res.status(200).json({ status: 'success', message: 'تم الدفع بنجاح' });
     } else if (req.params.status === 'fail') {
-      res.status(200).json({ status: 'fail', message: 'payment fail' });
+      res.status(200).json({ status: 'fail', message: 'فشل الدفع' });
     }
   } catch (error) {
     next(error);

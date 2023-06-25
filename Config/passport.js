@@ -10,7 +10,7 @@ const { SECRET_KEY } = require('./env');
 
 
 function authResponse(id, role, response) {
-  console.log("authResponse");
+  // console.log("authResponse");
   let token = jwt.sign({ id: id, role: role }, SECRET_KEY, { expiresIn: '1h' });
   console.log(token);
   response.status(200).json({
@@ -76,7 +76,7 @@ function(accessToken, refreshToken, profile, done) {
       return done(null, user, token);
     }
     if (!profile.emails || profile.emails.length === 0) {
-      return done(new Error("Email not provided by Google profile"));
+      return done(new Error("البريد الإلكتروني غير متوفر في ملف Google الشخصي"));
     }
     const newUser = new User({
       name: profile.displayName,

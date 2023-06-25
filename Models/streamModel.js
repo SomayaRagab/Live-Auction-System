@@ -9,15 +9,15 @@ const streamSchema = mongoose.Schema(
         },
         title: {
             type: String,
-            required: [true, 'title is required'],
+            required: [true, 'عنوان البث مطلوب'],
         },
         description: {
             type: String,
-            required: [true, 'description is required'],
+            required: [true, 'الوصف مطلوب'],
         },
         link :{
             type: String,
-            required: [true, 'link is required']
+            required: [true, 'الرابط مطلوب']
         },
         status: {
             type: String,

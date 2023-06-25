@@ -51,7 +51,7 @@ exports.sendResetPasswordEmail = async (req, res, next) => {
 
     await sendEmail(email, emailSubject, emailText);
 
-    res.json({ message: 'Email sent' });
+    res.json({ message: 'تم ارسال الايميل بنجاح' });
   } catch (error) {
     next(error);
   }
@@ -78,14 +78,14 @@ exports.verifyResetPasswordToken = async (req, res, next) => {
 
     // If user doesn't exist or token is expired, return error
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'رمز غير صالح أو منتهي الصلاحية' });
     }
 
     // compare the code with the hashed code
     const matched = await bcrypt.compare(codeNumber, code.replace(/-/g, '/'));
-    if (!matched) throw new Error('Wrong Verify Code');
+    if (!matched) throw new Error('رمز التحقق غير صحيح');
 
-    res.status(200).json({ message: 'Valid token' });
+    res.status(200).json({ message: 'رمز صالح' });
   } catch (error) {
     next(error);
   }
@@ -104,7 +104,7 @@ exports.updatePassword = async (req, res, next) => {
 
     // If user doesn't exist or token is expired, return error
     if (!user) {
-      return res.status(400).json({ message: 'Invalid or expired token' });
+      return res.status(400).json({ message: 'رمز غير صالح أو منتهي الصلاحية' });
     }
 
     // Hash the new password and update the user's password field
@@ -122,7 +122,7 @@ exports.updatePassword = async (req, res, next) => {
     const emailText = `This is a confirmation that the password for your account ${user.email} has just been changed successfully.\n`;
     const email = user.email;
     await sendEmail(email, emailSubject, emailText);
-    res.json({ message: 'Password updated Successfully' });
+    res.json({ message: 'تم تحديث كلمة المرور بنجاح' });
   } catch (error) {
     next(error);
   }

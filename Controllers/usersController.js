@@ -29,7 +29,7 @@ exports.getUser = (request, response, next) => {
     .findOne({ _id: request.params.id })
     .then((data) => {
       if (data) response.status(200).json({ data });
-      else throw new Error('user not found');
+      else throw new Error('لم يتم العثور على المستخدم');
     })
     .catch((error) => next(error));
 };
@@ -45,7 +45,7 @@ exports.addUser = async (request, response, next) => {
         { folder: 'images/user' },
         function (error, result) {
           if (error) {
-            return reject('Failed to upload image to Cloudinary');
+            return reject('فشل تحميل المنتج ال cloudinary');
           }
           const imageUrl = result.url;
           resolve(imageUrl);
@@ -80,12 +80,12 @@ exports.addUser = async (request, response, next) => {
 exports.updateUser = async (request, response, next) => {
   try {
     if (request.id != request.params.id) {
-      throw new Error('not have permission');
+      throw new Error('لا يوجد لديك صلاحية للقيام بهذا الإجراء');
     }
 
     const user = await userSchema.findOne({ _id: request.params.id });
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('لم يتم العثور على المستخدم');
     }
 
     let url = user.image;
@@ -93,7 +93,7 @@ exports.updateUser = async (request, response, next) => {
       const publicId = extractPublicId(user.image);
 
       cloudinary.uploader.destroy(publicId, function (error, result) {
-        if (error) console.log('error in delete image from cloudinary');
+        if (error) console.log('خطأ في حذف الصورة من Cloudinary');
       });
       // Upload image to Cloudinary and get the URL
       const tempFilePath = await handleTempImage(request);
@@ -103,7 +103,7 @@ exports.updateUser = async (request, response, next) => {
           { folder: 'images/user' },
           function (error, result) {
             if (error) {
-              return reject('Failed to upload image to Cloudinary');
+              return reject('فشل تحميل المنتج ال cloudinary');
             }
             const imageUrl = result.url;
             resolve(imageUrl);
@@ -129,7 +129,7 @@ exports.updateUser = async (request, response, next) => {
     );
 
 
-    response.status(200).json({ data: 'user updated successfully' });
+    response.status(200).json({ data: 'تم تحديث المستخدم بنجاح' });
   } catch (error) {
     next(error);
   }
@@ -142,7 +142,7 @@ exports.deleteUser = (request, response, next) => {
       _id: request.params.id,
     })
     .then((data) => {
-      if (!data) throw new Error("Can't delete not found id ");
+      if (!data) throw new Error("لا يمكن حذف معرف غير موجود ");
       if (data.image) {
         const publicId = extractPublicId(data.image);
         cloudinary.uploader.destroy(publicId, function (error, result) {});
@@ -151,7 +151,7 @@ exports.deleteUser = (request, response, next) => {
     })
     .then((data) => {
       if (data.deletedCount > 0) {
-        response.status(200).json({ data: 'user deleted successfully' });
+        response.status(200).json({ data: 'تم حذف المستخدم بنجاح' });
       }
     })
     .catch((error) => next(error));
@@ -164,7 +164,7 @@ exports.blockOrUnblockUser = (request, response, next) => {
       _id: request.params.id,
     })
     .then((data) => {
-      if (!data) throw new Error('there is no user with this id ');
+      if (!data) throw new Error('لا يوجد مستخدم بهذا المعرف');
       if (data.block == false) {
         data.block = true;
         data.expire_block = addMonthToDate();
@@ -189,7 +189,7 @@ exports.blockOrUnblockUser = (request, response, next) => {
     .then((data) => {
       response
         .status(200)
-        .json({ data: `user updated successfully, block=${block}` });
+        .json({ data: `تم تحديث المستخدم بنجاح، الحظر, block=${block}` });
     })
     .catch((error) => next(error));
 };

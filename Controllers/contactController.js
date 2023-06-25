@@ -24,9 +24,9 @@ exports.addContact = (request, response, next) => {
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
             console.log('Error:', error);
-            response.status(500).json({ success: false, message: 'Error sending email' });
+            response.status(500).json({ success: false, message: 'حدث خطأ أثناء إرسال البريد الإلكتروني' });
         } else {
-            console.log('helllo world');
+            // console.log('helllo world');
             // Save the contact details to the database
             new contactSchema({
                 name: name,
@@ -58,16 +58,16 @@ exports.deleteContact = (request, response, next) => {
         .findOne({ _id: request.params.id })
         .then((data) => {
             if (!data) {
-                throw new Error("Contact not found");
+                throw new Error("الاتصال غير موجود");
             } else {
                 return contactSchema.deleteOne({ _id: request.params.id });
             }
         })
         .then((data) => {
             if (data.deletedCount > 0) {
-                response.status(200).json({ message: 'Contact deleted successfully' });
+                response.status(200).json({ message: 'تم حذف الاتصال بنجاح' });
             } else {
-                throw new Error("Contact deletion failed");
+                throw new Error("فشل حذف الاتصال");
             }
         })
         .catch((error) => {

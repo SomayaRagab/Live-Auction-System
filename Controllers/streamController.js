@@ -23,7 +23,7 @@ exports.getStreamById = (request, response, next) => {
         .then((data) => {
             // if there is no stream with this id
             if (!data) {
-                response.status(404).json({ message: 'Stream not found' });
+                response.status(404).json({ message: 'البث لم يتم العثور عليه' });
             } else {
                 response.status(200).json({ data });
             }
@@ -38,7 +38,7 @@ exports.getActiveStream = (request, response, next) => {
         .then((data) => {
             // if there is no stream with this status
             if (data.length == 0) {
-                response.status(404).json({ message: 'Stream not found.' });
+                response.status(404).json({ message: 'البث لم يتم العثور عليه.' });
             } else {
                 response.status(200).json({ data });
             }
@@ -54,9 +54,9 @@ exports.deleteStream = (request, response, next) => {
         .then((data) => {
             // if there is no stream with this id
             if (!data) {
-                response.status(404).json({ message: 'Stream not found' });
+                response.status(404).json({ message: 'البث لم يتم العثور عليه' });
             } else {
-                response.status(200).json({ message: 'Stream deleted successfully' });
+                response.status(200).json({ message: 'تم حذف البث بنجاح' });
             }
         })
         .catch((error) => next(error));
@@ -86,9 +86,9 @@ exports.updateStreamStatus = (request, response, next) => {
         .then((data) => {
             // if there is no stream with this id
             if (!data) {
-                response.status(404).json({ message: 'Stream not found' });
+                response.status(404).json({ message: 'البث لم يتم العثور عليه' });
             } else {
-                response.status(200).json({ message: 'Stream status updated successfully' });
+                response.status(200).json({ message: 'تم تحديث حالة البث بنجاح' });
             }
         })
         .catch((error) => next(error));
@@ -103,9 +103,9 @@ exports.activateStream = (request, response, next) => {
         .then((data) => {
             // if there is no stream with this id
             if (!data) {
-                response.status(404).json({ message: 'Stream not found' });
+                response.status(404).json({ message: 'البث لم يتم العثور عليه' });
             } else {
-                response.status(200).json({ message: 'Stream status updated successfully' });
+                response.status(200).json({ message: 'تم تحديث حالة البث بنجاح' });
             }
         })
         .catch((error) => next(error));
@@ -116,9 +116,9 @@ exports.deactivateStream = (request, response, next) => {
         .then((data) => {
             // if there is no stream with this id
             if (!data) {
-                response.status(404).json({ message: 'Stream not found' });
+                response.status(404).json({ message: 'البث لم يتم العثور عليه' });
             } else {
-                response.status(200).json({ message: 'Stream status updated successfully' });
+                response.status(200).json({ message: 'تم تحديث حالة البث بنجاح' });
             }
         })
         .catch((error) => next(error));
