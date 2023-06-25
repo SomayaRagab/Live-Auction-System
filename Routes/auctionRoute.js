@@ -41,7 +41,7 @@ router
   .get(checkUserORAdmin, controller.getAuctionsByStatus);
 
 router
-  .route('/auction/:name')
+  .route('/auction/search/:name')
   .get(checkUserORAdmin, controller.getAuctionsByName);
 
 router.get('/newArrivalAuction', checkUserORAdmin, controller.newArrivalAuction);
