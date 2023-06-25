@@ -6,8 +6,7 @@ const cardSchema = mongoose.model('cards');
 const itemDetailsSchema = mongoose.model('itemDetails');
 const itemSchem = mongoose.model('items');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const endpointSecret =
-  'whsec_aefd73ff2be2786ef8ac674eced7ba671e9a903a53117bc8c6a86cf03f28b347';
+
 
 exports.createCheckoutSession = async (req, res, next) => {
   try {

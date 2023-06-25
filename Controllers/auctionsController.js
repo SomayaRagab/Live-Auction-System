@@ -128,7 +128,12 @@ exports.userAuctions = async(request, response, next) => {
 
 //Get Auctions By Name
 exports.getAuctionsByName = (request, response, next) => {
-  auctionSchema.find({ name: request.params.name }).then((data) => {
+  auctionSchema.find({
+   
+       name: { $regex: request.params.name, $options: 'ix' } ,
+     
+   
+  }).then((data) => {
     // if there is no auction with this name
     if (data.length == 0) {
       response.status(404).json({ message: 'Auction not found' });
@@ -137,7 +142,6 @@ exports.getAuctionsByName = (request, response, next) => {
     }
   });
 };
-
 // new arrival auction
 
 exports.newArrivalAuction = (request, response, next) => {

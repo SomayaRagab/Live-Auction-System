@@ -18,7 +18,10 @@ exports.createItemDetails = async (req, res) => {
     if (!auction) throw new Error('المزاد غير موجود');
 
     // check start date item is greater than start date auction
-    if (new Date(req.body.start_date) < new Date(auction.start_date)) {
+    if (
+      new Date(req.body.start_date).toISOString().substring(0, 10) <
+      new Date(auction.start_date).toISOString().substring(0, 10)
+    ) {
       throw new Error(
         'تاريخ بدايه المنتج يجب ان يكون نفس يوم المزاد او بعده من تاريخ بدايه المزاد'
       );
@@ -111,7 +114,6 @@ exports.updateItemDetails = async (req, res) => {
       const auction = await auctions.findById(itemDetails.auction_id._id);
       auction.end_date = addDurationToDate(itemDate, req.body.duration);
       await auction.save();
-      
 
       req.body.start_date = itemDate;
     }
@@ -170,7 +172,7 @@ exports.getItemDetailsByAuctionId = async (req, res) => {
         addDurationToDate(itemDetails.start_date, itemDetails.duration) <
         new Date(now).toISOString()
       ) {
-          itemDetails.is_open = false;
+        itemDetails.is_open = false;
         await itemDetails.save();
       }
     }
