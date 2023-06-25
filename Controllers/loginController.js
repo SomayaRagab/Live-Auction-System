@@ -9,10 +9,10 @@ const checkMailAndPassword = async (model, request, response, next) => {
 	try {
 		let data = await model.findOne({ email: request.body.email });
 		if (data == null) {
-			throw new Error('either mail or password is wrong');
+			throw new Error('البريد الالكتروني او كلمة المرور غير صحيحة');
 		} else {
 			let matched = await bcrypt.compare(request.body.password, data.password);
-			if (!matched) throw new Error('either mail or password is wrongooo');
+			if (!matched) throw new Error('البريد الالكتروني او كلمة المرور غير صحيحة');
 		}
 		return data;
 	} catch (error) { next(error); }

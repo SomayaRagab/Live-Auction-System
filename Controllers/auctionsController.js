@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 require('./../Models/auctionModel');
 require('./../Models/itemDetailsModel');
+require('./../Models/joinAuctionModel');
 const {addTimeToDate} = require('./../Helper/calculateDate')
 
 const auctionSchema = mongoose.model('auctions');
 const itemDetailsSchema = mongoose.model('itemDetails');
+const joinAuctionSchema = mongoose.model('joinAuctions');
 
 //Get All Auctions
 exports.getAllAuctions = (request, response, next) => {
@@ -106,6 +108,23 @@ exports.getAuctionsByStatus = (request, response, next) => {
     })
     .catch((error) => next(error));
 };
+
+exports.userAuctions = async(request, response, next) => {
+  const userId = request.id;
+  const startedAuction = await auctionSchema.find({ status: "started" });
+  joinAuctionSchema.find({ user_id: userId, auction_id: startedAuction})
+.then((data) => {
+  if (data.length === 0) {
+    response.status(404).json({ message: 'لم تشترك في هذا لمزاد' });
+  }
+  else{
+    response.status(200).json({ data });
+  }
+})
+.catch((error) => next(error));
+};
+
+
 
 //Get Auctions By Name
 exports.getAuctionsByName = (request, response, next) => {

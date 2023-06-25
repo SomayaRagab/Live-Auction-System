@@ -49,5 +49,7 @@ router.get('/newArrivalAuction', checkUserORAdmin, controller.newArrivalAuction)
 router.patch('/startAuction/:id',checkAdmin,controller.startAuction);
 router.patch('/endAuction/:id',checkAdmin,controller.endAuction);
 
+router.get('/userAuctions',checkUserORAdmin,controller.userAuctions);
+
 
 module.exports = router;
