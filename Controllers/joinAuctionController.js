@@ -17,6 +17,7 @@ exports.joinAuction = async (req, res, next) => {
       auction_id: req.body.auction_id,
       user_id: req.id,
     });
+    console.log(joined);
     if (joined && joined.is_fees_paid) {
       return res.status(400).json({
         success: false,
@@ -24,7 +25,7 @@ exports.joinAuction = async (req, res, next) => {
       });
     }
     // check if auction   has not fees
-    if (auction.fees != 0 && !joined.is_fees_paid)
+    if (auction.fees != 0 && !joined)
       throw new Error('لا يمكنك الانضمام للمزاد لانه يحتاج تامين');
     const { auction_id } = req.body;
     const joinAuction = new joinAuctionSchema({
