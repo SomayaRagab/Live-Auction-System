@@ -14,7 +14,7 @@ module.exports = (request, response, next) => {
     }
     catch (error) {
         error.status = 401;
-        error.message = "NOT authenticated";
+        error.message = "غير مصرح";
         next(error);
     }
 }

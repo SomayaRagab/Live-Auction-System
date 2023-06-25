@@ -118,7 +118,7 @@ exports.userAuctions = async(request, response, next) => {
     response.status(404).json({ message: 'لم تشترك في هذا لمزاد' });
   }
   else{
-    response.status(200).json({ data });
+    response.status(200).json({ startedAuction });
   }
 })
 .catch((error) => next(error));

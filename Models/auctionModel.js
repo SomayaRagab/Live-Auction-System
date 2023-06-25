@@ -8,36 +8,31 @@ const auctionSchema = mongoose.Schema(
     },
     name: {
       type: String,
-      required: [true, 'Name is required'],
+      required: [true, 'اسم المزاد مطلوب'],
     },
     reference_number: {
       type: Number,
       unique: true,
-      required: [true, 'Reference Number is required'],
+      required: [true, 'الرقم المرجعي  مطلوب'],
     },
     start_date: {
       type: Date,
-      required: [true, 'Start Date is required'],
+      required: [true, 'تاريخ البدء مطلوب'],
     },
     end_date: {
       type: Date,
       default:null,
-      required: [true, 'End Date is required'],
+      required: [true, 'تاريخ الانتهاء مطلوب'],
     },
-    // time: {
-    //   type: String,
-    //   match: [/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/, 'Invalid Time'],
-    //   required: [true, 'Time is required'],
-    // },
     fees: {
       type: Number,
-      required: [true, 'Fees is required'],
+      required: [true, 'الرسوم مطلوبة'],
     },
     status: {
       type: String,
       default: 'not started',
       enum: ['started', 'ended', 'not started'],
-      required: [true, 'Status is required'],
+      required: [true, 'الحالة مطلوبة'],
     },
   },
   {

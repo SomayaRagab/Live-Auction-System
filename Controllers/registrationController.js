@@ -16,7 +16,7 @@ exports.addUser = (request, response, next) => {
             console.error(error);
             return response
                 .status(500)
-                .json({ error: 'Failed to upload image to Cloudinary' });
+                .json({ error: 'فشل تحميل الصوره الي cloudinary ' });
         }
 
         request.body.image = result.url;

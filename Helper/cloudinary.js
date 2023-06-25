@@ -9,8 +9,5 @@ module.exports= cloudinary.config({
   api_secret: 'DobujUPSTN5VO6Gjk8O4QoL0ZkI'
 });
 
-// cloudinary.uploader.upload('./Images/download.jpeg', function(error, result) {
-//   //this will the image source
-//     console.log(result);
-//   });
+
   

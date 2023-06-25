@@ -6,12 +6,12 @@ const schema = new mongoose.Schema(
     auction_id: {
       type: Number,
       ref: 'auctions',
-      required: [true, 'Auction Id is required...'],
+      required: [true, 'معرّف المزاد مطلوب'],
     },
     user_id: {
       type: Number,
       ref: 'users',
-      required: [true, 'User Id is required'],
+      required: [true, 'معرّف المستخدم مطلوب'],
     },
     is_fees_paid: {
       type: Boolean,

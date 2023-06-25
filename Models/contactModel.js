@@ -10,28 +10,28 @@ const contactSchema = new Schema({
     },
     name: {
         type: String,
-        required: [true,'required name']
+        required: [true,'الاسم مطلوب']
     },
     email: {
         type: String,
         //match email with regex
-        match: [/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/, " Invalid Email"],
-        required: [true,'required email']
+        match: [/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/, " البريد الإلكتروني غير صحيح"],
+        required: [true,'البريد الإلكتروني مطلوب']
     },
     phone: {
         type: String,
         //match phone with regex
-        match: [/^01[0125][0-9]{8}$/, "Invalid phoneNumber"],
+        match: [/^01[0125][0-9]{8}$/, "رقم الهاتف غير صحيح"],
         
-        required: [true,'required phone']
+        required: [true,'رقم الهاتف مطلوب']
     },
     subject: {
         type: String,
-        required: [true,'required subject']
+        required: [true,'الموضوع مطلوب']
     },
     message: {
         type: String,
-        required: [true,'required message']
+        required: [true,'الرسالة مطلوبة']
     }
 }, {
     timestamps: true
