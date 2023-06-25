@@ -47,7 +47,7 @@ exports.createCheckoutSession = async (req, res, next) => {
       customer: customer.id,
       mode: 'payment', // specify the payment mode at the top level
       success_url: `http://localhost:3000/payment-status/success/${userData._id}`,
-      cancel_url: `http://localhost:3000/payment-status/fail`,
+      cancel_url: `http://localhost:3000/payment-status/fail/${userData._id}`,
       customer_email: userData.email,
       client_reference_id: req.params.id,
       // put card id in line_items
@@ -142,8 +142,8 @@ exports.createFeesSession = async (req, res, next) => {
       payment_method_types: ['card'],
       customer: customer.id,
       mode: 'payment', // specify the payment mode at the top level
-      success_url: `http://localhost:3000/payment-status/fees/success/${auction._id}`,
-      cancel_url: `http://localhost:3000/payment-status/fees/fail`,
+      success_url: `http://localhost:3000/Join-status/success/${auction._id}`,
+      cancel_url: `http://localhost:3000/Join-status/fail/${auction._id}`,
       customer_email: req.email,
       client_reference_id: req.params.id,
       // put card id in line_items
@@ -178,6 +178,19 @@ exports.checkFeesPayment = async (req, res, next) => {
     if (req.params.status === 'success') {
       const auction = await auctionSchema.findById(req.params.id);
       if (!auction) throw new Error('لا يوجد مزاد بهذا الرقم');
+
+      // check if user already joined the auction and paid the fees
+      const joined = await joinAuctionSchema.findOne({
+        auction_id: req.params.id,
+        user_id: req.id,
+        is_fees_paid: true,
+      });
+      if (joined) {
+        return res.status(400).json({
+          success: false,
+          message: 'لفد  تم الدفع مسبقا بالفعل مسبقا ',
+        });
+      }
 
       // create joinAuction with is_fees_paid true for this user
       const joinAuction = await new joinAuctionSchema({

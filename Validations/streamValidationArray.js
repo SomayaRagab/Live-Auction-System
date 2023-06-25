@@ -1,7 +1,7 @@
 const { body } = require('express-validator');
 
 exports.streamValidatePostArray = [
-    body('title').isString().withMessage('Name is required'),
-    body('description').isString().withMessage('Description is required'),
-    body('link').isString().withMessage('Link is required'),
+    body('title').isString().withMessage('الاسم مطلوب'),
+    body('description').isString().withMessage('الوصف مطلوب'),
+    body('link').isString().withMessage('الرابط مطلوب'),
 ];
