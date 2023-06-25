@@ -13,6 +13,10 @@ const schema = new mongoose.Schema(
       ref: 'users',
       required: [true, 'User Id is required'],
     },
+    is_fees_paid: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
