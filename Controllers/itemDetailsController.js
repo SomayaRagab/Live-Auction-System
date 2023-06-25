@@ -43,6 +43,7 @@ exports.createItemDetails = async (req, res) => {
       auction_id: req.body.auction_id,
       duration: req.body.duration,
       start_date: itemDate,
+      current_price:req.body.start_bidding,
     });
     const savedItem = await itemDetails.save();
     res.status(201).json({ data: savedItem });
