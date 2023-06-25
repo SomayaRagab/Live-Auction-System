@@ -28,82 +28,26 @@ exports.joinAuction = async (req, res) => {
       data: joinAuction,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Unable to join auction...',
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // get user joined auctions
 exports.getJoinedAuctions = async (req, res) => {
-    try {
-        const joinedAuctions = await joinAuctionSchema
-        .find({ user_id: req.id })
-        .populate( {path: 'auction_id',selected:{name:1 , image:1}});
-        res.status(200).json({
-        success: true,
-        message: 'Joined auctions fetched successfully...',
-        data: joinedAuctions,
-        });
-    } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: 'Unable to fetch joined auctions...',
-        error: error.message,
-        });
-    }
-    }
-
-
-    // get user joined auctions
-exports.getJoinedAuctions = async (req, res) => {
-
-    try {
-        const joinedAuctions = await joinAuctionSchema
-        .find({ user_id: req.id })
-        .populate( { path: 'auction_id', select: { name: 1 , start_date:1    } });
-        res.status(200).json({
-        success: true,
-        message: 'Joined auctions fetched successfully...',
-        data: joinedAuctions,
-        });
-    } catch (error) {
-        res.status(500).json({
-        success: false,
-        message: 'Unable to fetch joined auctions...',
-        error: error.message,
-        });
-    }
-    }
-
-    // check if user joined auction
-
-    exports.checkIfUserJoinedAuction = async (req, res) => {
-        try {
-            const joined = await joinAuctionSchema.findOne({
-                auction_id: req.params.id,
-                user_id: req.id,
-            });
-            if (joined) {
-                return res.status(200).json({
-                    success: true,
-                    message: 'User joined this auction...',
-                    data: joined,
-                });
-            } else {
-                return res.status(200).json({
-                    success: true,
-                    message: 'User not joined this auction...',
-                    data: joined,
-                });
-            }
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: 'Unable to check if user joined auction...',
-                error: error.message,
-            });
-        }
-    }
+  try {
+    const joinedAuctions = await joinAuctionSchema
+      .find({ user_id: req.id })
+      .populate({ path: 'auction_id', select: { name: 1, start_date: 1 } });
+    res.status(200).json({
+      success: true,
+      message: 'Joined auctions fetched successfully...',
+      data: joinedAuctions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Unable to fetch joined auctions...',
+      error: error.message,
+    });
+  }
+};

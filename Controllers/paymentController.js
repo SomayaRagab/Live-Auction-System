@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 require('../Models/itemDetailsModel');
 require('../Models/cardModel');
-const bcrypt = require('bcrypt');
+require('../Models/itemModel');
 const cardSchema = mongoose.model('cards');
 const itemDetailsSchema = mongoose.model('itemDetails');
+const itemSchem = mongoose.model('items');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const endpointSecret =
+  'whsec_aefd73ff2be2786ef8ac674eced7ba671e9a903a53117bc8c6a86cf03f28b347';
 
 exports.createCheckoutSession = async (req, res, next) => {
   try {
@@ -16,6 +19,15 @@ exports.createCheckoutSession = async (req, res, next) => {
       res.status(404).json({ status: 'fail', message: 'no winner found' });
       return;
     }
+
+    // create customer with email , card id
+    const customer = await stripe.customers.create({
+      email: userData.user_id.email,
+      name: userData.user_id.name,
+      metadata: {
+        cardId: userData._id,
+      },
+    });
     const itemDetails = await itemDetailsSchema.findById(req.params.id);
     if (!itemDetails) {
       res.status(404).json({ status: 'fail', message: 'no itemDetails found' });
@@ -30,11 +42,13 @@ exports.createCheckoutSession = async (req, res, next) => {
     // create checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      customer: customer.id,
       mode: 'payment', // specify the payment mode at the top level
-      success_url: 'http://localhost:3000/payment-status/success',
-      cancel_url: 'http://localhost:3000/payment-status/fail',
+      success_url: `http://localhost:3000/payment-status/success/${userData._id}`,
+      cancel_url: `http://localhost:3000/payment-status/fail/${userData._id}`,
       customer_email: userData.email,
       client_reference_id: req.params.id,
+      // put card id in line_items
       line_items: [
         {
           price_data: {
@@ -64,75 +78,30 @@ exports.createCheckoutSession = async (req, res, next) => {
 
 exports.checkPayment = async (req, res, next) => {
   try {
-    const session = await stripe.checkout.sessions.retrieve(req.params.id);
-    if (session.payment_status === 'paid') {
-      // update cardSchema for this itemDetails_id to pay true , qty minus 1 that is in itemSchema
-      const query = [
-        {
-          $match: {
-            itemDetails_id: session.client_reference_id,
-          },
-        },
-        {
-          $lookup: {
-            from: 'itemdetails',
-            localField: 'itemDetails_id',
-            foreignField: '_id',
-            as: 'itemdetails',
-          },
-        },
-        {
-          $unwind: '$itemdetails',
-        },
-        {
-          $lookup: {
-            from: 'items',
-            localField: 'itemdetails.item_id',
-            foreignField: '_id',
-            as: 'items',
-          },
-        },
-        {
-          $unwind: '$items',
-        },
-        // update qty in itemSchema and pay true in cardSchema
-        {
-          $set: {
-            'items.qty': { $subtract: ['$items.qty', 1] },
-          },
-        },
-        {
-          $project: {
-            _id: 1,
-            user_id: 1,
-            itemDetails_id: 1,
-            price: 1,
-            'items.name': 1,
-            'items.image': 1,
-            'itemdetails.qty': 1,
-          },
-        },
-        // update qty in itemSchema and pay true in cardSchema
-        {
-          $set: {
-            'itemdetails.qty': '$items.qty',
-            pay: true,
-          },
-        },
-      ];
-      const itemWinner = await cardSchema.aggregate(query);
-      if (itemWinner.length === 0) {
-        throw new Error('No winner items');
+    if (req.params.status === 'success') {
+      const itemWinner = await cardSchema
+        .findById(req.params.id)
+        .populate({ path: 'itemDetails_id', select: { item_id: 1 } });
+
+      if (!itemWinner) {
+        throw new Error('لا يوجد فائز ');
       }
-      res.status(200).json({
-        status: 'success',
-        message: 'payment success',
-      });
-    } else {
-      res.status(200).json({
-        status: 'success',
-        message: 'payment not success',
-      });
+      if (itemWinner.pay === true) throw new Error('تم الدفع مسبقا');
+
+      itemWinner.pay = true;
+      await itemWinner.save();
+
+      // update qty in itemSchema and pay true in cardSchema
+
+      const item = await itemSchem.findOneAndUpdate(
+        { _id: itemWinner.itemDetails_id.item_id },
+        { $inc: { qty: -1 } },
+        { new: true }
+      );
+
+      res.status(200).json({ status: 'success', message: 'payment success' });
+    } else if (req.params.status === 'fail') {
+      res.status(200).json({ status: 'fail', message: 'payment fail' });
     }
   } catch (error) {
     next(error);
