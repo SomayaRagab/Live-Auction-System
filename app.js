@@ -7,8 +7,6 @@ const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
 const uuid = require('uuid');
-
-// run schedule
 require('./Helper/schedule');
 
 // routes
@@ -29,13 +27,14 @@ const streamRoute = require('./Routes/streamRoute');
 const cardRoute = require('./Routes/cardRoute');
 const websiteRoute = require('./Routes/website/websiteRoute');
 
+
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
 const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
 const refresh = require('./refresh');
 
-console.log();
+
 
 //  open server using express
 const server = express(PORT);
@@ -89,8 +88,6 @@ morgan('dev');
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 
-
-
 // login Route
 server.use(resetPasswordRoute);
 server.use(registrationRoute);
@@ -127,5 +124,7 @@ server.use((request, response, next) => {
 server.use((error, request, response, next) => {
   // if (request.file) fs.unlinkSync(request.file.path);
   let status = error.status || 500;
-  response.status(status).json({status:'fail', message: error?.message + ''    });
+  response
+    .status(status)
+    .json({ status: 'fail', message: error?.message + '' });
 });

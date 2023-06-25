@@ -16,7 +16,12 @@ const router = express.Router();
 router
   .route('/auctions')
   .get(checkUserORAdmin, controller.getAllAuctions)
-  .post(checkAdmin, auctionValidatePostArray,validateMW, controller.addAuction);
+  .post(
+    checkAdmin,
+    auctionValidatePostArray,
+    validateMW,
+    controller.addAuction
+  );
 
 router
   .route('/auctions/:id')
@@ -34,7 +39,7 @@ router
     validateMW,
     controller.updateAuction
   )
-  .delete(checkAdmin, validateParamArray,validateMW, controller.deleteAuction);
+  .delete(checkAdmin, validateParamArray, validateMW, controller.deleteAuction);
 
 router
   .route('/auction/:status')
@@ -44,12 +49,15 @@ router
   .route('/auction/search/:name')
   .get(checkUserORAdmin, controller.getAuctionsByName);
 
-router.get('/newArrivalAuction', checkUserORAdmin, controller.newArrivalAuction);
+router.get(
+  '/newArrivalAuction',
+  checkUserORAdmin,
+  controller.newArrivalAuction
+);
 
-router.patch('/startAuction/:id',checkAdmin,controller.startAuction);
-router.patch('/endAuction/:id',checkAdmin,controller.endAuction);
+router.patch('/startAuction/:id', checkAdmin, controller.startAuction);
+router.patch('/endAuction/:id', checkAdmin, controller.endAuction);
 
-router.get('/userAuctions',checkUserORAdmin,controller.userAuctions);
-
+router.get('/userAuctions', checkUserORAdmin, controller.userAuctions);
 
 module.exports = router;
