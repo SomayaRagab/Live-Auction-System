@@ -65,6 +65,55 @@ exports.getUserReport = async (request, response, next) => {
     }
 };
 
+exports.getAuctionReport = async (request, response, next) => {
+    try {
+        const currentYear = moment().year();
+        const currentMonth = moment().month() + 1;
+
+        const pipeline = [
+            {
+                $match: {
+                    start_date: {
+                        $gte: moment().startOf('year').toDate(),
+                        $lte: moment().endOf('year').toDate()
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: '$start_date' },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ];
+
+        const auctionCounts = await auctionSchema.aggregate(pipeline);
+
+        const result = {};
+        const monthlyCounts = [];
+
+        auctionCounts.forEach(auction => {
+            const month = moment().month(auction._id - 1).format('MMMM');
+            const count = auction.count;
+
+            monthlyCounts.push({ month, count });
+            result[month] = count;
+        });
+
+        const currentMonthCount = result[currentMonth] || 0;
+
+        response.json({
+            currentMonthCount,
+            monthlyCounts
+        });
+    } catch (error) {
+        response.status(500).json({ error: error.message });
+    }
+};
+
 exports.getCategoryReport = async (request, response, next) => {
     try {
         const categoryCounts = await itemsSchema.aggregate([
@@ -178,7 +227,6 @@ exports.getProfitReport = async (request, response, next) => {
         next(error);
     }
 };
-
 
 exports.getTop10Users = async (request, response, next) => {
     try {
