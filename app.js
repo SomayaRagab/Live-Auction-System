@@ -110,7 +110,7 @@ server.use(joinAuctionRoute);
 server.use(streamRoute);
 server.use(cardRoute);
 server.use(contactRoutes);
-server.use(reportRoute);
+// server.use(reportRoute);
 
 // not found middleware
 server.use((request, response, next) => {
