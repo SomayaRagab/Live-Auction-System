@@ -27,14 +27,11 @@ const streamRoute = require('./Routes/streamRoute');
 const cardRoute = require('./Routes/cardRoute');
 const websiteRoute = require('./Routes/website/websiteRoute');
 
-
 const authRoutes = require('./Routes/auth');
 const calenderRoute = require('./Routes/calenderRoute');
 const reportRoute = require('./Routes/reportRoute');
 const { PORT, CONNECTION } = require('./Config/env');
 const refresh = require('./refresh');
-
-
 
 //  open server using express
 const server = express(PORT);
@@ -59,7 +56,7 @@ mongoose
   .then(() => {
     console.log('DB connected');
     // listen port
-    server.listen(8080, () => {
+    server.listen(PORT, () => {
       console.log('server is listening....', PORT);
     });
   })

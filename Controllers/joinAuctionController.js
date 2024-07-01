@@ -63,3 +63,23 @@ exports.getJoinedAuctions = async (req, res) => {
     });
   }
 };
+
+// get all join auctions
+exports.getAllJoinAuctions = async (req, res) => {
+  try {
+    const joinedAuctions = await joinAuctionSchema
+      .find()
+      .populate({ path: 'auction_id', select: { name: 1, start_date: 1 } });
+    res.status(200).json({
+      success: true,
+      message: 'تم جلب المزادات المشترك فيها بنجاح...',
+      data: joinedAuctions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'تعذر جلب المزادات المشترك فيها...',
+      error: error.message,
+    });
+  }
+}

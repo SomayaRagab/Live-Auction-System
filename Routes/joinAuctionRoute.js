@@ -10,6 +10,10 @@ router
   .get(constroller.getJoinedAuctions)
   .post(constroller.joinAuction);
 
+router
+  .route('/allJoinActions')
+  .get(constroller.getAllJoinAuctions)
+
 
 
 module.exports = router;
